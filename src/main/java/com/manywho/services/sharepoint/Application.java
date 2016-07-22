@@ -22,13 +22,9 @@ public class Application extends BaseApplication {
     public static void main(String[] args) {
         try {
             final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(BASE_URI, new Application(), false);
-
             Runtime.getRuntime().addShutdownHook(new Thread(server::shutdownNow));
-
             server.start();
-
             System.out.println(String.format("com.manywho.services.sharepoint.Application started.\nTry out %s\nStop the application using CTRL+C", BASE_URI));
-
             Thread.currentThread().join();
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);

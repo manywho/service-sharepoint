@@ -43,6 +43,5 @@ public class FileSharePointService {
         return sharePointFacadeFactory.createSharePointFacadeForSubdomain( configuration.getSubdomain(),
                 configuration.getUsername(), configuration.getPassword())
                 .fetchFiles(folderPath);
-
     }
 }

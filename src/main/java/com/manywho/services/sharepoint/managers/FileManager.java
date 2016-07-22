@@ -11,7 +11,6 @@ import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.FileSharePointService;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-
 import javax.inject.Inject;
 import java.util.List;
 
@@ -38,7 +37,6 @@ public class FileManager {
 
         throw new Exception("A file was not provided to upload to Box");
     }
-
 
     public ObjectDataResponse loadFiles(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest) throws Exception {
         Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
