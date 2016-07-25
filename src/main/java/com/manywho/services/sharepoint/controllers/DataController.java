@@ -24,7 +24,7 @@ public class DataController extends AbstractDataController {
 
     @Override
     public ObjectDataResponse delete(ObjectDataRequest objectDataRequest) throws Exception {
-        throw new Exception("Deleting isn't currently supported in the Box Service");
+        throw new Exception("Deleting isn't currently supported in the SharePoint Service");
     }
 
     @Path("/data")
@@ -34,8 +34,8 @@ public class DataController extends AbstractDataController {
         switch (objectDataRequest.getObjectDataType().getDeveloperName()) {
             case File.NAME:
                 return fileManager.loadFile(getAuthenticatedWho(), objectDataRequest);
-//            case Folder.NAME:
-//                return new ObjectDataResponse(dataManager.loadFolderType(getAuthenticatedWho(), objectDataRequest));
+            case Folder.NAME:
+                return fileManager.loadFolder(getAuthenticatedWho(), objectDataRequest);
         }
 
         throw new Exception("object not found");

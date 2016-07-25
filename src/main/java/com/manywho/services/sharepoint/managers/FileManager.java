@@ -1,6 +1,7 @@
 package com.manywho.services.sharepoint.managers;
 
 import com.independentsoft.share.File;
+import com.independentsoft.share.Folder;
 import com.manywho.sdk.entities.run.elements.config.ServiceRequest;
 import com.manywho.sdk.entities.run.elements.config.ServiceResponse;
 import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
@@ -14,22 +15,28 @@ import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.entities.request.FileCopy;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.FileSharePointService;
+import com.manywho.services.sharepoint.services.FolderSharePointService;
+import com.manywho.services.sharepoint.services.ObjectMapperService;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-
 import javax.inject.Inject;
 import java.util.List;
 
 public class FileManager {
     private FileService fileService;
     private FileSharePointService fileSharePointService;
+    private FolderSharePointService folderSharepointService;
+    private ObjectMapperService objectMapperService;
     private PropertyCollectionParser propertyParser;
 
     @Inject
-    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser) {
+    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser,
+                       FolderSharePointService folderSharePointService, ObjectMapperService objectMapperService) {
         this.fileService = fileService;
         this.fileSharePointService = fileSharePointService;
+        this.folderSharepointService = folderSharePointService;
         this.propertyParser = propertyParser;
+        this.objectMapperService = objectMapperService;
     }
 
     public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
@@ -39,7 +46,7 @@ public class FileManager {
         if (bodyPart != null) {
             File file = fileSharePointService.uploadFileToSharepoint(authenticatedWho.getToken(), configuration, fileDataRequest, bodyPart);
             if (file != null) {
-                return new ObjectDataResponse(fileService.buildManyWhoFileSystemObject(file));
+                return new ObjectDataResponse(objectMapperService.buildManyWhoFileSystemObject(file));
             }
         }
 
@@ -52,7 +59,7 @@ public class FileManager {
         ObjectCollection files = new ObjectCollection();
 
         for (File file : filesSharepoint) {
-                files.add(fileService.buildManyWhoFileSystemObject(file));
+                files.add(objectMapperService.buildManyWhoFileSystemObject(file));
         }
 
         return new ObjectDataResponse(files);
@@ -66,7 +73,7 @@ public class FileManager {
         ObjectCollection files = new ObjectCollection();
 
         if(filesSharepoint != null) {
-            files.add(fileService.buildManyWhoFileObject(filesSharepoint, null));
+            files.add(objectMapperService.buildManyWhoObjectFile(filesSharepoint, null));
         }
 
         return new ObjectDataResponse(files);
@@ -83,5 +90,19 @@ public class FileManager {
         fileSharePointService.copyFile(user.getToken(), configuration, fileCopy.getFile().getId(), newPath);
 
         return new ServiceResponse(InvokeType.Forward, serviceRequest.getToken());
+    }
+
+    public ObjectDataResponse loadFolder(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
+        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        String folderPath = objectDataRequest.getListFilter().getId();
+
+        Folder folderSharePoint = folderSharepointService.fetchFolder(authenticatedWho.getToken(), configuration, folderPath);
+        ObjectCollection files = new ObjectCollection();
+
+        if(folderSharePoint != null) {
+            files.add(objectMapperService.buildManyWhoObjectFolder(folderSharePoint));
+        }
+
+        return new ObjectDataResponse(files);
     }
 }

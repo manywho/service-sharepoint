@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 import com.independentsoft.share.File;
+import com.independentsoft.share.Folder;
 import com.independentsoft.share.Service;
 import com.independentsoft.share.ServiceException;
 import java.io.InputStream;
@@ -16,6 +17,14 @@ public class SharepointFacade {
     public File createFile(String path, InputStream inputStream) {
         try {
             return service.createFile(path, inputStream);
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Folder createFolder(String path) {
+        try {
+            return service.createFolder(path);
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -44,6 +53,14 @@ public class SharepointFacade {
             }
 
             throw new RuntimeException("File "+ newPath + "can not be copy");
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Folder fetchFolder(String folderPath) {
+        try {
+            return service.getFolder(folderPath);
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
