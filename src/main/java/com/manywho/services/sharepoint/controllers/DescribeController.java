@@ -23,12 +23,13 @@ public class DescribeController extends AbstractController {
     @AuthorizationRequired
     public DescribeServiceResponse describe(DescribeServiceRequest describeServiceRequest) throws Exception {
         return new DescribeServiceBuilder()
-                .setProvidesLogic(true)
+                .setProvidesDatabase(true)
                 .setProvidesFiles(true)
+                .setProvidesLogic(true)
                 .setCulture(new Culture("EN", "US"))
                 .addConfigurationValue(new DescribeValue("Username", ContentType.String, true))
                 .addConfigurationValue(new DescribeValue("Password", ContentType.Password, true))
-                .addConfigurationValue(new DescribeValue("Subdomain", ContentType.String, true))
+                .addConfigurationValue(new DescribeValue("Host", ContentType.String, true))
                 .createDescribeService()
                 .createResponse();
     }

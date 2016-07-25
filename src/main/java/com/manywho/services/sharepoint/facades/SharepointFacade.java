@@ -28,4 +28,24 @@ public class SharepointFacade {
             throw new RuntimeException(e);
         }
     }
+
+    public File fetchFile(String path) {
+        try {
+            return service.getFile(path);
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public File copyFile(String accessToken, String sourcePath, String newPath)  {
+        try {
+            if(service.copyFile(sourcePath, newPath)){
+                return service.getFile(newPath);
+            }
+
+            throw new RuntimeException("File "+ newPath + "can not be copy");
+        } catch (ServiceException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

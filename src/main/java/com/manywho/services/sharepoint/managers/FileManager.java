@@ -1,28 +1,36 @@
 package com.manywho.services.sharepoint.managers;
 
 import com.independentsoft.share.File;
+import com.manywho.sdk.entities.run.elements.config.ServiceRequest;
+import com.manywho.sdk.entities.run.elements.config.ServiceResponse;
 import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
+import com.manywho.sdk.enums.InvokeType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.entities.request.FileCopy;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.FileSharePointService;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+
 import javax.inject.Inject;
 import java.util.List;
 
 public class FileManager {
-    @Inject
     private FileService fileService;
-
-    @Inject
     private FileSharePointService fileSharePointService;
+    private PropertyCollectionParser propertyParser;
 
     @Inject
-    private PropertyCollectionParser propertyParser;
+    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser) {
+        this.fileService = fileService;
+        this.fileSharePointService = fileSharePointService;
+        this.propertyParser = propertyParser;
+    }
 
     public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
         BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
@@ -31,7 +39,7 @@ public class FileManager {
         if (bodyPart != null) {
             File file = fileSharePointService.uploadFileToSharepoint(authenticatedWho.getToken(), configuration, fileDataRequest, bodyPart);
             if (file != null) {
-                return new ObjectDataResponse(fileService.buildManyWhoFileObject(file));
+                return new ObjectDataResponse(fileService.buildManyWhoFileSystemObject(file));
             }
         }
 
@@ -44,9 +52,36 @@ public class FileManager {
         ObjectCollection files = new ObjectCollection();
 
         for (File file : filesSharepoint) {
-                files.add(fileService.buildManyWhoFileObject(file));
+                files.add(fileService.buildManyWhoFileSystemObject(file));
         }
 
         return new ObjectDataResponse(files);
+    }
+
+    public ObjectDataResponse loadFile(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
+        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        String fileId = objectDataRequest.getListFilter().getId();
+
+        File filesSharepoint = fileSharePointService.fetchFile(authenticatedWho.getToken(), configuration, fileId);
+        ObjectCollection files = new ObjectCollection();
+
+        if(filesSharepoint != null) {
+            files.add(fileService.buildManyWhoFileObject(filesSharepoint, null));
+        }
+
+        return new ObjectDataResponse(files);
+    }
+
+    public ServiceResponse copyFile(AuthenticatedWho user, ServiceRequest serviceRequest) throws Exception {
+        FileCopy fileCopy = propertyParser.parse(serviceRequest.getInputs(), FileCopy.class);
+        Configuration configuration = propertyParser.parse(serviceRequest.getConfigurationValues(), Configuration.class);
+        if (fileCopy == null) {
+            throw new Exception("Unable to parse the incoming FileCopy request");
+        }
+
+        String newPath = fileCopy.getFolder().getId() + fileCopy.getName();
+        fileSharePointService.copyFile(user.getToken(), configuration, fileCopy.getFile().getId(), newPath);
+
+        return new ServiceResponse(InvokeType.Forward, serviceRequest.getToken());
     }
 }

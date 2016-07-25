@@ -7,6 +7,7 @@ import com.manywho.services.sharepoint.factories.SharePointFacadeFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
+
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,9 +15,12 @@ import java.util.List;
 
 public class FileSharePointService {
     final public static String DEFAULT_ROOT_PATH = "Shared Documents";
+    private SharePointFacadeFactory sharePointFacadeFactory;
 
     @Inject
-    private SharePointFacadeFactory sharePointFacadeFactory;
+    public FileSharePointService(SharePointFacadeFactory sharePointFacadeFactory) {
+        this.sharePointFacadeFactory = sharePointFacadeFactory;
+    }
 
     public File uploadFileToSharepoint(String token, Configuration configuration, FileDataRequest fileDataRequest, BodyPart filePart) {
         try {
@@ -24,7 +28,7 @@ public class FileSharePointService {
             String uploadPath = StringUtils.isNotEmpty(fileDataRequest.getResourcePath()) ? fileDataRequest.getResourcePath() : "/" + DEFAULT_ROOT_PATH;
 
             try {
-                return sharePointFacadeFactory.createSharePointFacadeForSubdomain( configuration.getSubdomain(),
+                return sharePointFacadeFactory.createSharePointFacade( configuration.getHost(),
                         configuration.getUsername(), configuration.getPassword())
                         .createFile(uploadPath + "/" + filePart.getContentDisposition().getFileName(), inputStream);
             } finally {
@@ -40,8 +44,22 @@ public class FileSharePointService {
     public List<File> fetchFiles(String token, Configuration configuration, FileDataRequest fileDataRequest) {
         String folderPath = StringUtils.isNotEmpty(fileDataRequest.getResourcePath()) ? fileDataRequest.getResourcePath() : "/" + DEFAULT_ROOT_PATH;
 
-        return sharePointFacadeFactory.createSharePointFacadeForSubdomain( configuration.getSubdomain(),
+        return sharePointFacadeFactory.createSharePointFacade( configuration.getHost(),
                 configuration.getUsername(), configuration.getPassword())
                 .fetchFiles(folderPath);
+    }
+
+    public File fetchFile(String token, Configuration configuration, String fileId) {
+
+        return sharePointFacadeFactory.createSharePointFacade( configuration.getHost(),
+                configuration.getUsername(), configuration.getPassword())
+                .fetchFile(fileId);
+    }
+
+    public File copyFile(String token, Configuration configuration, String sourcePath, String newPath) {
+
+        return sharePointFacadeFactory.createSharePointFacade( configuration.getHost(),
+                configuration.getUsername(), configuration.getPassword())
+                .copyFile(token, sourcePath, newPath);
     }
 }

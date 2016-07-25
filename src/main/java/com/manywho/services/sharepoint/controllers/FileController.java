@@ -1,5 +1,7 @@
 package com.manywho.services.sharepoint.controllers;
 
+import com.manywho.sdk.entities.run.elements.config.ServiceRequest;
+import com.manywho.sdk.entities.run.elements.config.ServiceResponse;
 import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
@@ -18,8 +20,19 @@ import javax.ws.rs.Produces;
 @Produces("application/json")
 public class FileController extends AbstractController {
 
-    @Inject
     private FileManager fileManager;
+
+    @Inject
+    public FileController(FileManager fileManager) {
+        this.fileManager = fileManager;
+    }
+
+    @Path("/copy")
+    @POST
+    @AuthorizationRequired
+    public ServiceResponse copyFile(ServiceRequest serviceRequest) throws Exception {
+        return fileManager.copyFile(getAuthenticatedWho(), serviceRequest);
+    }
 
     @Path("/")
     @POST

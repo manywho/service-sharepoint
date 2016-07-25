@@ -9,8 +9,8 @@ public class Configuration {
     @Property("Password")
     private String password;
 
-    @Property("Subdomain")
-    private String subdomain;
+    @Property("Host")
+    private String host;
 
     public String getUsername() {return username;}
 
@@ -18,5 +18,5 @@ public class Configuration {
         return password;
     }
 
-    public String getSubdomain() {return subdomain;}
+    public String getHost() {return host;}
 }

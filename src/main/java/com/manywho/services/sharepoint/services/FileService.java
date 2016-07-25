@@ -26,13 +26,13 @@ public class FileService {
         throw new Exception("A file could not be found in the received request");
     }
 
-    public Object buildManyWhoFileObject(File file) {
+    public Object buildManyWhoFileSystemObject(File file) {
 
         PropertyCollection properties = new PropertyCollection();
         properties.add(new Property("Kind", FilenameUtils.getExtension(file.getName())));
-        properties.add(new Property("ID", file.getUniqueId()));
+        properties.add(new Property("ID", file.getServerRelativeUrl()));
         properties.add(new Property("Mime Type"));
-        properties.add(new Property("Name",file.getName()));
+        properties.add(new Property("Name", file.getName()));
         properties.add(new Property("Description", file.getTitle()));
         properties.add(new Property("Date Created", file.getCreatedTime()));
         properties.add(new Property("Date Modified", file.getLastModifiedTime()));
@@ -42,6 +42,29 @@ public class FileService {
         Object object = new Object();
         object.setDeveloperName("$File");
         object.setExternalId(file.getUniqueId());
+        object.setProperties(properties);
+
+        return object;
+    }
+
+    public Object buildManyWhoFileObject(File file, String content) {
+        PropertyCollection properties = new PropertyCollection();
+        properties.add(new Property("ID", file.getServerRelativeUrl()));
+        properties.add(new Property("Name", file.getName()));
+        properties.add(new Property("Description", file.getTitle()));
+        properties.add(new Property("Content", content));
+
+        properties.add(new Property("Parent Folder", content));
+        properties.add(new Property("Comments", content));
+        //properties.add(new Property("Parent Folder", convertBoxFolder(fileInfo.getParent())));
+        //properties.add(new Property("Comments", convertBoxComments(fileInfo.getResource().getComments())));
+
+        properties.add(new Property("Created At", file.getCreatedTime()));
+        properties.add(new Property("Modified At", file.getLastModifiedTime()));
+
+        Object object = new Object();
+        object.setDeveloperName(com.manywho.services.sharepoint.types.File.NAME);
+        object.setExternalId(file.getServerRelativeUrl());
         object.setProperties(properties);
 
         return object;
