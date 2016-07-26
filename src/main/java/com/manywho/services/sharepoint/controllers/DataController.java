@@ -45,11 +45,6 @@ public class DataController extends AbstractDataController {
     @PUT
     @AuthorizationRequired
     public ObjectDataResponse save(ObjectDataRequest objectDataRequest) throws Exception {
-//        switch (objectDataRequest.getObjectDataType().getDeveloperName()) {
-//            default:
-//                // Assume the type represents Metadata
-//                return new ObjectDataResponse(dataManager.saveMetadataType(getAuthenticatedWho(), objectDataRequest));
-//        }
-        return null;
+        throw new Exception("Save isn't currently supported in the SharePoint Service");
     }
 }
