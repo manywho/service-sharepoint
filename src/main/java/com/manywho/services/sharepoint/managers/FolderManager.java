@@ -36,13 +36,14 @@ public class FolderManager {
             throw new Exception("Unable to parse the incoming FolderCreate request");
         }
         Configuration configuration = propertyParser.parse(serviceRequest.getConfigurationValues(), Configuration.class);
-
-        MObject folder = objectMapperService.buildManyWhoObjectFolder(
-                folderSharepointService.createFolder(user.getToken(), folderCreate.getFolder().getId(), folderCreate.getName(), configuration)
-        );
-
-        EngineValue folderValue = new EngineValue("Folder", ContentType.Object, Folder.NAME, folder);
-
-        return new ServiceResponse(InvokeType.Forward, folderValue, serviceRequest.getToken());
+        return null;
+        //
+//        MObject folder = objectMapperService.buildManyWhoObjectFolder(
+//                folderSharepointService.createFolder(user.getToken(), folderCreate.getFolder().getId(), folderCreate.getName(), configuration)
+//        );
+//
+//        EngineValue folderValue = new EngineValue("Folder", ContentType.Object, Folder.NAME, folder);
+//
+//        return new ServiceResponse(InvokeType.Forward, folderValue, serviceRequest.getToken());
     }
 }

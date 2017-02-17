@@ -32,10 +32,11 @@ public class DataController extends AbstractDataController {
     @AuthorizationRequired
     public ObjectDataResponse load(ObjectDataRequest objectDataRequest) throws Exception {
         switch (objectDataRequest.getObjectDataType().getDeveloperName()) {
-            case File.NAME:
-                return fileManager.loadFile(getAuthenticatedWho(), objectDataRequest);
-            case Folder.NAME:
-                return fileManager.loadFolder(getAuthenticatedWho(), objectDataRequest);
+//            case File.NAME:
+//                return fileManager.loadFile(getAuthenticatedWho(), objectDataRequest);
+//            case Folder.NAME:
+//                return fileManager.loadFolder(getAuthenticatedWho(), objectDataRequest);
+            //case Site
         }
 
         throw new Exception("object not found");
