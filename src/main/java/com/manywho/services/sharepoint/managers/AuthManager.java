@@ -13,11 +13,8 @@ import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.services.AuthenticationService;
 import com.manywho.services.sharepoint.services.AuthorizationService;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.services.graph.fetchers.GraphServiceClient;
-import com.microsoft.services.orc.log.LogLevel;
-import com.microsoft.services.orc.resolvers.JavaDependencyResolver;
 import org.scribe.oauth.OAuthService;
+
 import javax.inject.Inject;
 
 public class AuthManager {
@@ -75,13 +72,5 @@ public class AuthManager {
 
     public ObjectDataResponse loadUsersAttributes() {
         return new ObjectDataResponse(authorizationService.loadUsersAttributes());
-    }
-
-    private GraphServiceClient getServiceClient(AuthenticationResult authenticationResult, String resource) {
-            JavaDependencyResolver resolver = new JavaDependencyResolver(authenticationResult.getAccessToken());
-            resolver.getLogger().setEnabled(true);
-            resolver.getLogger().setLogLevel(LogLevel.VERBOSE);
-
-            return new GraphServiceClient(resource, resolver);
     }
 }

@@ -3,10 +3,11 @@ package com.manywho.services.sharepoint;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointFacade;
-import com.manywho.services.sharepoint.factories.SharePointFacadeFactory;
 import com.manywho.services.sharepoint.managers.AuthManager;
 import com.manywho.services.sharepoint.managers.FileManager;
 import com.manywho.services.sharepoint.managers.FolderManager;
+import com.manywho.services.sharepoint.managers.SiteManager;
+import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import com.manywho.services.sharepoint.services.*;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -25,8 +26,9 @@ public class ApplicationBinder extends AbstractBinder {
         bind(ObjectMapperService.class).to(ObjectMapperService.class);
         bind(FileSharePointService.class).to(FileSharePointService.class);
         bind(SharePointFacade.class).to(SharePointFacade.class);
-        bind(SharePointFacadeFactory.class).to(SharePointFacadeFactory.class);
         bind(FolderSharePointService.class).to(FolderSharePointService.class);
+        bind(SiteManager.class).to(SiteManager.class);
+        bind(AzureHttpClient.class).to(AzureHttpClient.class);
 
     }
 }

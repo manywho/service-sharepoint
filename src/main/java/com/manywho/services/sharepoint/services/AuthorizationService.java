@@ -95,7 +95,7 @@ public class AuthorizationService {
         return null;
 //        BoxDeveloperEditionAPIConnection apiConnection = boxClient.createDeveloperApiConnection(enterpriseId);
 //
-//        Iterable<BoxGroup.Info> groups = boxClient.loadGroups(apiConnection.getAccessToken());
+//        Iterable<BoxGroup.Info> groups = boxClient.loadGroups(apiConnection.getAccessTokenByUsernamePassword());
 //
 //        return StreamUtils.asStream(groups.iterator())
 //                .map(objectMapperService::convertGroupObjectToManyWhoGroup)
@@ -119,7 +119,7 @@ public class AuthorizationService {
         return null;
 //        BoxDeveloperEditionAPIConnection apiConnection = boxClient.createDeveloperApiConnection(enterpriseId);
 //
-//        Iterable<BoxUser.Info> users = boxClient.loadUsers(apiConnection.getAccessToken());
+//        Iterable<BoxUser.Info> users = boxClient.loadUsers(apiConnection.getAccessTokenByUsernamePassword());
 //
 //        return StreamUtils.asStream(users.iterator())
 //                .map(objectMapperService::convertUserObjectToManyWhoUser)

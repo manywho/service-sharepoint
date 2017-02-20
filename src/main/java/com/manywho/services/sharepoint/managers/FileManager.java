@@ -9,9 +9,9 @@ import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.FileSharePointService;
 import com.manywho.services.sharepoint.services.FolderSharePointService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
-import com.microsoft.services.graph.Item;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+
 import javax.inject.Inject;
 
 public class FileManager {
@@ -30,21 +30,21 @@ public class FileManager {
         this.propertyParser = propertyParser;
         this.objectMapperService = objectMapperService;
     }
-
+//
     public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
         BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
         Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
 
-        if (bodyPart != null) {
-            Item itemFile = fileSharePointService.uploadFileToSharepoint(authenticatedWho, configuration, fileDataRequest, bodyPart);
-            if (itemFile != null) {
-                return new ObjectDataResponse(objectMapperService.buildManyWhoFileSystemObject(itemFile));
-            }
-        }
+//        if (bodyPart != null) {
+//            Item itemFile = fileSharePointService.uploadFileToSharepoint(authenticatedWho, configuration, fileDataRequest, bodyPart);
+//            if (itemFile != null) {
+//                return new ObjectDataResponse(objectMapperService.buildManyWhoFileSystemObject(itemFile));
+//            }
+//        }
 
         throw new Exception("A file was not provided to upload to Box");
     }
-//
+
 //    public ObjectDataResponse loadFiles(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest) throws Exception {
 //        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
 //        List<File> filesSharepoint = fileSharePointService.fetchFiles(authenticatedWho.getToken(), configuration, fileDataRequest);
