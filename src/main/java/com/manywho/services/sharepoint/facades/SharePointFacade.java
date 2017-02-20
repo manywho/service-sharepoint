@@ -1,69 +1,57 @@
 package com.manywho.services.sharepoint.facades;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.manywho.services.sharepoint.oauth.AuthenticationCallbackImpl;
-import com.microsoft.aad.adal4j.AuthenticationCallback;
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
-import com.microsoft.aad.adal4j.ClientCredential;
-import com.microsoft.services.files.fetchers.FilesClient;
-import com.microsoft.services.graph.Item;
-import com.microsoft.services.graph.fetchers.ItemCollectionOperations;
-import com.microsoft.services.graph.fetchers.ItemFetcher;
-import com.microsoft.services.graph.fetchers.UserFetcher;
-import com.microsoft.services.orc.core.OrcCollectionFetcher;
-import com.microsoft.services.orc.log.LogLevel;
-import com.microsoft.services.orc.resolvers.JavaDependencyResolver;
-import com.microsoft.services.graph.fetchers.GraphServiceClient;
-import org.apache.commons.io.IOUtils;
+import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
+import com.manywho.services.sharepoint.services.ObjectMapperService;
+import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
+import org.apache.olingo.client.api.v4.ODataClient;
+import org.apache.olingo.client.core.ODataClientFactory;
+import org.apache.olingo.commons.api.domain.v4.ODataEntity;
+import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
+
 import javax.inject.Inject;
-import javax.ws.rs.ServiceUnavailableException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class SharePointFacade {
 
-    private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta/manywho";
+    private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
+    private ObjectMapperService objectMapperService;
 
     @Inject
-    public SharePointFacade() {
+    public SharePointFacade(ObjectMapperService objectMapperService) {
+        this.objectMapperService = objectMapperService;
     }
 
 
-    public Item createFile(String token, String userId, String path, InputStream inputStream) throws ExecutionException, InterruptedException, IOException {
+//    public Item createFile(String token, String userId, String path, InputStream inputStream) throws ExecutionException, InterruptedException, IOException {
 
-        String filename = UUID.randomUUID().toString() + ".txt";
-        JavaDependencyResolver resolver = new JavaDependencyResolver(token);
-        resolver.getLogger().setEnabled(true);
-        resolver.getLogger().setLogLevel(LogLevel.VERBOSE);
-
-        Item newFile = new Item();
-        //com.microsoft.services.files.Item newFile = new com.microsoft.services.files.Item();
-        newFile.setType("File");
-        newFile.setName(filename);
-
-        GraphServiceClient client = new GraphServiceClient(GRAPH_ENDPOINT, resolver);
-        Item addedFile = client.getUsers().getById(userId).getFiles().add(newFile).get();
-
-
-        client.getUsers().getById(userId).getFiles().getById(addedFile.getId()).asFile().getOperations()
-                .uploadContent(IOUtils.toByteArray(inputStream)).get();
+//        String filename = UUID.randomUUID().toString() + ".txt";
+//        JavaDependencyResolver resolver = new JavaDependencyResolver(token);
+//        resolver.getLogger().setEnabled(true);
+//        resolver.getLogger().setLogLevel(LogLevel.VERBOSE);
+//
+//        Item newFile = new Item();
+//        //com.microsoft.services.files.Item newFile = new com.microsoft.services.files.Item();
+//        newFile.setType("File");
+//        newFile.setName(filename);
+//
+//        GraphServiceClient client = new GraphServiceClient(GRAPH_ENDPOINT, resolver);
+//        Item addedFile = client.getUsers().getById(userId).getFiles().add(newFile).get();
+//
+//
+//        client.getUsers().getById(userId).getFiles().getById(addedFile.getId()).asFile().getOperations()
+//                .uploadContent(IOUtils.toByteArray(inputStream)).get();
 
         //FilesClient client = new FilesClient("https://manywho.sharepoint.com/_api/v1.0/me", resolver);
 //        com.microsoft.services.files.Item addedFile = client.getFiles().add(newFile).get();
 //        client.getFiles().getById(addedFile.getId()).asFile().putContent(IOUtils.toByteArray(inputStream)).get();
 
         //return addedFile;
-        return null;
-    }
+//        return null;
+//    }
 
 //    public Folder createFolder(String path) {
 //
@@ -127,64 +115,28 @@ public class SharePointFacade {
 ////        }
 //    }
 
+    public ObjectDataResponse fetchSites(String token) throws ExecutionException, InterruptedException {
+        final ODataClient client = ODataClientFactory.getV4();
 
-    public String getAccessTokenFromUserCredentials(String resource, String clientId, String authority) {
-        AuthenticationContext context;
-        AuthenticationResult result = null;
-        ExecutorService service = null;
-        try {
-            service = Executors.newFixedThreadPool(1);
-            try {
-                context = new AuthenticationContext(authority, false, service);
-                Future<AuthenticationResult> future = context.acquireToken(resource, clientId, "j.ci@test.com", "1",null);
-                result = future.get();
-            } catch (MalformedURLException | InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
+        final URI carsEntitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
+                .appendEntitySetSegment("sharepoint/sites").build();
 
-        } finally {
-            service.shutdown();
+        final ODataEntitySetRequest<ODataEntitySet> carsEntitySetRequest = client.getRetrieveRequestFactory()
+                .getEntitySetRequest(carsEntitySetURI);
+
+        carsEntitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+
+        final ODataRetrieveResponse<ODataEntitySet> carsEntitySetResponse = carsEntitySetRequest.execute();
+        List<ODataEntity> sites = carsEntitySetResponse.getBody().getEntities();
+
+        ObjectCollection objectCollection = new ObjectCollection();
+
+        for (ODataEntity siteEntity : sites) {
+            objectCollection.add(this.objectMapperService.buildManyWhoSiteObject(siteEntity));
         }
 
-        if (result == null) {
-            throw new ServiceUnavailableException(
-                    "authentication result was null");
-        }
-        return result.getAccessToken();
-    }
-
-
-    public String getAccessToken(String authorizationCode, String authorityUrl, String resource, String clientId, String clientSecret, String redirectUri) {
-        AuthenticationContext context;
-        ExecutorService service = null;
-
-        try {
-            service = Executors.newFixedThreadPool(1);
-            context = new AuthenticationContext(authorityUrl, false, service);
-            ClientCredential clientCredential = new ClientCredential(clientId, clientSecret);
-            AuthenticationCallback authenticationCallback = new AuthenticationCallbackImpl();
-            URI redirectUriObj = new URI(redirectUri);
-
-            Future<AuthenticationResult> future = context.acquireTokenByAuthorizationCode(
-                    authorizationCode,
-                    redirectUriObj,
-                    clientCredential,
-                    resource,
-                    authenticationCallback);
-
-            AuthenticationResult result = future.get();
-
-            if (result == null) {
-                throw new ServiceUnavailableException("authentication result was null");
-            }
-
-            return result.getAccessToken();
-        } catch (InterruptedException | ExecutionException | MalformedURLException | URISyntaxException e) {
-            e.printStackTrace();
-            throw new RuntimeException("authentication error");
-        } finally {
-            service.shutdown();
-        }
+        return new ObjectDataResponse(objectCollection);
     }
 }
+
+

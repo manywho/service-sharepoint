@@ -6,39 +6,32 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
-import com.manywho.services.sharepoint.facades.SharePointFacade;
+import com.manywho.services.sharepoint.oauth.AuthResponse;
+import com.manywho.services.sharepoint.oauth.AzureHttpClient;
+import com.manywho.services.sharepoint.oauth.SharepointProvider;
 
 import javax.inject.Inject;
 
 public class AuthenticationService {
-    private final static String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
-    private final static String AUTHORITY_URL = "https://login.microsoftonline.com/common"; //
-    private final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
-    private final static String FILES_ENDPOINT = "https://manywho.sharepoint.com/_api/v1.0/me";
+    public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
     private SecurityConfiguration securityConfiguration;
-    private SharePointFacade sharePointFacade;
+    private AzureHttpClient azureHttpClient;
 
     @Inject
-    public AuthenticationService( SecurityConfiguration securityConfiguration, SharePointFacade sharePointFacade) {
+    public AuthenticationService( SecurityConfiguration securityConfiguration, AzureHttpClient azureHttpClient) {
         this.securityConfiguration = securityConfiguration;
-        this.sharePointFacade = sharePointFacade;
+        this.azureHttpClient = azureHttpClient;
     }
 
     public AuthenticatedWhoResult getAuthenticatedWhoResult(AbstractOauth2Provider provider, AuthenticationCredentials credentials) throws Exception {
-        String accessToken = sharePointFacade.getAccessToken(
+        AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
-                AUTHORITY_URL,
-                RESOURCE_ID,
+                SharepointProvider.REDIRECT_URI,
                 securityConfiguration.getOauth2ClientId(),
                 securityConfiguration.getOauth2ClientSecret(),
-                REDIRECT_URI);
+                RESOURCE_ID);
 
-//        String accessToken = sharePointFacade.getAccessTokenFromUserCredentials(
-//                FILES_ENDPOINT,
-//                securityConfiguration.getOauth2ClientId(),
-//                AUTHORITY_URL);
-
-        JWT jwt = JWT.decode(accessToken);
+        JWT jwt = JWT.decode(authResponse.getAccess_token());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId( provider.getName());
         authenticatedWhoResult.setDirectoryName( provider.getName());
