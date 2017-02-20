@@ -47,7 +47,7 @@ public class FileManager {
 
 //    public ObjectDataResponse loadFiles(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest) throws Exception {
 //        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
-//        List<File> filesSharepoint = fileSharePointService.fetchFiles(authenticatedWho.getToken(), configuration, fileDataRequest);
+//        SharePointList<File> filesSharepoint = fileSharePointService.fetchFiles(authenticatedWho.getToken(), configuration, fileDataRequest);
 //        ObjectCollection files = new ObjectCollection();
 //
 //        for (File file : filesSharepoint) {

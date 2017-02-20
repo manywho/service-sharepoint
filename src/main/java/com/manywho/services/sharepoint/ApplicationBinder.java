@@ -3,10 +3,7 @@ package com.manywho.services.sharepoint;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointFacade;
-import com.manywho.services.sharepoint.managers.AuthManager;
-import com.manywho.services.sharepoint.managers.FileManager;
-import com.manywho.services.sharepoint.managers.FolderManager;
-import com.manywho.services.sharepoint.managers.SiteManager;
+import com.manywho.services.sharepoint.managers.*;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import com.manywho.services.sharepoint.services.*;
@@ -16,7 +13,10 @@ public class ApplicationBinder extends AbstractBinder {
     @Override
     protected void configure() {
         bind(SharepointProvider.class).to(AbstractOauth2Provider.class);
+        bind(AzureHttpClient.class).to(AzureHttpClient.class);
         bind(FileManager.class).to(FileManager.class);
+        bind(SiteManager.class).to(SiteManager.class);
+        bind(ListManager.class).to(ListManager.class);
         bind(AuthManager.class).to(AuthManager.class);
         bind(AuthenticationService.class).to(AuthenticationService.class);
         bind(AuthorizationService.class).to(AuthorizationService.class);
@@ -27,8 +27,6 @@ public class ApplicationBinder extends AbstractBinder {
         bind(FileSharePointService.class).to(FileSharePointService.class);
         bind(SharePointFacade.class).to(SharePointFacade.class);
         bind(FolderSharePointService.class).to(FolderSharePointService.class);
-        bind(SiteManager.class).to(SiteManager.class);
-        bind(AzureHttpClient.class).to(AzureHttpClient.class);
 
     }
 }

@@ -5,7 +5,9 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
 import com.manywho.sdk.services.controllers.AbstractDataController;
 import com.manywho.services.sharepoint.managers.FileManager;
+import com.manywho.services.sharepoint.managers.ListManager;
 import com.manywho.services.sharepoint.managers.SiteManager;
+import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 
 import javax.inject.Inject;
@@ -18,12 +20,14 @@ public class DataController extends AbstractDataController {
 
     private FileManager fileManager;
     private SiteManager siteManager;
+    private ListManager listManager;
 
     @Inject
-    public DataController(FileManager fileManager, SiteManager siteManager)
+    public DataController(FileManager fileManager, SiteManager siteManager, ListManager listManager)
     {
         this.fileManager = fileManager;
         this.siteManager = siteManager;
+        this.listManager = listManager;
     }
 
     @Override
@@ -42,6 +46,8 @@ public class DataController extends AbstractDataController {
 //                return fileManager.loadFolder(getAuthenticatedWho(), objectDataRequest);
             case Site.NAME:
                 return siteManager.loadSites(getAuthenticatedWho(), objectDataRequest);
+            case SharePointList.NAME:
+                return listManager.loadLists(getAuthenticatedWho(), objectDataRequest);
         }
 
         throw new Exception("object not found");
