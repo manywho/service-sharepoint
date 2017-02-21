@@ -22,12 +22,12 @@ public class AzureHttpClient {
 //    public AuthResponse getAccessTokenByUsernamePassword(String userName, String password, String clientId,
 //                                                         String clientSecret, String resource) {
 //        try {
-//            List<NameValuePair> formParams = new ArrayList<>();
+//            SharePointList<NameValuePair> formParams = new ArrayList<>();
 //            formParams.add(new BasicNameValuePair("grant_type", "password"));
 //            formParams.add(new BasicNameValuePair("resource", "00000003-0000-0000-c000-000000000000"));
 //            formParams.add(new BasicNameValuePair("client_id", "37b7a843-eb48-432a-b4cd-f201c8ee084d"));
-//            formParams.add(new BasicNameValuePair("username", "jose.collazzi@manywho.com"));
-//            formParams.add(new BasicNameValuePair("password", "Maldonado1941"));
+//            formParams.add(new BasicNameValuePair("username", "email"));
+//            formParams.add(new BasicNameValuePair("password", "pass"));
 //            formParams.add(new BasicNameValuePair("client_secret", "LTOHbWa7oobfjQsWDQrqvkn"));
 //
 //            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
