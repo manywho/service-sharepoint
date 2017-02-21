@@ -50,6 +50,6 @@ public class FileController extends AbstractController {
     @AuthorizationRequired
     public ObjectDataResponse uploadFile(@FormDataParam("FileDataRequest") FileDataRequest fileDataRequest, FormDataMultiPart file) throws Exception {
         return null;
-//        return fileManager.uploadFile(getAuthenticatedWho(), fileDataRequest, file);
+        //return fileManager.uploadFile(getAuthenticatedWho(), fileDataRequest, file);
     }
 }

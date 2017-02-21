@@ -18,6 +18,7 @@ public class Site extends AbstractType{
                 add(new TypeElementPropertyBinding("Name", "Name"));
                 add(new TypeElementPropertyBinding("Web URL", "Web URL"));
                 add(new TypeElementPropertyBinding("Site ID", "Description"));
+                add(new TypeElementPropertyBinding("Parent ID", "Parent ID"));
             }}));
         }};
     }
@@ -37,6 +38,7 @@ public class Site extends AbstractType{
             add(new TypeElementProperty("Name", ContentType.String));
             add(new TypeElementProperty("Web URL", ContentType.String));
             add(new TypeElementProperty("Site ID", ContentType.String));
+            add(new TypeElementProperty("Parent ID", ContentType.String));
         }};
     }
 }

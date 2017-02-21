@@ -1,10 +1,18 @@
 package com.manywho.services.sharepoint.managers;
 
+import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
+import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
+import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.FileSharePointService;
 import com.manywho.services.sharepoint.services.FolderSharePointService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+
+import javax.inject.Inject;
 
 public class FileManager {
     private FileService fileService;
@@ -13,29 +21,29 @@ public class FileManager {
     private ObjectMapperService objectMapperService;
     private PropertyCollectionParser propertyParser;
 
-//    @Inject
-//    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser,
-//                       FolderSharePointService folderSharePointService, ObjectMapperService objectMapperService) {
-//        this.fileService = fileService;
-//        this.fileSharePointService = fileSharePointService;
-//        this.folderSharepointService = folderSharePointService;
-//        this.propertyParser = propertyParser;
-//        this.objectMapperService = objectMapperService;
-//    }
+    @Inject
+    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser,
+                       FolderSharePointService folderSharePointService, ObjectMapperService objectMapperService) {
+        this.fileService = fileService;
+        this.fileSharePointService = fileSharePointService;
+        this.folderSharepointService = folderSharePointService;
+        this.propertyParser = propertyParser;
+        this.objectMapperService = objectMapperService;
+    }
 //
-//    public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
-//        BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
-//        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
-//
+    public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
+        BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
+        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
+
 //        if (bodyPart != null) {
 //            Item itemFile = fileSharePointService.uploadFileToSharepoint(authenticatedWho, configuration, fileDataRequest, bodyPart);
 //            if (itemFile != null) {
 //                return new ObjectDataResponse(objectMapperService.buildManyWhoFileSystemObject(itemFile));
 //            }
 //        }
-//
-//        throw new Exception("A file was not provided to upload to Box");
-//    }
+
+        throw new Exception("A file was not provided to upload to Box");
+    }
 
 //    public ObjectDataResponse loadFiles(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest) throws Exception {
 //        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);

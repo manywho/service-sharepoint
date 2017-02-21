@@ -3,7 +3,10 @@ package com.manywho.services.sharepoint.facades;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import org.apache.olingo.client.api.communication.request.ODataRequest;
+import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
+import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
 import org.apache.olingo.client.api.v4.ODataClient;
 import org.apache.olingo.client.core.ODataClientFactory;
@@ -12,6 +15,7 @@ import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -19,10 +23,14 @@ public class SharePointFacade {
 
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
     private ObjectMapperService objectMapperService;
+    private final ODataClient client;
+    private final RetrieveRequestFactory retrieveRequestFactory;
 
     @Inject
     public SharePointFacade(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
+        client = ODataClientFactory.getV4();
+        retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
 
@@ -116,23 +124,51 @@ public class SharePointFacade {
 //    }
 
     public ObjectDataResponse fetchSites(String token) throws ExecutionException, InterruptedException {
-        final ODataClient client = ODataClientFactory.getV4();
+        return fetchSitesInternal(token, "sharepoint/sites", "");
+    }
 
-        final URI carsEntitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
-                .appendEntitySetSegment("sharepoint/sites").build();
+    public ObjectDataResponse fetchSites(String token, String parentId) {
+        return fetchSitesInternal(token, String.format("sharepoint/sites/%s/sites", parentId), parentId);
+    }
 
-        final ODataEntitySetRequest<ODataEntitySet> carsEntitySetRequest = client.getRetrieveRequestFactory()
-                .getEntitySetRequest(carsEntitySetURI);
+    private ObjectDataResponse fetchSitesInternal(String token, String segment, String parentId) {
+        URI sitesEntitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
+                .appendEntitySetSegment(segment).build();
 
-        carsEntitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        ODataEntitySetRequest<ODataEntitySet> sitesEntitySetRequest = retrieveRequestFactory.getEntitySetRequest(sitesEntitySetURI);
+        authenticate(token, sitesEntitySetRequest);
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = sitesEntitySetRequest.execute();
 
-        final ODataRetrieveResponse<ODataEntitySet> carsEntitySetResponse = carsEntitySetRequest.execute();
-        List<ODataEntity> sites = carsEntitySetResponse.getBody().getEntities();
+        return responseSites(sitesEntitySetResponse.getBody().getEntities(), parentId);
+    }
 
+    public ObjectDataResponse fetchSite(String token, String id) {
+        URI siteEntityURI = client.newURIBuilder(GRAPH_ENDPOINT)
+                .appendEntitySetSegment(String.format("sharepoint/sites/%s", id)).build();
+
+        ODataEntityRequest<ODataEntity> sitesEntitySetRequest = retrieveRequestFactory.getEntityRequest(siteEntityURI);
+        authenticate(token, sitesEntitySetRequest);
+        ODataRetrieveResponse<ODataEntity> sitesEntitySetResponse = sitesEntitySetRequest.execute();
+
+        return responseSites(sitesEntitySetResponse.getBody(), "");
+    }
+
+    private void authenticate(String token, ODataRequest sitesEntitySetRequest) {
+        sitesEntitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+    }
+
+    private ObjectDataResponse responseSites(ODataEntity site, String parentId) {
+        List<ODataEntity> sites = new ArrayList<>();
+        sites.add(0, site);
+
+        return responseSites(sites, parentId);
+    }
+
+    private ObjectDataResponse responseSites(List<ODataEntity> sites, String parentId) {
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (ODataEntity siteEntity : sites) {
-            objectCollection.add(this.objectMapperService.buildManyWhoSiteObject(siteEntity));
+            objectCollection.add(this.objectMapperService.buildManyWhoSiteObject(siteEntity, parentId));
         }
 
         return new ObjectDataResponse(objectCollection);
