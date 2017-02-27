@@ -54,7 +54,7 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoListObject(ODataEntity siteEntity, String siteId) {
+    public MObject buildManyWhoSharePointListObject(ODataEntity siteEntity, String siteId) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));
@@ -67,7 +67,28 @@ public class ObjectMapperService {
 
         Object object = new Object();
         object.setDeveloperName(SharePointList.NAME);
-        object.setExternalId(String.format("%s-%s", siteEntity.getProperty("id").getValue().toString(), siteId));
+        object.setExternalId(String.format("%s#%s", siteEntity.getProperty("id").getValue().toString(), siteId));
+        object.setProperties(properties);
+
+        return object;
+    }
+
+
+    public MObject buildManyWhoItemObject(ODataEntity siteEntity, String siteId, String listId) {
+        PropertyCollection properties = new PropertyCollection();
+
+        properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));
+        properties.add(new Property("Created Date Time", siteEntity.getProperty("createdDateTime").getValue().toString()));
+        properties.add(new Property("Last Modified Date Time", siteEntity.getProperty("lastModifiedDateTime").getValue().toString()));
+        properties.add(new Property("e Tag", siteEntity.getProperty("eTag").getValue().toString()));
+        properties.add(new Property("Web URL", siteEntity.getProperty("webUrl").getValue().toString()));
+        properties.add(new Property("List Item ID", siteEntity.getProperty("listItemId").getValue().toString()));
+        properties.add(new Property("Site ID", siteId));
+        properties.add(new Property("List ID", listId));
+
+        Object object = new Object();
+        object.setDeveloperName(SharePointList.NAME);
+        object.setExternalId(String.format("%s#%s", listId, siteEntity.getProperty("id").getValue().toString()));
         object.setProperties(properties);
 
         return object;

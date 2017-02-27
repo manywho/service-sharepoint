@@ -4,28 +4,28 @@ import com.manywho.sdk.entities.draw.elements.type.*;
 import com.manywho.sdk.enums.ContentType;
 import com.manywho.sdk.services.describe.types.AbstractType;
 
-public class Site extends AbstractType{
-    public final static String NAME = "Site";
+public class Item extends AbstractType{
+    public final static String NAME = "Item";
 
     @Override
     public TypeElementBindingCollection getBindings() {
         return new TypeElementBindingCollection() {{
-            add(new TypeElementBinding(NAME, "Details about a Site", NAME, new TypeElementPropertyBindingCollection() {{
+            add(new TypeElementBinding(NAME, "Details about a Item", NAME, new TypeElementPropertyBindingCollection() {{
                 add(new TypeElementPropertyBinding("ID", "ID"));
                 add(new TypeElementPropertyBinding("Created Date Time", "Created Date Time"));
-                add(new TypeElementPropertyBinding("Last Modified Date Time", "Description"));
-                add(new TypeElementPropertyBinding("Description", "Description"));
-                add(new TypeElementPropertyBinding("Name", "Name"));
+                add(new TypeElementPropertyBinding("Last Modified Date Time", "Last Modified Date Time"));
+                add(new TypeElementPropertyBinding("e Tag", "e Tag"));
                 add(new TypeElementPropertyBinding("Web URL", "Web URL"));
+                add(new TypeElementPropertyBinding("List Item ID", "List Item Id"));
                 add(new TypeElementPropertyBinding("Site ID", "Site ID"));
-                add(new TypeElementPropertyBinding("Parent ID", "Parent ID"));
+                add(new TypeElementPropertyBinding("List ID", "List ID"));
             }}));
         }};
     }
 
     @Override
     public String getDeveloperName() {
-        return Site.NAME;
+        return Item.NAME;
     }
 
     @Override
@@ -34,11 +34,11 @@ public class Site extends AbstractType{
             add(new TypeElementProperty("ID", ContentType.String));
             add(new TypeElementProperty("Created Date Time", ContentType.DateTime));
             add(new TypeElementProperty("Last Modified Date Time", ContentType.DateTime));
-            add(new TypeElementProperty("Description", ContentType.String));
-            add(new TypeElementProperty("Name", ContentType.String));
+            add(new TypeElementProperty("e Tag", ContentType.String));
             add(new TypeElementProperty("Web URL", ContentType.String));
+            add(new TypeElementProperty("List Item ID", ContentType.String));
             add(new TypeElementProperty("Site ID", ContentType.String));
-            add(new TypeElementProperty("Parent ID", ContentType.String));
+            add(new TypeElementProperty("List ID", ContentType.String));
         }};
     }
 }

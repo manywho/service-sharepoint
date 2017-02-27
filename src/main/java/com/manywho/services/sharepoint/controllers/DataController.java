@@ -5,8 +5,10 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
 import com.manywho.sdk.services.controllers.AbstractDataController;
 import com.manywho.services.sharepoint.managers.FileManager;
+import com.manywho.services.sharepoint.managers.ItemManager;
 import com.manywho.services.sharepoint.managers.ListManager;
 import com.manywho.services.sharepoint.managers.SiteManager;
+import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 
@@ -21,13 +23,15 @@ public class DataController extends AbstractDataController {
     private FileManager fileManager;
     private SiteManager siteManager;
     private ListManager listManager;
+    private ItemManager itemManager;
 
     @Inject
-    public DataController(FileManager fileManager, SiteManager siteManager, ListManager listManager)
+    public DataController(FileManager fileManager, SiteManager siteManager, ListManager listManager, ItemManager itemManager)
     {
         this.fileManager = fileManager;
         this.siteManager = siteManager;
         this.listManager = listManager;
+        this.itemManager = itemManager;
     }
 
     @Override
@@ -48,6 +52,8 @@ public class DataController extends AbstractDataController {
                 return siteManager.loadSites(getAuthenticatedWho(), objectDataRequest);
             case SharePointList.NAME:
                 return listManager.loadLists(getAuthenticatedWho(), objectDataRequest);
+            case Item.NAME:
+                return itemManager.loadItems(getAuthenticatedWho(), objectDataRequest);
         }
 
         throw new Exception("object not found");

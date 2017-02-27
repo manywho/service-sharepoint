@@ -13,7 +13,7 @@ public class SharePointList extends AbstractType {
             add(new TypeElementBinding(NAME, "Details about a SharePointList", NAME, new TypeElementPropertyBindingCollection() {{
                 add(new TypeElementPropertyBinding("ID", "ID"));
                 add(new TypeElementPropertyBinding("Created Date Time", "Created Date Time"));
-                add(new TypeElementPropertyBinding("Last Modified Date Time", "Description"));
+                add(new TypeElementPropertyBinding("Last Modified Date Time", "Last Modified Date Time"));
                 add(new TypeElementPropertyBinding("Description", "Description"));
                 add(new TypeElementPropertyBinding("Name", "Name"));
                 add(new TypeElementPropertyBinding("Web URL", "Web URL"));
