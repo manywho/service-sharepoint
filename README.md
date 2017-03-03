@@ -35,5 +35,3 @@ Contribution are welcome to the project - whether they are feature requests, imp
 ## License
 
 This service is released under the [MIT License](http://opensource.org/licenses/mit-license.php).
-
-This service is using a proprietary library, follow the instruction from [independentsoft website](http://www.independentsoft.de/jshare/tutorial/index.html) and include the jar files to make it work.
