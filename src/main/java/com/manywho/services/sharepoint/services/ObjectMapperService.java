@@ -7,6 +7,7 @@ import com.manywho.sdk.entities.run.elements.type.MObject;
 import com.manywho.sdk.entities.run.elements.type.Object;
 import com.manywho.sdk.entities.run.elements.type.Property;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
+import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
@@ -87,7 +88,7 @@ public class ObjectMapperService {
         properties.add(new Property("List ID", listId));
 
         Object object = new Object();
-        object.setDeveloperName(SharePointList.NAME);
+        object.setDeveloperName(Item.NAME);
         object.setExternalId(String.format("%s#%s", listId, siteEntity.getProperty("id").getValue().toString()));
         object.setProperties(properties);
 
