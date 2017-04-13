@@ -1,49 +1,80 @@
 package com.manywho.services.sharepoint.managers;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.facades.SharePointFacade;
 import com.manywho.services.sharepoint.services.FileService;
-import com.manywho.services.sharepoint.services.FileSharePointService;
-import com.manywho.services.sharepoint.services.FolderSharePointService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import com.microsoft.aad.adal4j.AuthenticationResult;
+import com.microsoft.services.graph.Item;
+import com.microsoft.services.graph.User;
+import com.microsoft.services.graph.fetchers.*;
+import com.microsoft.services.orc.core.OrcCollectionFetcher;
+import com.microsoft.services.orc.resolvers.JavaDependencyResolver;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 public class FileManager {
     private FileService fileService;
-    private FileSharePointService fileSharePointService;
-    private FolderSharePointService folderSharepointService;
     private ObjectMapperService objectMapperService;
     private PropertyCollectionParser propertyParser;
+    private SharePointFacade sharePointFacade;
 
     @Inject
-    public FileManager(FileService fileService, FileSharePointService fileSharePointService, PropertyCollectionParser propertyParser,
-                       FolderSharePointService folderSharePointService, ObjectMapperService objectMapperService) {
+    public FileManager(FileService fileService, PropertyCollectionParser propertyParser,
+                       ObjectMapperService objectMapperService, SharePointFacade sharePointFacade) {
         this.fileService = fileService;
-        this.fileSharePointService = fileSharePointService;
-        this.folderSharepointService = folderSharePointService;
         this.propertyParser = propertyParser;
         this.objectMapperService = objectMapperService;
+        this.sharePointFacade = sharePointFacade;
     }
 //
-    public ObjectDataResponse uploadFile(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
+    public ObjectDataResponse uploadFile(String token, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
         BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
         Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);
 
-//        if (bodyPart != null) {
-//            Item itemFile = fileSharePointService.uploadFileToSharepoint(authenticatedWho, configuration, fileDataRequest, bodyPart);
-//            if (itemFile != null) {
-//                return new ObjectDataResponse(objectMapperService.buildManyWhoFileSystemObject(itemFile));
-//            }
-//        }
+        if (bodyPart != null) {
+            return sharePointFacade.uploadFileToSharePoint(token, fileDataRequest.getResourcePath(), bodyPart);
+        }
 
-        throw new Exception("A file was not provided to upload to Box");
+        throw new Exception("A file was not provided to upload to SharePoint");
     }
+
+//    public static void retrieveGraphServicesFile(AuthenticatedWho user, FileDataRequest fileDataRequest, FormDataMultiPart file) throws Exception {
+//        JavaDependencyResolver resolver = new JavaDependencyResolver(user.getToken());
+//        resolver.getLogger().setEnabled(true);
+//
+//        //String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta/myOrganization";
+//        String GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0";
+//        GraphServiceClient client = new GraphServiceClient(GRAPH_ENDPOINT, resolver);
+//        String filename = UUID.randomUUID().toString() + ".txt";
+//
+//        Item newFile = new Item();
+//        newFile.setType("File");
+//        newFile.setName(filename);
+//
+//        String ID = user.getUserId();
+//        String payload = "My Content";
+//
+//        OrcCollectionFetcher<User, UserFetcher, UserCollectionOperations> users = client.getUsers();
+//        UserFetcher user1 = users.getById(ID);
+//        OrcCollectionFetcher<Item, ItemFetcher, ItemCollectionOperations> getFiles = user1.getFiles();
+//        ListenableFuture<Item> newFile1 = getFiles.add(newFile);
+//        Item addedFile = newFile1.get();
+//        client.getUsers().getById(ID).getFiles().getById(addedFile.getId())
+//                .asFile().getOperations().uploadContent(payload.getBytes()).get();
+//
+//        byte[] content = client.getUsers().getById(ID).getFiles().getById(addedFile.getId()).asFile().getOperations().content().get();
+//        String retrieved = new String(content, "UTF-8");
+//    }
+
 
 //    public ObjectDataResponse loadFiles(AuthenticatedWho authenticatedWho, FileDataRequest fileDataRequest) throws Exception {
 //        Configuration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), Configuration.class);

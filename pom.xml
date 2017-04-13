@@ -86,5 +86,11 @@
             <version>4.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.services</groupId>
+            <artifactId>graph-services-java</artifactId>
+            <version>0.2.5</version>
+        </dependency>
+
     </dependencies>
 </project>

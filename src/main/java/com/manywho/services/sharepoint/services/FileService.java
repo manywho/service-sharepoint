@@ -3,7 +3,6 @@ package com.manywho.services.sharepoint.services;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-
 import java.util.Optional;
 
 public class FileService {

@@ -42,7 +42,7 @@ public class AuthenticationService {
         authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(provider.getClientId());
         authenticatedWhoResult.setToken( jwt.getToken());
-        authenticatedWhoResult.setUserId( jwt.getClaim("oid").asString());
+        authenticatedWhoResult.setUserId( "9c102602-1474-11e7-93ae-92361f002671");
         authenticatedWhoResult.setUsername(jwt.getClaim("unique_name").asString());
 
         return authenticatedWhoResult;

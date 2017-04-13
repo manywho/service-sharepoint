@@ -1,8 +1,5 @@
 package com.manywho.services.sharepoint.services;
 
-//import com.independentsoft.share.File;
-//import com.independentsoft.share.Folder;
-
 import com.manywho.sdk.entities.run.elements.type.MObject;
 import com.manywho.sdk.entities.run.elements.type.Object;
 import com.manywho.sdk.entities.run.elements.type.Property;

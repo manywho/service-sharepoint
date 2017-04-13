@@ -49,7 +49,8 @@ public class FileController extends AbstractController {
     @Consumes({"multipart/form-data", "application/octet-stream"})
     @AuthorizationRequired
     public ObjectDataResponse uploadFile(@FormDataParam("FileDataRequest") FileDataRequest fileDataRequest, FormDataMultiPart file) throws Exception {
-        return null;
-        //return fileManager.uploadFile(getAuthenticatedWho(), fileDataRequest, file);
+        //fileManager.retrieveGraphServicesFile(getAuthenticatedWho(), fileDataRequest, file);
+        //return null;
+        return fileManager.uploadFile(getAuthenticatedWho().getToken(), fileDataRequest, file);
     }
 }

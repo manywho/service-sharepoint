@@ -7,6 +7,7 @@ import com.manywho.services.sharepoint.managers.*;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import com.manywho.services.sharepoint.services.*;
+import com.manywho.services.sharepoint.services.file.FileSharePointService;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 public class ApplicationBinder extends AbstractBinder {

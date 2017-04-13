@@ -1,6 +1,5 @@
 package com.manywho.services.sharepoint.services;
 
-//import com.independentsoft.share.Folder;
 public class FolderSharePointService {
 //    private SharePointFacadeFactory sharePointFacadeFactory;
 //

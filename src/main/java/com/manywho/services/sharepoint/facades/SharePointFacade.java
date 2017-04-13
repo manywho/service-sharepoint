@@ -3,6 +3,7 @@ package com.manywho.services.sharepoint.facades;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import com.manywho.services.sharepoint.services.file.FileSharePointService;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
@@ -11,6 +12,7 @@ import org.apache.olingo.client.api.v4.ODataClient;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
 import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
+import org.glassfish.jersey.media.multipart.BodyPart;
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,15 +21,18 @@ import java.util.concurrent.ExecutionException;
 
 public class SharePointFacade {
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
+
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
+    private FileSharePointService fileSharePointService;
 
     @Inject
-    public SharePointFacade(ObjectMapperService objectMapperService) {
+    public SharePointFacade(ObjectMapperService objectMapperService, FileSharePointService fileSharePointService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getV4();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
+        this.fileSharePointService = fileSharePointService;
     }
 
     public ObjectDataResponse fetchSites(String token) throws ExecutionException, InterruptedException {
@@ -86,6 +91,13 @@ public class SharePointFacade {
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
         return responseItems(entitySetResponse.getBody().getEntities(), siteId, listId);
+    }
+
+    public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
+        String uploadPath = fileSharePointService.getAnUploadUrl(token, bodyPart, path);
+        fileSharePointService.uploadFile(token, uploadPath, bodyPart);
+//        fileSharePointService.uploadSmallFile(token, path, bodyPart);
+        return new ObjectDataResponse();
     }
 
     private ODataRetrieveResponse<ODataEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
