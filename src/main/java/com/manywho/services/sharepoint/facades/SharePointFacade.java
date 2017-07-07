@@ -36,20 +36,20 @@ public class SharePointFacade {
     }
 
     public ObjectDataResponse fetchSites(String token) throws ExecutionException, InterruptedException {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sharepoint/sites");
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
 
         return responseSites(sitesEntitySetResponse.getBody().getEntities(), "");
     }
 
     public ObjectDataResponse fetchSites(String token, String parentId) {
-        String url = String.format("sharepoint/sites/%s/sites", parentId);
+        String url = String.format("sites/%s/sites", parentId);
         ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, url);
 
         return responseSites(sitesEntitySetResponse.getBody().getEntities(), parentId);
     }
 
     public ObjectDataResponse fetchSite(String token, String id) {
-        String urlEntity = String.format("sharepoint/sites/%s", id);
+        String urlEntity = String.format("sites/%s", id);
         List<ODataEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
 
@@ -57,14 +57,14 @@ public class SharePointFacade {
     }
 
     public ObjectDataResponse fetchLists(String token, String idSite) {
-        String urlEntity = String.format("sharepoint/sites/%s/lists", idSite);
+        String urlEntity = String.format("sites/%s/lists", idSite);
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
         return responseLists(entitySetResponse.getBody().getEntities(), idSite);
     }
 
     public ObjectDataResponse fetchList(String token, String idSite, String idList) {
-        String entryPoint = String.format("sharepoint/sites/%s/lists/%s", idSite, idList);
+        String entryPoint = String.format("sites/%s/lists/%s", idSite, idList);
         ODataRetrieveResponse<ODataEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
         List<ODataEntity> lists = new ArrayList<>();
         lists.add(0, entitySetResponse.getBody());
@@ -73,11 +73,11 @@ public class SharePointFacade {
     }
 
     public ObjectDataResponse fetchListsRoot(String token) {
-        return responseLists(getEntitiesSetResponse(token, "sharepoint/site/lists").getBody().getEntities(), "");
+        return responseLists(getEntitiesSetResponse(token, "site/lists").getBody().getEntities(), "");
     }
 
     public ObjectDataResponse fetchItem(String token, String siteId, String listId, String itemId) {
-        String entryPoint = String.format("sharepoint/sites/%s/lists/%s/items/%s", siteId, listId, itemId);
+        String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ODataEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
         List<ODataEntity> items = new ArrayList<>();
@@ -87,7 +87,7 @@ public class SharePointFacade {
     }
 
     public ObjectDataResponse fetchItems(String token, String siteId , String listId) {
-        String urlEntity = String.format("sharepoint/sites/%s/lists/%s/items", siteId, listId);
+        String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
         return responseItems(entitySetResponse.getBody().getEntities(), siteId, listId);

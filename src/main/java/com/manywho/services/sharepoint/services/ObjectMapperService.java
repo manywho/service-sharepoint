@@ -41,7 +41,7 @@ public class ObjectMapperService {
         properties.add(new Property("Description", siteItem.getProperty("description").getValue().toString()));
         properties.add(new Property("Name", siteItem.getProperty("name").getValue().toString()));
         properties.add(new Property("Web URL", siteItem.getProperty("webUrl").getValue().toString()));
-        properties.add(new Property("Site ID", siteItem.getProperty("siteId").getValue().toString()));
+        properties.add(new Property("Site ID", siteItem.getProperty("id").getValue().toString()));
         properties.add(new Property("Parent ID", parentId));
 
         Object object = new Object();

@@ -1,6 +1,5 @@
 package com.manywho.services.sharepoint.services.file;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -13,9 +12,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -75,7 +71,7 @@ public class FileSharePointService {
                     .setMode(HttpMultipartMode.STRICT)
                     .build();
 
-            entity.
+            //entity.
             httpPut.setEntity(entity);
             httpPut.addHeader("Range", "bytes=0-0");
 
