@@ -92,5 +92,11 @@
             <version>0.2.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.services</groupId>
+            <artifactId>files-services-java</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 </project>

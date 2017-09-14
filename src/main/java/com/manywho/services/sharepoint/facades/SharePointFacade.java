@@ -94,9 +94,9 @@ public class SharePointFacade {
     }
 
     public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-        String uploadPath = fileSharePointService.getAnUploadUrl(token, bodyPart, path);
-        fileSharePointService.uploadFile(token, uploadPath, bodyPart);
-//        fileSharePointService.uploadSmallFile(token, path, bodyPart);
+        //String uploadPath = fileSharePointService.getAnUploadUrl(token, bodyPart, path);
+        //fileSharePointService.uploadFile(token, uploadPath, bodyPart);
+        fileSharePointService.uploadSmallFile(token, path, bodyPart);
         return new ObjectDataResponse();
     }
 
