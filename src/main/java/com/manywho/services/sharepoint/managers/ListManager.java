@@ -6,7 +6,8 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
-import com.manywho.services.sharepoint.facades.SharePointFacade;
+import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
+import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import java.util.Objects;
@@ -14,15 +15,16 @@ import java.util.Optional;
 
 public class ListManager {
     private PropertyCollectionParser propertyParser;
-    private SharePointFacade sharePointFacade;
+    private SharepointFacadeFactory sharepointFacadeFactory;
 
     @Inject
-    public ListManager(PropertyCollectionParser propertyParser, SharePointFacade sharePointFacade) {
+    public ListManager(PropertyCollectionParser propertyParser, SharepointFacadeFactory sharepointFacadeFactory) {
         this.propertyParser = propertyParser;
-        this.sharePointFacade = sharePointFacade;
+        this.sharepointFacadeFactory = sharepointFacadeFactory;
     }
 
     public ObjectDataResponse loadLists(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
+
         Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
 
         if (objectDataRequest.getListFilter() != null && StringUtils.isNotEmpty(objectDataRequest.getListFilter().getId())) {
@@ -30,7 +32,7 @@ public class ListManager {
             if (parts.length <2) {
                 throw new RuntimeException(String.format("the external id %s is wrong", objectDataRequest.getListFilter().getId()));
             }
-            return sharePointFacade.fetchList(authenticatedWho.getToken(), parts[0], parts[1]);
+            return sharepointFacadeFactory.get().fetchList(configuration, authenticatedWho.getToken(), parts[0], parts[1]);
         }
 
         if (objectDataRequest.getListFilter() != null && objectDataRequest.getListFilter().getWhere() != null) {
@@ -39,11 +41,11 @@ public class ListManager {
                     .findFirst();
 
             if (siteId.isPresent()) {
-                return sharePointFacade.fetchLists(authenticatedWho.getToken(), siteId.get().getContentValue());
+                return  sharepointFacadeFactory.get().fetchLists(configuration, authenticatedWho.getToken(), siteId.get().getContentValue());
             }
         }
 
-        return sharePointFacade.fetchListsRoot(authenticatedWho.getToken());
+        return  sharepointFacadeFactory.get().fetchListsRoot(configuration, authenticatedWho.getToken());
     }
 
 }

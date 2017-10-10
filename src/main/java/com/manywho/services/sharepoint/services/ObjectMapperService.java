@@ -7,7 +7,10 @@ import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
+import com.microsoft.services.sharepoint.SPList;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ObjectMapperService {
     public Object buildManyWhoFileSystemObject(ODataEntity fileItem) {
@@ -66,6 +69,34 @@ public class ObjectMapperService {
         Object object = new Object();
         object.setDeveloperName(SharePointList.NAME);
         object.setExternalId(String.format("%s#%s", siteEntity.getProperty("id").getValue().toString(), siteId));
+        object.setProperties(properties);
+
+        return object;
+    }
+
+    public MObject buildManyWhoSharePointListObject(SPList siteEntity, String siteId) {
+        PropertyCollection properties = new PropertyCollection();
+
+        properties.add(new Property("ID", siteEntity.getId()));
+        properties.add(new Property("Created Date Time", siteEntity.getData("Created").toString()));
+        properties.add(new Property("Last Modified Date Time", siteEntity.getData("LastItemUserModifiedDate").toString()));
+        properties.add(new Property("Description", siteEntity.getData("Description").toString()));
+        properties.add(new Property("Name", siteEntity.getData("Title").toString()));
+        java.lang.Object metadata =siteEntity.getData("__metadata");
+        String url = null;
+
+        try {
+            url = ((JSONObject) metadata).get("id").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        properties.add(new Property("Web URL", url));
+        properties.add(new Property("Site ID", siteId));
+
+        Object object = new Object();
+        object.setDeveloperName(SharePointList.NAME);
+        object.setExternalId(String.format("%s#%s", siteEntity.getId(), siteId));
         object.setProperties(properties);
 
         return object;

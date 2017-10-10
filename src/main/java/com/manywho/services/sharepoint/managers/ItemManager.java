@@ -6,7 +6,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
-import com.manywho.services.sharepoint.facades.SharePointFacade;
+import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -15,10 +15,10 @@ import java.util.Optional;
 
 public class ItemManager {
     private PropertyCollectionParser propertyParser;
-    private SharePointFacade sharePointFacade;
+    private SharePointOdataFacade sharePointFacade;
 
     @Inject
-    public ItemManager(PropertyCollectionParser propertyParser, SharePointFacade sharePointFacade) {
+    public ItemManager(PropertyCollectionParser propertyParser, SharePointOdataFacade sharePointFacade) {
         this.propertyParser = propertyParser;
         this.sharePointFacade = sharePointFacade;
     }
@@ -41,7 +41,7 @@ public class ItemManager {
                             objectDataRequest.getListFilter().getId()));
                 }
 
-                return sharePointFacade.fetchItem(authenticatedWho.getToken(), parts[0], parts[1],parts[2]);
+                return sharePointFacade.fetchItem(configuration, authenticatedWho.getToken(), parts[0], parts[1],parts[2]);
             }
 
             listOptional  = objectDataRequest.getListFilter().getWhere().stream()
@@ -66,11 +66,11 @@ public class ItemManager {
         }
 
         if( itemOptional.isPresent()) {
-            return sharePointFacade.fetchItem(authenticatedWho.getToken(), siteOptional.get().getContentValue(),
+            return sharePointFacade.fetchItem(configuration, authenticatedWho.getToken(), siteOptional.get().getContentValue(),
                     listOptional.get().getContentValue(),  itemOptional.get().getContentValue());
         }
 
-        return sharePointFacade.fetchItems(authenticatedWho.getToken(),siteOptional.get().getContentValue(),
+        return sharePointFacade.fetchItems(configuration, authenticatedWho.getToken(),siteOptional.get().getContentValue(),
                 listOptional.get().getContentValue());
     }
 

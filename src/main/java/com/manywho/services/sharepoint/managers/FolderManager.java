@@ -1,18 +1,13 @@
 package com.manywho.services.sharepoint.managers;
 
-import com.manywho.sdk.entities.run.EngineValue;
 import com.manywho.sdk.entities.run.elements.config.ServiceRequest;
 import com.manywho.sdk.entities.run.elements.config.ServiceResponse;
-import com.manywho.sdk.entities.run.elements.type.MObject;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.enums.ContentType;
-import com.manywho.sdk.enums.InvokeType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.entities.request.FolderCreate;
 import com.manywho.services.sharepoint.services.FolderSharePointService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
-import com.manywho.services.sharepoint.types.Folder;
 
 import javax.inject.Inject;
 

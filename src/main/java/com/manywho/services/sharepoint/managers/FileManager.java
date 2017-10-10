@@ -4,7 +4,7 @@ import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.services.sharepoint.entities.Configuration;
-import com.manywho.services.sharepoint.facades.SharePointFacade;
+import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import org.glassfish.jersey.media.multipart.BodyPart;
@@ -16,11 +16,11 @@ public class FileManager {
     private FileService fileService;
     private ObjectMapperService objectMapperService;
     private PropertyCollectionParser propertyParser;
-    private SharePointFacade sharePointFacade;
+    private SharePointOdataFacade sharePointFacade;
 
     @Inject
     public FileManager(FileService fileService, PropertyCollectionParser propertyParser,
-                       ObjectMapperService objectMapperService, SharePointFacade sharePointFacade) {
+                       ObjectMapperService objectMapperService, SharePointOdataFacade sharePointFacade) {
         this.fileService = fileService;
         this.propertyParser = propertyParser;
         this.objectMapperService = objectMapperService;

@@ -32,6 +32,9 @@ public class AuthManager {
     }
 
     public AuthenticatedWhoResult authenticateUser(AbstractOauth2Provider provider, AuthenticationCredentials credentials) throws Exception {
+        if (credentials.getSessionToken()!= null) {
+            return authenticationService.getAuthenticatedWhoResult(credentials);
+        }
 
         return authenticationService.getAuthenticatedWhoResult(provider, credentials);
     }
