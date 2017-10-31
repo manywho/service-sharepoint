@@ -97,6 +97,11 @@
             <artifactId>files-services-java</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.microsoft.services</groupId>
+            <artifactId>sharepoint-services-java</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
     </dependencies>
 </project>

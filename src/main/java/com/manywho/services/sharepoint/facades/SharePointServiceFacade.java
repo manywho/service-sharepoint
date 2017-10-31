@@ -5,8 +5,8 @@ import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
-import org.glassfish.jersey.media.multipart.BodyPart;
 import com.microsoft.services.sharepoint.*;
+import org.glassfish.jersey.media.multipart.BodyPart;
 
 import javax.inject.Inject;
 import java.util.List;
