@@ -68,6 +68,14 @@
             </exclusions>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.microsoft.azure/adal4j -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>adal4j</artifactId>
+            <version>0.0.3</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-api</artifactId>

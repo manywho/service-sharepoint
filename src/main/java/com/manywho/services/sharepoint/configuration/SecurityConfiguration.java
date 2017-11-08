@@ -19,4 +19,8 @@ public class SecurityConfiguration extends ServiceConfigurationDefault {
     public String getOauth2ClientSecret() {
         return this.get("oauth2.clientSecret");
     }
+
+    public String getAppSecret() {
+        return this.get("app.clientSecret");
+    }
 }

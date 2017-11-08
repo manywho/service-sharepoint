@@ -48,4 +48,34 @@ public class AzureHttpClient {
             }
         }
     }
+
+
+    public AuthResponse getAccessTokenByContextToken(String uri, String grantType, String clientId, String clientSecret,
+                                                     String refreshToken, String resource) {
+        try {
+            HttpPost httpPost = new HttpPost(uri);
+
+            List<NameValuePair> formParams = new ArrayList<>();
+
+            formParams.add(new BasicNameValuePair("grant_type", grantType));
+            formParams.add(new BasicNameValuePair("resource", resource));
+            formParams.add(new BasicNameValuePair("client_id", clientId));
+            formParams.add(new BasicNameValuePair("client_secret", clientSecret));
+            formParams.add(new BasicNameValuePair("refresh_token", refreshToken));
+
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+            httpPost.setEntity(entity);
+
+            return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
