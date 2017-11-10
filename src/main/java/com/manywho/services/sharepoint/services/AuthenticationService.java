@@ -104,7 +104,7 @@ public class AuthenticationService {
 
         String domain = configuration.getHost().replace("https://", "");
         String resource = String.format("%s/%s@%s", targetPrincipalName, domain, realm);
-        AuthResponse response = azureHttpClient.getAccessTokenByContextToken(uriAuth, grant_type, aud,
+        AuthResponse response = azureHttpClient.getAccessTokenByContextToken(uri, grant_type, aud,
                 securityConfiguration.getAppSecret(), refreshToken, resource);
 
 

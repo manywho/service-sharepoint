@@ -1,29 +1,48 @@
 package com.manywho.services.sharepoint.controllers;
 
+import com.google.common.base.Strings;
 import javax.ws.rs.*;
+
 
 @Path("/callback")
 public class AddInController {
 
+    //Todo move this project as stand alone front-end project
+
+
+    @Path("/run-flow-web-part")
+    @Produces("text/html")
+    @POST
+    public String runFlowWebPart(@FormParam("SPAppToken") String contextToken, @QueryParam("editmode") String editMode,
+                                 @QueryParam("flow-id") String flowId,
+                                 @QueryParam("flow-version-id") String flowVersionId,
+                                 @QueryParam("tenant-id") String tenantId,
+                                 @QueryParam("admin-tenant-id") String adminTenantId,
+                                 @QueryParam("host") String host,
+                                 @QueryParam("player") String player,
+                                 @QueryParam("mode") String mode
+                                 ) {
+
+        return this.runFlowInternal(contextToken, flowId, flowVersionId, tenantId, adminTenantId, host, player, mode);
+    }
+
     @Path("/run-flow")
     @Produces("text/html")
     @POST
-    public String ShowFlowPost(@FormParam("SPAppToken") String contextToken) {
-
-
-        return runFlow(contextToken);
+    public String runFlow(@FormParam("SPAppToken") String contextToken) {
+        // todo allow configure the app to run standalone without a web part
+        return this.runFlowInternal(contextToken, "", "", "", "", "",
+                                    "", "");
     }
 
-    public String runFlow(String accessToken) {
+    private String runFlowInternal(String contextToken, String flowId, String flowVersionId, String tenantId,
+                                   String adminTenantId, String host, String player, String mode) {
 
-        String tenantId ="8b572d5b-76ba-473e-9e37-be06b6e8a396";
-        String flowId= "0620de05-dd64-4c8f-b61d-1513fefeb917";
-        String flowVersionId="23758157-410b-4d04-86f7-4c9c6ef59e98";
-        String adminTenantId = "da497693-4d02-45db-bc08-8ea16d2ccbdf";
-        String host = "flow.manywho.com";
-        String player = "default";
+        if (Strings.isNullOrEmpty(mode) || "DEFAULT".equals(mode)) {
+            mode = "null";
+        }
+
         String navigationElementId = "null";
-        String mode = "null";
         String reportingMode = "null";
         String theme = "null";
         String join = "null";
@@ -130,7 +149,6 @@ public class AddInController {
                 "    </style>\n" +
                 "</head>\n" +
                 "<body style=\"height: 100%;\">\n" +
-
                 "<div id=\"manywho\">\n" +
                 "    <div id=\"loader\" class=\"mw-bs\" style=\"width: 100%; height: 100%;\">\n" +
                 "        <div class=\"wait-container\">\n" +
@@ -211,7 +229,7 @@ public class AddInController {
         template = template.replace("{{join}}", join);
         template = template.replace("{{authorization}}", authorization);
         template = template.replace("{{initialization}}", initialization);
-        template = template.replace("{{accessToken}}", accessToken);
+        template = template.replace("{{accessToken}}", contextToken);
 
         return template;
     }

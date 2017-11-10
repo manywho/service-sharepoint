@@ -23,4 +23,8 @@ public class SecurityConfiguration extends ServiceConfigurationDefault {
     public String getAppSecret() {
         return this.get("app.clientSecret");
     }
+
+    public String getAppId() {
+        return this.get("app.clientId");
+    }
 }
