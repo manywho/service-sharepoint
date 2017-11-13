@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="service" basedir="." default="generate-properties">
+    <target name="generate-properties" description="Generate the properties file from the given system properties">
+        <propertyfile file="src/main/resources/service.properties">
+            <entry key="app.clientSecret" value="${app.clientSecret}"/>
+            <entry key="app.clientId" value="${app.clientId}"/>
+            <entry key="oauth2.clientId" value="${oauth2.clientId}"/>
+            <entry key="oauth2.clientSecret" value="${oauth2.clientSecret}"/>
+        </propertyfile>
+    </target>
+</project>
