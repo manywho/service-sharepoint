@@ -33,7 +33,10 @@ public class AzureHttpClient {
             formParams.add(new BasicNameValuePair("redirect_uri", redirectUri));
             formParams.add(new BasicNameValuePair("client_secret", clientSecret));
 
-            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
+
+
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams);
+            entity.setChunked(false);
             httpPost.setEntity(entity);
 
             return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler());

@@ -80,7 +80,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
 
     @Override
     public ObjectDataResponse fetchListsRoot(Configuration configuration, String token) {
-        return responseLists(getEntitiesSetResponse(token, "site/lists").getBody().getEntities(), "");
+        return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "");
     }
 
 

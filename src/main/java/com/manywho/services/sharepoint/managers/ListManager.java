@@ -32,7 +32,7 @@ public class ListManager {
             if (parts.length <2) {
                 throw new RuntimeException(String.format("the external id %s is wrong", objectDataRequest.getListFilter().getId()));
             }
-            return sharepointFacadeFactory.get().fetchList(configuration, authenticatedWho.getToken(), parts[0], parts[1]);
+            return sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider()).fetchList(configuration, authenticatedWho.getToken(), parts[0], parts[1]);
         }
 
         if (objectDataRequest.getListFilter() != null && objectDataRequest.getListFilter().getWhere() != null) {
@@ -41,11 +41,11 @@ public class ListManager {
                     .findFirst();
 
             if (siteId.isPresent()) {
-                return  sharepointFacadeFactory.get().fetchLists(configuration, authenticatedWho.getToken(), siteId.get().getContentValue());
+                return  sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider()).fetchLists(configuration, authenticatedWho.getToken(), siteId.get().getContentValue());
             }
         }
 
-        return  sharepointFacadeFactory.get().fetchListsRoot(configuration, authenticatedWho.getToken());
+        return  sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider()).fetchListsRoot(configuration, authenticatedWho.getToken());
     }
 
 }
