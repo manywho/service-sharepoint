@@ -1,8 +1,10 @@
 package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import javax.inject.Inject;
@@ -15,12 +17,14 @@ public class DescribeTypesManager {
 
     private final static String AUTHORITY = "https://login.windows.net/common";
     private final static String RESOURCE_GRAPH = "00000003-0000-0000-c000-000000000000";
-
     private ApplicationConfiguration securityConfiguration;
+    private SharePointOdataFacade sharePointOdataFacade;
 
     @Inject
-    public DescribeTypesManager(ApplicationConfiguration configuration) {
+    public DescribeTypesManager(ApplicationConfiguration configuration, SharePointOdataFacade sharePointOdataFacade) {
         this.securityConfiguration = configuration;
+        this.sharePointOdataFacade = sharePointOdataFacade;
+
     }
 
     public TypeElementCollection getTypeElements(ServiceConfiguration configuration) {
@@ -30,6 +34,7 @@ public class DescribeTypesManager {
                     configuration.getPassword());
 
             String token = authenticationResult.getAccessToken();
+            ObjectDataResponse sites = this.sharePointOdataFacade.fetchSites(configuration, token);
 
         } catch (Exception e) {
             return new TypeElementCollection();

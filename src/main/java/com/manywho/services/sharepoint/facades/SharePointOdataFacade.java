@@ -38,9 +38,27 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
 
     @Override
     public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
+        //this line should work but it doesn't
+        //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
+        // we fetch groups
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups?$filter=groupTypes/any(c:c+eq+'Unified')");
+        List<ODataEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
+        List<ODataEntity> listSitesByGroups = new ArrayList<>();
 
-        return responseSites(sitesEntitySetResponse.getBody().getEntities(), "");
+        for (ODataEntity group: listGroups) {
+            List<ODataEntity> sites = fetchSiteByGroup(configuration, token, group.getId().toString());
+            listSitesByGroups.addAll(sites);
+        }
+
+        return responseSites(listSitesByGroups, "");
+    }
+
+    private List<ODataEntity> fetchSiteByGroup(ServiceConfiguration configuration, String token, String groupId) {
+        String urlEntity = String.format("%s/sites/root", groupId);
+        List<ODataEntity> sites = new ArrayList<>();
+        sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
+
+        return sites;
     }
 
     @Override
