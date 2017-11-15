@@ -10,7 +10,7 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.AuthenticationService;
 import com.manywho.services.sharepoint.services.AuthorizationService;
 import org.scribe.oauth.OAuthService;
@@ -54,7 +54,7 @@ public class AuthManager {
     }
 
     public ObjectDataResponse loadGroups(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        ServiceConfiguration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), ServiceConfiguration.class);
 
         return new ObjectDataResponse(new ObjectCollection());
         //todo restore this line when we made the changes to be safe again and remove ignore from test
@@ -66,7 +66,7 @@ public class AuthManager {
     }
 
     public ObjectDataResponse loadUsers(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        ServiceConfiguration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), ServiceConfiguration.class);
 
         //todo restore this line when we made the changes to be safe again and remove ignore from test
         return new ObjectDataResponse(new ObjectCollection());

@@ -1,8 +1,8 @@
 package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
-import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import javax.inject.Inject;
@@ -11,26 +11,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class TypeManager {
+public class DescribeTypesManager {
 
     private final static String AUTHORITY = "https://login.windows.net/common";
     private final static String RESOURCE_GRAPH = "00000003-0000-0000-c000-000000000000";
 
-    private SecurityConfiguration securityConfiguration;
+    private ApplicationConfiguration securityConfiguration;
 
     @Inject
-    public TypeManager(SecurityConfiguration configuration) {
+    public DescribeTypesManager(ApplicationConfiguration configuration) {
         this.securityConfiguration = configuration;
     }
 
-    public TypeElementCollection getTypeElements(Configuration configuration) {
+    public TypeElementCollection getTypeElements(ServiceConfiguration configuration) {
         try {
             AuthenticationResult authenticationResult  = getAccessTokenFromUserCredentials(RESOURCE_GRAPH,
                     configuration.getUsername(),
                     configuration.getPassword());
 
-            authenticationResult.getAccessToken();
-
+            String token = authenticationResult.getAccessToken();
 
         } catch (Exception e) {
             return new TypeElementCollection();

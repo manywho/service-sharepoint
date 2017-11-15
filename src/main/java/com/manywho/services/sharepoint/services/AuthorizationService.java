@@ -6,27 +6,18 @@ import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.Property;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
-import org.apache.http.Consts;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AuthorizationService {
     //private BoxClient boxClient;
     private ObjectMapperService objectMapperService;
-    private SecurityConfiguration securityConfiguration;
+    private ApplicationConfiguration securityConfiguration;
 
     @Inject
-    public AuthorizationService(ObjectMapperService objectMapperService, SecurityConfiguration securityConfiguration) {
+    public AuthorizationService(ObjectMapperService objectMapperService, ApplicationConfiguration securityConfiguration) {
         this.securityConfiguration = securityConfiguration;
         this.objectMapperService = objectMapperService;
     }

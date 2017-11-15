@@ -5,7 +5,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class ListManager {
 
     public ObjectDataResponse loadLists(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
 
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        ServiceConfiguration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), ServiceConfiguration.class);
 
         if (objectDataRequest.getListFilter() != null && StringUtils.isNotEmpty(objectDataRequest.getListFilter().getId())) {
             String[] parts = objectDataRequest.getListFilter().getId().split("#");

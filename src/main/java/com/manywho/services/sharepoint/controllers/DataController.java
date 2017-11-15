@@ -11,7 +11,6 @@ import com.manywho.services.sharepoint.managers.SiteManager;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
-
 import javax.inject.Inject;
 import javax.ws.rs.*;
 
@@ -20,15 +19,13 @@ import javax.ws.rs.*;
 @Produces("application/json")
 public class DataController extends AbstractDataController {
 
-    private FileManager fileManager;
     private SiteManager siteManager;
     private ListManager listManager;
     private ItemManager itemManager;
 
     @Inject
-    public DataController(FileManager fileManager, SiteManager siteManager, ListManager listManager, ItemManager itemManager)
+    public DataController(SiteManager siteManager, ListManager listManager, ItemManager itemManager)
     {
-        this.fileManager = fileManager;
         this.siteManager = siteManager;
         this.listManager = listManager;
         this.itemManager = itemManager;
@@ -44,10 +41,6 @@ public class DataController extends AbstractDataController {
     @AuthorizationRequired
     public ObjectDataResponse load(ObjectDataRequest objectDataRequest) throws Exception {
         switch (objectDataRequest.getObjectDataType().getDeveloperName()) {
-//            case File.NAME:
-//                return fileManager.loadFile(getAuthenticatedWho(), objectDataRequest);
-//            case Folder.NAME:
-//                return fileManager.loadFolder(getAuthenticatedWho(), objectDataRequest);
             case Site.NAME:
                 return siteManager.loadSites(getAuthenticatedWho(), objectDataRequest);
             case SharePointList.NAME:

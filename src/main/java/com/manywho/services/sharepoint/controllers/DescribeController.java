@@ -9,11 +9,10 @@ import com.manywho.sdk.entities.translate.Culture;
 import com.manywho.sdk.enums.ContentType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
-import com.manywho.sdk.services.annotations.Type;
 import com.manywho.sdk.services.controllers.AbstractController;
 import com.manywho.sdk.services.describe.DescribeServiceBuilder;
-import com.manywho.services.sharepoint.entities.Configuration;
-import com.manywho.services.sharepoint.managers.TypeManager;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.managers.DescribeTypesManager;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -28,10 +27,10 @@ import javax.ws.rs.Produces;
 public class DescribeController extends AbstractController {
 
     private PropertyCollectionParser propertyCollectionParser;
-    private TypeManager typeManager;
+    private DescribeTypesManager typeManager;
 
     @Inject
-    DescribeController(PropertyCollectionParser propertyCollectionParser, TypeManager typeManager) {
+    DescribeController(PropertyCollectionParser propertyCollectionParser, DescribeTypesManager typeManager) {
         this.propertyCollectionParser = propertyCollectionParser;
         this.typeManager = typeManager;
     }
@@ -44,7 +43,7 @@ public class DescribeController extends AbstractController {
 
         if (describeServiceRequest.hasConfigurationValues()) {
             EngineValueCollection configurationValues = describeServiceRequest.getConfigurationValues();
-            Configuration configuration = propertyCollectionParser.parse(configurationValues, Configuration.class);
+            ServiceConfiguration configuration = propertyCollectionParser.parse(configurationValues, ServiceConfiguration.class);
 
             if (!StringUtils.isEmpty(configuration.getHost()) && !StringUtils.isEmpty(configuration.getUsername()) &&
                 !StringUtils.isEmpty(configuration.getPassword())) {

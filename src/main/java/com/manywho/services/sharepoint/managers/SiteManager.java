@@ -5,7 +5,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +24,7 @@ public class SiteManager {
     }
 
     public ObjectDataResponse loadSites(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+        ServiceConfiguration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), ServiceConfiguration.class);
 
         if (objectDataRequest.getListFilter() != null && StringUtils.isNotEmpty(objectDataRequest.getListFilter().getId())) {
             return sharePointFacade.fetchSite(configuration, authenticatedWho.getToken(), objectDataRequest.getListFilter().getId());

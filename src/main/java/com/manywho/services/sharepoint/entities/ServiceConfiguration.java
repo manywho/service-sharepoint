@@ -2,7 +2,7 @@ package com.manywho.services.sharepoint.entities;
 
 import com.manywho.sdk.services.annotations.Property;
 
-public class Configuration {
+public class ServiceConfiguration {
     @Property("Username")
     private String username;
 

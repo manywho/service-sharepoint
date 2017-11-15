@@ -1,7 +1,6 @@
 package com.manywho.services.sharepoint.services;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
@@ -9,8 +8,8 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.oauth.AuthResponse;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;
@@ -21,12 +20,12 @@ import java.util.UUID;
 
 public class AuthenticationService {
     public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
-    private SecurityConfiguration securityConfiguration;
+    private ApplicationConfiguration securityConfiguration;
     private AzureHttpClient azureHttpClient;
     private PropertyCollectionParser propertyParser;
 
     @Inject
-    public AuthenticationService(SecurityConfiguration securityConfiguration, AzureHttpClient azureHttpClient, PropertyCollectionParser propertyParser) {
+    public AuthenticationService(ApplicationConfiguration securityConfiguration, AzureHttpClient azureHttpClient, PropertyCollectionParser propertyParser) {
         this.securityConfiguration = securityConfiguration;
         this.azureHttpClient = azureHttpClient;
         this.propertyParser = propertyParser;
@@ -77,7 +76,7 @@ public class AuthenticationService {
 
 
     public AuthenticatedWhoResult getAuthenticatedWhoResult(AuthenticationCredentials credentials) throws Exception {
-        Configuration configuration = propertyParser.parse(credentials.getConfigurationValues(), Configuration.class);
+        ServiceConfiguration configuration = propertyParser.parse(credentials.getConfigurationValues(), ServiceConfiguration.class);
         Algorithm algorithm = Algorithm.HMAC256(securityConfiguration.getAppSecret());
 //        JWTVerifier verifier = JWT.require(algorithm)
 //                .withIssuer("00000001-0000-0000-c000-000000000000@f1cd6ef0-f210-4c39-8471-15f8929b25ce")

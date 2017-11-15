@@ -1,18 +1,18 @@
 package com.manywho.services.sharepoint.oauth;
 
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.sharepoint.configuration.SecurityConfiguration;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import org.scribe.model.OAuthConfig;
 
 import javax.inject.Inject;
 
 public class SharepointProvider extends AbstractOauth2Provider {
-    private final SecurityConfiguration configuration;
+    private final ApplicationConfiguration configuration;
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
 
     @Inject
-    public SharepointProvider(SecurityConfiguration configuration) {
+    public SharepointProvider(ApplicationConfiguration configuration) {
         this.configuration = configuration;
     }
 

@@ -6,9 +6,9 @@ import com.manywho.sdk.services.config.ServiceConfigurationProperties;
 
 import javax.inject.Inject;
 
-public class SecurityConfiguration extends ServiceConfigurationDefault {
+public class ApplicationConfiguration extends ServiceConfigurationDefault {
     @Inject
-    public SecurityConfiguration(ServiceConfigurationEnvironmentVariables environment, ServiceConfigurationProperties properties) {
+    public ApplicationConfiguration(ServiceConfigurationEnvironmentVariables environment, ServiceConfigurationProperties properties) {
         super(environment, properties);
     }
 

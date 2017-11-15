@@ -2,7 +2,7 @@ package com.manywho.services.sharepoint.facades;
 
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.services.sharepoint.entities.Configuration;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
@@ -37,14 +37,14 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchSites(Configuration configuration, String token) throws ExecutionException, InterruptedException {
+    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
         ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
 
         return responseSites(sitesEntitySetResponse.getBody().getEntities(), "");
     }
 
     @Override
-    public ObjectDataResponse fetchSites(Configuration configuration, String token, String parentId) {
+    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token, String parentId) {
         String url = String.format("sites/%s/sites", parentId);
         ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, url);
 
@@ -52,7 +52,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchSite(Configuration configuration, String token, String id) {
+    public ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id) {
         String urlEntity = String.format("sites/%s", id);
         List<ODataEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
@@ -61,7 +61,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchLists(Configuration configuration, String token, String idSite) {
+    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite) {
         String urlEntity = String.format("sites/%s/lists", idSite);
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
@@ -69,7 +69,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchList(Configuration configuration, String token, String idSite, String idList) {
+    public ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList) {
         String entryPoint = String.format("sites/%s/lists/%s", idSite, idList);
         ODataRetrieveResponse<ODataEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
         List<ODataEntity> lists = new ArrayList<>();
@@ -79,13 +79,13 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchListsRoot(Configuration configuration, String token) {
+    public ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token) {
         return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "");
     }
 
 
     @Override
-    public ObjectDataResponse fetchItem(Configuration configuration, String token, String siteId, String listId, String itemId) {
+    public ObjectDataResponse fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
         String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ODataEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
@@ -96,7 +96,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchItems(Configuration configuration, String token, String siteId, String listId) {
+    public ObjectDataResponse fetchItems(ServiceConfiguration configuration, String token, String siteId, String listId) {
         String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
