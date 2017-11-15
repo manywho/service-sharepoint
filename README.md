@@ -10,6 +10,28 @@ This service allows you to integrate your Flows with [SharePoint](https://produc
 The service is a Jersey JAX-RS application, that by default is run under the Grizzly2 server on port 8080 (if you use 
 the packaged JAR).
 
+To build the service, you will need to have Apache Ant, Maven 3 and a Java 8 implementation installed.
+
+You will need to generate a configuration file for the service by running the provided build.xml script with Ant.
+
+This service requires a SharePoint Add-In (e.g. https://github.com/manywho/sharepoint-flow-addin) and a oauth2 windows client that have support for the implicit flow.
+
+At the moment of write this code you can register the SharePoint Add-In at https://{your sharepoint domain}/_layouts/15/AppRegNew.aspx
+the redirect url should be https://{the domain of this project}/api/sharepoint/1/callback/run-flow
+
+and for register the oauth2 client you should register it at https://apps.dev.microsoft.com/?mkt=en-us#/appList
+the redirect URL should be https://flow.manywho.com/api/run/1/oauth2
+The app should support Platforms Web and native, also the Allow Implicit Flow should be checked
+
+# SharePoint-ManyWho
+
+$ ant -Doauth2.clientId=xxx \
+-Doauth2.clientSecretxxx \
+-Dapp.clientSecret=xxx \
+-Dapp.clientId=xxx
+
+Now you can build the runnable shaded JAR
+
 ##### Defaults
 
 Running the following command will start the service listening on `0.0.0.0:8080/api/sharepoint/1`:
