@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
 import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
@@ -15,12 +14,9 @@ import com.manywho.services.sharepoint.entities.Configuration;
 import com.manywho.services.sharepoint.oauth.AuthResponse;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;
-import com.sun.corba.se.spi.orb.PropertyParser;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
-import java.net.URLDecoder;
-import java.util.Base64;
 import java.util.UUID;
 
 public class AuthenticationService {
