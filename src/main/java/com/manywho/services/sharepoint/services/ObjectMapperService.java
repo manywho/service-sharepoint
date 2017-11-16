@@ -9,7 +9,6 @@ import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.SPList;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
-import org.apache.olingo.commons.api.domain.v4.ODataProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,7 +70,7 @@ public class ObjectMapperService {
         object.setDeveloperName(SharePointList.NAME);
 
         if (fullType) {
-            object.setDeveloperName("List " + sharepointListEntity.getProperty("name").getValue().toString());
+            object.setDeveloperName(sharepointListEntity.getProperty("name").getValue().toString());
             PropertyCollection customProperties = new PropertyCollection();
 
             sharepointListEntity.getProperties().stream().filter(
