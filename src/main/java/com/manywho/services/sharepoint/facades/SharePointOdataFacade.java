@@ -79,11 +79,11 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
     }
 
     @Override
-    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite) {
+    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType) {
         String urlEntity = String.format("sites/%s/lists", idSite);
         ODataRetrieveResponse<ODataEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
-        return responseLists(entitySetResponse.getBody().getEntities(), idSite);
+        return responseLists(entitySetResponse.getBody().getEntities(), idSite, fullType);
     }
 
     @Override
@@ -93,12 +93,12 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
         List<ODataEntity> lists = new ArrayList<>();
         lists.add(0, entitySetResponse.getBody());
 
-        return responseLists(lists, idSite);
+        return responseLists(lists, idSite, false);
     }
 
     @Override
     public ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token) {
-        return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "");
+        return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "", false);
     }
 
 
@@ -163,11 +163,11 @@ public class SharePointOdataFacade implements SharePointFacadeInterface{
         return new ObjectDataResponse(objectCollection);
     }
 
-    private ObjectDataResponse responseLists(List<ODataEntity> lists, String siteId) {
+    private ObjectDataResponse responseLists(List<ODataEntity> lists, String siteId, boolean fullType) {
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (ODataEntity listEntity : lists) {
-            objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(listEntity, siteId));
+            objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(listEntity, siteId, fullType));
         }
 
         return new ObjectDataResponse(objectCollection);

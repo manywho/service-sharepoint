@@ -12,7 +12,7 @@ public interface SharePointFacadeInterface {
 
     ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id);
 
-    ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite);
+    ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType);
 
     ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList);
 

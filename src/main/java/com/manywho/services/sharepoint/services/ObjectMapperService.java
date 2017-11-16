@@ -9,6 +9,7 @@ import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.SPList;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
+import org.apache.olingo.commons.api.domain.v4.ODataProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -55,20 +56,33 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoSharePointListObject(ODataEntity siteEntity, String siteId) {
+    public MObject buildManyWhoSharePointListObject(ODataEntity sharepointListEntity, String siteId, boolean fullType) {
         PropertyCollection properties = new PropertyCollection();
 
-        properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));
-        properties.add(new Property("Created Date Time", siteEntity.getProperty("createdDateTime").getValue().toString()));
-        properties.add(new Property("Last Modified Date Time", siteEntity.getProperty("lastModifiedDateTime").getValue().toString()));
-        properties.add(new Property("Description", siteEntity.getProperty("description").getValue().toString()));
-        properties.add(new Property("Name", siteEntity.getProperty("name").getValue().toString()));
-        properties.add(new Property("Web URL", siteEntity.getProperty("webUrl").getValue().toString()));
+        properties.add(new Property("ID", sharepointListEntity.getProperty("id").getValue().toString()));
+        properties.add(new Property("Created Date Time", sharepointListEntity.getProperty("createdDateTime").getValue().toString()));
+        properties.add(new Property("Last Modified Date Time", sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString()));
+        properties.add(new Property("Description", sharepointListEntity.getProperty("description").getValue().toString()));
+        properties.add(new Property("Name", sharepointListEntity.getProperty("name").getValue().toString()));
+        properties.add(new Property("Web URL", sharepointListEntity.getProperty("webUrl").getValue().toString()));
         properties.add(new Property("Site ID", siteId));
 
         Object object = new Object();
         object.setDeveloperName(SharePointList.NAME);
-        object.setExternalId(String.format("%s#%s", siteEntity.getProperty("id").getValue().toString(), siteId));
+
+        if (fullType) {
+            object.setDeveloperName("List " + sharepointListEntity.getProperty("name").getValue().toString());
+            PropertyCollection customProperties = new PropertyCollection();
+
+            sharepointListEntity.getProperties().stream().filter(
+                    p -> !p.getName().equals("id") && !p.getName().equals("createdDateTime") &&
+                            !p.getName().equals("lastModifiedDateTime") && !p.getName().equals("description") &&
+                            !p.getName().equals("name") && !p.getName().equals("webUrl"))
+                    .forEach( p -> customProperties.add(new Property(p.getName(), p.getValue().toString())));
+
+        }
+
+        object.setExternalId(String.format("%s#%s", sharepointListEntity.getProperty("id").getValue().toString(), siteId));
         object.setProperties(properties);
 
         return object;

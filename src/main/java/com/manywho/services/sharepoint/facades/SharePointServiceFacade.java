@@ -35,7 +35,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite) {
+    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType) {
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
         ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());

@@ -40,7 +40,7 @@ public class ListManager {
                     .findFirst();
 
             if (siteId.isPresent()) {
-                return  sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider()).fetchLists(configuration, authenticatedWho.getToken(), siteId.get().getContentValue());
+                return  sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider()).fetchLists(configuration, authenticatedWho.getToken(), siteId.get().getContentValue(), false);
             }
         }
 
