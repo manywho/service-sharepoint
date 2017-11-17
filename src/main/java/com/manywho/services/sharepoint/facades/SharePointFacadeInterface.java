@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 
+import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import org.glassfish.jersey.media.multipart.BodyPart;
@@ -13,6 +14,8 @@ public interface SharePointFacadeInterface {
     ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id);
 
     ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType);
+
+    TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token);
 
     ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList);
 

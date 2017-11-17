@@ -3,12 +3,10 @@ package com.manywho.services.sharepoint.controllers;
 import com.google.common.base.Strings;
 import javax.ws.rs.*;
 
-
 @Path("/callback")
 public class AddInController {
 
-    //Todo move this project as stand alone front-end project
-
+    //Todo move this project as stand alone out of the api domain
 
     @Path("/run-flow-web-part")
     @Produces("text/html")

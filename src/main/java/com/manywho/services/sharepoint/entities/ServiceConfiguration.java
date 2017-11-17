@@ -12,6 +12,9 @@ public class ServiceConfiguration {
     @Property("Host")
     private String host;
 
+    @Property("Include Default Lists?")
+    private Boolean includeDefaultLists;
+
     public String getUsername() {return username;}
 
     public String getPassword() {
@@ -19,4 +22,8 @@ public class ServiceConfiguration {
     }
 
     public String getHost() {return host;}
+
+    public Boolean getIncludeDefaultLists() {
+        return includeDefaultLists;
+    }
 }

@@ -1,6 +1,7 @@
 package com.manywho.services.sharepoint.facades;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
@@ -53,6 +54,11 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token) {
+        throw new RuntimeException("fetch types for all sites is not implemented for apps");
     }
 
     @Override

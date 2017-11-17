@@ -30,6 +30,7 @@ public class ApplicationBinder extends AbstractBinder {
         bind(ListManager.class).to(ListManager.class);
         bind(AuthManager.class).to(AuthManager.class);
         bind(ItemManager.class).to(ItemManager.class);
+        bind(TypeItemManager.class).to(TypeItemManager.class);
         bind(DescribeTypesManager.class).to(DescribeTypesManager.class);
         bind(AuthenticationService.class).to(AuthenticationService.class);
         bind(AuthorizationService.class).to(AuthorizationService.class);

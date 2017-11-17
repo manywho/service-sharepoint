@@ -8,12 +8,12 @@ import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.SPList;
-import org.apache.olingo.commons.api.domain.v4.ODataEntity;
+import org.apache.olingo.client.api.domain.ClientEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ObjectMapperService {
-    public Object buildManyWhoFileSystemObject(ODataEntity fileItem) {
+    public Object buildManyWhoFileSystemObject(ClientEntity fileItem) {
 
         PropertyCollection properties = new PropertyCollection();
 //        properties.add(new Property("Kind", FilenameUtils.getExtension(fileItem.getName())));
@@ -35,7 +35,7 @@ public class ObjectMapperService {
     }
 
 
-    public Object buildManyWhoSiteObject(ODataEntity siteItem, String parentId) {
+    public Object buildManyWhoSiteObject(ClientEntity siteItem, String parentId) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("ID", siteItem.getProperty("id").getValue().toString()));
@@ -55,7 +55,7 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoSharePointListObject(ODataEntity sharepointListEntity, String siteId, boolean fullType) {
+    public MObject buildManyWhoSharePointListObject(ClientEntity sharepointListEntity, String siteId, boolean fullType) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("ID", sharepointListEntity.getProperty("id").getValue().toString()));
@@ -77,6 +77,7 @@ public class ObjectMapperService {
                     p -> !p.getName().equals("id") && !p.getName().equals("createdDateTime") &&
                             !p.getName().equals("lastModifiedDateTime") && !p.getName().equals("description") &&
                             !p.getName().equals("name") && !p.getName().equals("webUrl"))
+
                     .forEach( p -> customProperties.add(new Property(p.getName(), p.getValue().toString())));
 
         }
@@ -116,7 +117,7 @@ public class ObjectMapperService {
     }
 
 
-    public MObject buildManyWhoItemObject(ODataEntity siteEntity, String siteId, String listId) {
+    public MObject buildManyWhoItemObject(ClientEntity siteEntity, String siteId, String listId) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));

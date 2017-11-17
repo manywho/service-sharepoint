@@ -4,10 +4,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
 import com.manywho.sdk.services.controllers.AbstractDataController;
-import com.manywho.services.sharepoint.managers.FileManager;
-import com.manywho.services.sharepoint.managers.ItemManager;
-import com.manywho.services.sharepoint.managers.ListManager;
-import com.manywho.services.sharepoint.managers.SiteManager;
+import com.manywho.services.sharepoint.managers.*;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
@@ -22,13 +19,15 @@ public class DataController extends AbstractDataController {
     private SiteManager siteManager;
     private ListManager listManager;
     private ItemManager itemManager;
+    private TypeItemManager typeItemManager;
 
     @Inject
-    public DataController(SiteManager siteManager, ListManager listManager, ItemManager itemManager)
+    public DataController(SiteManager siteManager, ListManager listManager, ItemManager itemManager, TypeItemManager typeItemManager)
     {
         this.siteManager = siteManager;
         this.listManager = listManager;
         this.itemManager = itemManager;
+        this.typeItemManager = typeItemManager;
     }
 
     @Override
@@ -47,15 +46,25 @@ public class DataController extends AbstractDataController {
                 return listManager.loadLists(getAuthenticatedWho(), objectDataRequest);
             case Item.NAME:
                 return itemManager.loadItems(getAuthenticatedWho(), objectDataRequest);
+            default:
+                return typeItemManager.loadTypeItems(getAuthenticatedWho(), objectDataRequest);
         }
-
-        throw new Exception("object not found");
     }
 
     @Path("/data")
     @PUT
     @AuthorizationRequired
     public ObjectDataResponse save(ObjectDataRequest objectDataRequest) throws Exception {
-        throw new Exception("Save isn't currently supported in the SharePoint Service");
+
+        if (Site.NAME.equals(objectDataRequest.getObjectDataType().getDeveloperName()) ||
+                SharePointList.NAME.equals(objectDataRequest.getObjectDataType().getDeveloperName()) ||
+                Item.NAME.equals(objectDataRequest.getObjectDataType().getDeveloperName())) {
+
+            throw new RuntimeException(String.format("Type \"%s\" not supported", objectDataRequest.getObjectDataType().getDeveloperName()));
+        }
+
+        // we can only save the element if the list id exist
+        throw new RuntimeException("not supported");
+
     }
 }

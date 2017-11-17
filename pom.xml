@@ -21,7 +21,7 @@
 
     <properties>
         <manywho-sdk.version>1.25.0</manywho-sdk.version>
-        <odata.version>4.0.0-beta-02</odata.version>
+        <odata.version>4.4.0</odata.version>
     </properties>
 
     <dependencies>
