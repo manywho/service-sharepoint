@@ -62,6 +62,7 @@ public class DescribeController extends AbstractController {
                 .addConfigurationValue(new DescribeValue("Username", ContentType.String, false))
                 .addConfigurationValue(new DescribeValue("Password", ContentType.Password, false))
                 .addConfigurationValue(new DescribeValue("Include Default Lists?", ContentType.Boolean, false))
+                .addConfigurationValue(new DescribeValue("Only For Groups", ContentType.String, false))
                 .setTypes(typeElements)
                 .createDescribeService()
                 .createResponse();

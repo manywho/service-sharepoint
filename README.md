@@ -23,6 +23,13 @@ and for register the oauth2 client you should register it at https://apps.dev.mi
 the redirect URL should be https://flow.manywho.com/api/run/1/oauth2
 The app should support Platforms Web and native, also the Allow Implicit Flow should be checked
 
+Add-in considerations
+In order to use a context token (add-in tokens) with SharePoint 2013 apps, you will need to create a provider-hosted app that uses a client ID and a client secret.  
+This requires that the target SharePoint farm has a trust configured to Azure Access Control Services, or ACS.  
+Office365 automatically configures this trust for you, so if you create your app using Office365 then this works just fine.  
+If you create your app using your own SharePoint farm, then you will need to configure low-trust apps for on-premises deployments 
+in order to establish a trust with Azure ACS for your SharePoint farm.
+
 # SharePoint-ManyWho
 
 $ ant -Doauth2.clientId=xxx \

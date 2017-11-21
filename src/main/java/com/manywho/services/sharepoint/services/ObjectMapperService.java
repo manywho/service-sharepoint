@@ -1,16 +1,20 @@
 package com.manywho.services.sharepoint.services;
 
-import com.manywho.sdk.entities.run.elements.type.MObject;
+import com.manywho.sdk.entities.run.elements.type.*;
 import com.manywho.sdk.entities.run.elements.type.Object;
-import com.manywho.sdk.entities.run.elements.type.Property;
-import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.SPList;
+import com.microsoft.services.sharepoint.SPListItem;
 import org.apache.olingo.client.api.domain.ClientEntity;
+import org.apache.olingo.client.api.domain.ClientProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ObjectMapperService {
     public Object buildManyWhoFileSystemObject(ClientEntity fileItem) {
@@ -133,6 +137,54 @@ public class ObjectMapperService {
         object.setDeveloperName(Item.NAME);
         object.setExternalId(String.format("%s#%s", listId, siteEntity.getProperty("id").getValue().toString()));
         object.setProperties(properties);
+
+        return object;
+    }
+
+    public MObject buildManyWhoDynamicObject(List<ClientProperty> clientProperties, ObjectDataTypePropertyCollection properties) {
+        PropertyCollection mobjectProperties = new PropertyCollection();
+        String externalId = null;
+
+        for (ObjectDataTypeProperty property: properties) {
+            if (Objects.equals(property.getDeveloperName(), "ID")) {
+                Optional<ClientProperty> id = clientProperties.stream().filter(p -> Objects.equals(p.getName(), "id")).findFirst();
+                if (id.isPresent()) {
+                    externalId = id.get().getValue().toString();
+                    mobjectProperties.add(new Property("ID", externalId));
+                }
+            } else {
+                Optional<ClientProperty> foundProperty = clientProperties.stream()
+                        .filter(p -> Objects.equals(p.getName(), property.getDeveloperName())).findFirst();
+
+                if (foundProperty.isPresent()) {
+                    mobjectProperties.add(new Property(property.getDeveloperName(), foundProperty.get().getValue().asPrimitive().toValue()));
+                }
+            }
+        }
+
+        Object object = new Object();
+        object.setDeveloperName(Item.NAME);
+        object.setExternalId(externalId);
+        object.setProperties(mobjectProperties);
+
+        return object;
+    }
+
+    public MObject buildManyWhoDynamicObject(SPListItem spList, ObjectDataTypePropertyCollection properties) {
+        PropertyCollection mobjectProperties = new PropertyCollection();
+
+        for (ObjectDataTypeProperty p: properties) {
+            if (!Objects.equals(p.getDeveloperName(), "ID")) {
+//                mobjectProperties.add(new Property(p.getDeveloperName(), siteEntity.getProperty(p.getDeveloperName()).getValue().asPrimitive()));
+            }
+        }
+
+//        mobjectProperties.add(new Property("ID", siteEntity.getId().toString()));
+
+        Object object = new Object();
+        object.setDeveloperName(Item.NAME);
+//        object.setExternalId(siteEntity.getId().toString());
+        object.setProperties(mobjectProperties);
 
         return object;
     }

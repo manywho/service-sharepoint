@@ -15,6 +15,9 @@ public class ServiceConfiguration {
     @Property("Include Default Lists?")
     private Boolean includeDefaultLists;
 
+    @Property("Only For Groups")
+    private String onlyGroups;
+
     public String getUsername() {return username;}
 
     public String getPassword() {
@@ -25,5 +28,9 @@ public class ServiceConfiguration {
 
     public Boolean getIncludeDefaultLists() {
         return includeDefaultLists;
+    }
+
+    public String getOnlyGroups() {
+        return onlyGroups;
     }
 }

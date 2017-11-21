@@ -4,6 +4,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
 import com.manywho.sdk.services.controllers.AbstractDataController;
+import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.managers.*;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;

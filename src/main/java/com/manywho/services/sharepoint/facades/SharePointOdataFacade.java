@@ -4,6 +4,7 @@ import com.manywho.sdk.entities.draw.elements.type.TypeElement;
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
 import com.manywho.sdk.enums.ContentType;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
@@ -15,10 +16,9 @@ import org.apache.olingo.client.api.communication.request.retrieve.RetrieveReque
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
-import org.apache.olingo.client.api.domain.ClientProperty;
+import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.glassfish.jersey.media.multipart.BodyPart;
-
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     private List<ClientEntity> fetchSiteByGroup(ServiceConfiguration configuration, String token, String groupId) {
-        String urlEntity = String.format("groups/%s/sites/root?expand=columns", groupId);
+        String urlEntity = String.format("groups/%s/sites/root", groupId);
         List<ClientEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
 
@@ -95,8 +95,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     @Override
     public TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token) {
         TypeElementCollection typeElements = new TypeElementCollection();
+        String groupFilter= String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')+and+mailNickname+eq+'%s'", configuration.getOnlyGroups());
 
-        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups?$filter=groupTypes/any(c:c+eq+'Unified')");
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, groupFilter);
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
         List<ClientEntity> listSitesByGroups = new ArrayList<>();
 
@@ -107,74 +108,80 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
         for (ClientEntity site : listSitesByGroups) {
             String siteName = site.getProperty("name").getValue().toString();
-            String urlEntity = String.format("sites/%s/lists", site.getProperty("id").getValue().toString());
+            String siteId = site.getProperty("id").getValue().toString();
+            String urlEntity = String.format("sites/%s/lists", siteId);
             ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
             List<ClientEntity> lists = entitySetResponse.getBody().getEntities();
 
             for (ClientEntity list : lists) {
+                ClientValue infoList = list.getProperty("list").getValue();
+                String displayName = infoList.asComplex().get("template").getValue().asPrimitive().toString();
+
                 if (!configuration.getIncludeDefaultLists()) {
-                    if (Objects.equals("IWConvertedForms", list.getProperty("name").getValue().toString()) ||
-                            Objects.equals("Shared Documents", list.getProperty("name").getValue().toString()) ||
-                            Objects.equals("SitePages ", list.getProperty("name").getValue().toString()) ||
-                            Objects.equals("users", list.getProperty("name").getValue().toString())) {
-                        break;
+                    if (Objects.equals("genericList", displayName)) {
+                        TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
+                        if (typeElement != null) {
+                            typeElements.add(typeElement);
+                        }
+                    }
+                } else {
+                    TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
+                    if (typeElement != null) {
+                        typeElements.add(typeElement);
                     }
                 }
-
-                String typeDeveloperName = String.format("%s (%s) Ref#%s", list.getProperty("name").getValue().toString(), siteName, list.getProperty("id").getValue().toString());
-                String typeDeveloperSummary = String.format("Type for list \"%s\" in site \"%s\"", list.getProperty("name").getValue().toString(), siteName);
-
-                TypeElement.SimpleTypeBuilder typeBuilder = new TypeElement.SimpleTypeBuilder()
-                        .setDeveloperName(typeDeveloperName)
-                        .setTableName(list.getProperty("name").getValue().toString() + " " + siteName);
-
-                for (ClientProperty property : list.getProperties()) {
-                    ContentType contentType = null;
-                    switch (property.getValue().getTypeName()) {
-                        case "Edm.Boolean":
-                            contentType = ContentType.Boolean;
-                            break;
-                        case "Edm.DateTime":
-                            contentType = ContentType.DateTime;
-                            break;
-                        case "Edm.Decimal":
-                        case "Edm.Double":
-                        case "Edm.Single":
-                        case "Edm.Int16":
-                        case "Edm.Int32":
-                        case "Edm.Int64":
-                            contentType = ContentType.Number;
-                            break;
-                        case "Edm.Guid":
-                        case "Edm.String":
-                            contentType = ContentType.String;
-                            break;
-                        case "Edm.Time":
-                        case "Edm.DateTimeOffset":
-                            contentType = ContentType.DateTime;
-                            break;
-                        case "Edm.SByte":
-                            break;
-                        case "Edm.Byte":
-                            break;
-                        case "Edm.Binary":
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (contentType != null) {
-                        typeBuilder.addProperty(property.getName(), contentType, property.getName());
-                    }
-                }
-
-                TypeElement typeElement = typeBuilder.build();
-                typeElement.setDeveloperSummary(typeDeveloperSummary);
-                typeElements.add(typeElement);
             }
         }
 
         return typeElements;
+    }
+
+    private TypeElement getTypeElement(String token, String siteId, String siteName, ClientEntity list) {
+        String listName = list.getProperty("name").getValue().toString();
+        String typeDeveloperName = String.format("%s Type", listName);
+        String typeDeveloperSummary = String.format("Type for list \"%s\" in site \"%s\"", listName, siteName);
+
+        TypeElement.SimpleTypeBuilder typeBuilder = new TypeElement.SimpleTypeBuilder()
+                .setDeveloperName(typeDeveloperName)
+                .setTableName(String.format("sites/%s/lists/%s", siteId, list.getProperty("id").getValue().asPrimitive().toString()));
+
+        // should be possible extends=columns in list but for some reason I can not access to those properties with olingo
+        ODataRetrieveResponse<ClientEntitySet> oDataRetrieveResponse = getEntitiesSetResponse(token, list.getNavigationLink("columns").getLink().toString().replace(GRAPH_ENDPOINT, ""));
+        List<ClientEntity> properties = oDataRetrieveResponse.getBody().getEntities();
+        for (ClientEntity property : properties) {
+            ContentType contentType = null;
+
+            if (property.getProperty("text") != null) {
+                contentType = ContentType.String;
+            } else if (property.getProperty("dateTime") != null) {
+                contentType = ContentType.DateTime;
+            } else if (property.getProperty("boolean") != null) {
+                contentType = ContentType.Boolean;
+            } else if (property.getProperty("number") != null) {
+                contentType = ContentType.Number;
+            } else {
+                contentType = null;
+            }
+
+            if (!(boolean) property.getProperty("readOnly").getValue().asPrimitive().toValue() && contentType != null) {
+                String propertyDisplayName = property.getProperty("name").getValue().toString();
+                String propertyName = property.getProperty("displayName").getValue().toString();
+
+                typeBuilder.addProperty(propertyName, contentType, propertyDisplayName);
+            }
+
+            if (property.getProperty("name") != null && Objects.equals(property.getProperty("name").getValue().asPrimitive().toString(), "ID")) {
+                //
+
+                typeBuilder.addProperty("ID", ContentType.String,  "ID");
+            }
+
+        }
+
+        TypeElement typeElement = typeBuilder.build();
+        typeElement.setDeveloperSummary(typeDeveloperSummary);
+
+        return typeElement;
     }
 
     @Override
@@ -191,7 +198,6 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     public ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token) {
         return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "", false);
     }
-
 
     @Override
     public ObjectDataResponse fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
@@ -213,17 +219,22 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-        //String uploadPath = fileSharePointService.getAnUploadUrl(token, bodyPart, path);
-        //fileSharePointService.uploadFile(token, uploadPath, bodyPart);
         fileSharePointService.uploadSmallFile(token, path, bodyPart);
         return new ObjectDataResponse();
     }
 
+    @Override
+    public ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+        String entryPoint = String.format("%s/items", developerName);
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).expand("fields").build();
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
+        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
+
+        return responseDynamicTypes(entitySetResponse.getBody().getEntities(), properties);
+    }
+
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
-        URI entitySetURI2 = client.newURIBuilder(GRAPH_ENDPOINT).build();
-        ODataEntitySetRequest<ClientEntitySet> entitySetRequest2 = retrieveRequestFactory.getEntitySetRequest(entitySetURI2);
-
-
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
 
@@ -264,6 +275,16 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
         for (ClientEntity listEntity : lists) {
             objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(listEntity, siteId, fullType));
+        }
+
+        return new ObjectDataResponse(objectCollection);
+    }
+
+    private ObjectDataResponse responseDynamicTypes(List<ClientEntity> items, ObjectDataTypePropertyCollection properties) {
+        ObjectCollection objectCollection = new ObjectCollection();
+
+        for (ClientEntity itemEntity : items) {
+            objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(itemEntity.getNavigationLink("fields").asInlineEntity().getEntity().getProperties(), properties));
         }
 
         return new ObjectDataResponse(objectCollection);

@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.microsoft.services.sharepoint.*;
@@ -100,5 +101,26 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     @Override
     public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
         return null;
+    }
+
+    @Override
+    public ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+        Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
+        ListClient client = new ListClient(configuration.getHost(), "" , credentials);
+        ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
+
+        try {
+            ObjectCollection objectCollection = new ObjectCollection();
+            List<SPList> lists = listsFuture.get();
+
+            for (SPList spList : lists) {
+                objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(spList, ""));
+            }
+
+            return new ObjectDataResponse(objectCollection);
+
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
