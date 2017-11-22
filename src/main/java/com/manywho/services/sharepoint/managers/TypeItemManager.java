@@ -20,7 +20,7 @@ public class TypeItemManager {
     public ObjectDataResponse loadTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        return sharePointFacade.fetchDynamicType(null, authenticatedWho.getToken(),
+        return sharePointFacade.fetchItemsDynamicType(null, authenticatedWho.getToken(),
                 objectDataRequest.getObjectDataType().getDeveloperName(),
                 objectDataRequest.getObjectDataType().getProperties());
     }

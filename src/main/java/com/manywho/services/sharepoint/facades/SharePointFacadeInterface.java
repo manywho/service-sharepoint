@@ -29,7 +29,9 @@ public interface SharePointFacadeInterface {
 
     ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
 
-    ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
+    ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
+
+    ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties);
 
     ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties);
 }

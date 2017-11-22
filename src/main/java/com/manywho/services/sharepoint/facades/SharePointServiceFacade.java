@@ -105,7 +105,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
         ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
@@ -123,6 +123,11 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+        return null;
     }
 
     @Override

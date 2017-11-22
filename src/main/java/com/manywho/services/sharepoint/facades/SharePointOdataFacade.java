@@ -6,24 +6,18 @@ import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.*;
 import com.manywho.sdk.enums.ContentType;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
 import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
-import org.apache.olingo.client.api.communication.response.ODataEntityCreateResponse;
-import org.apache.olingo.client.api.communication.response.ODataEntityUpdateResponse;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import javax.inject.Inject;
 import java.net.URI;
@@ -34,11 +28,9 @@ import java.util.concurrent.ExecutionException;
 
 public class SharePointOdataFacade implements SharePointFacadeInterface {
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
-
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
-    private final CUDRequestFactory cudRequestFactory;
     private FileSharePointService fileSharePointService;
 
     @Inject
@@ -46,7 +38,6 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
-        cudRequestFactory = client.getCUDRequestFactory();
         this.fileSharePointService = fileSharePointService;
     }
 
@@ -232,7 +223,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
         String entryPoint = String.format("%s/items", developerName);
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).expand("fields").build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
@@ -242,96 +233,62 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return responseDynamicTypes(entitySetResponse.getBody().getEntities(), properties);
     }
 
-//    ClientEntity getDynamicType(String token, URI uri) {
-//        ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(uri);
-//
-//        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
-//        ODataRetrieveResponse<ClientEntity> entitySetResponse = entitySetRequest.execute();
-//
-//        return entitySetResponse.getBody();
-//    }
+    @Override
+    public ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
+                .appendEntitySetSegment(developerName)
+                .appendEntitySetSegment("items")
+                .appendEntitySetSegment(itemId)
+                .expand("fields").build();
+
+        ODataEntityRequest<ClientEntity> entityRequest = retrieveRequestFactory.getEntityRequest(entitySetURI);
+        entityRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        ODataRetrieveResponse<ClientEntity> entityResponse = entityRequest.execute();
+
+        List<ClientEntity> items = new ArrayList<>();
+        items.add(0, entityResponse.getBody());
+
+        return responseDynamicTypes(items, properties);
+    }
 
     @Override
     public ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
-        if (properties.getContentValue("ID") == null ) {
+        String itemId = null;
+
+        if (Strings.isNullOrEmpty(properties.getContentValue("ID"))) {
             URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
                     .appendEntitySetSegment("items")
                     .build();
 
-            ClientEntity clientEntityFields = getClientEntityModification(properties);
-            ClientEntity clientEntity = client.getObjectFactory().newEntity(new FullQualifiedName("microsoft.graph", "items"));
+            itemId = DynamicTypesService.insertDynamicType(token, itemUri.toString());
 
-//            clientEntity.getProperties().add(client.getObjectFactory().newDeepInsertEntity("fields",
-//                    //client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue()))
-//                    client.getObjectFactory().new("fields", clientEntityFields)
-//            );
-
-            ODataEntityCreateRequest<ClientEntity> req = cudRequestFactory.getEntityCreateRequest(itemUri, clientEntity);
-            req.addCustomHeader("Authorization", String.format("Bearer %s", token));
-            req.addCustomHeader("Content-Type", "application/json");
-
-            ODataEntityCreateResponse<ClientEntity> response = req.execute();
-            int code = response.getStatusCode();
-
-            return new ObjectDataResponse();
-        } else {
-
-            URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+            URI itemUriUpdate = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
                     .appendEntitySetSegment("items")
-                    .appendEntitySetSegment(properties.getContentValue("ID"))
+                    .appendEntitySetSegment(itemId)
                     .appendEntitySetSegment("fields")
                     .build();
 
-            ClientEntity clientEntity = getClientEntityModification(properties);
-            ODataEntityUpdateRequest<ClientEntity> request = cudRequestFactory.getEntityUpdateRequest(itemUri, UpdateType.PATCH, clientEntity);
+            DynamicTypesService.patchDynamicType(token, itemUriUpdate.toString(), properties);
+        } else {
+            itemId = properties.getContentValue("ID");
 
-            request.addCustomHeader("Authorization", String.format("Bearer %s", token));
-            request.addCustomHeader("Content-Type", "application/json");
+            URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+                    .appendEntitySetSegment("items")
+                    .appendEntitySetSegment(itemId)
+                    .appendEntitySetSegment("fields")
+                    .build();
 
-            ODataEntityUpdateResponse<ClientEntity> response = request.execute();
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                return new ObjectDataResponse();
-            }
-
-            return new ObjectDataResponse();
-        }
-    }
-
-
-
-
-    private ClientEntity getClientEntityModification(PropertyCollection properties){
-        ClientEntity clientEntity = client.getObjectFactory().newEntity(new FullQualifiedName("microsoft.graph", "fieldValueSet"));
-
-        for (Property property: properties) {
-            if (Objects.equals(property.getDeveloperName(), "ID")) {
-                break;
-            }
-            switch(property.getContentType()){
-                case String:
-                case Number:
-                    clientEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
-                            client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue()))
-                    );
-                    break;
-                case Boolean:
-                    boolean propertyValue = !Strings.isNullOrEmpty(property.getContentValue()) && Objects.equals(property.getContentValue().toLowerCase(), "true");
-                    clientEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
-                            client.getObjectFactory().newPrimitiveValueBuilder().buildBoolean(propertyValue))
-                    );
-                    break;
-                case DateTime:
-                    // dateTime currently failing
-//                    clientEntity.getProperties().add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
-//                            client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue()))
-//                    );
-//                    break;
-                default:
-                    break;
-            }
+            DynamicTypesService.patchDynamicType(token, itemUri.toString(), properties);
         }
 
-        return clientEntity;
+        ObjectDataTypePropertyCollection propertyCollection = new ObjectDataTypePropertyCollection();
+        properties.forEach(p->{
+            ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
+            prop.setDeveloperName(p.getDeveloperName());
+            propertyCollection.add(prop);
+        });
+
+        return fetchItemDynamicType(configuration, token, developerName, itemId, propertyCollection);
     }
 
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
