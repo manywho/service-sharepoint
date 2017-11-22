@@ -3,6 +3,7 @@ package com.manywho.services.sharepoint.facades;
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
+import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import java.util.concurrent.ExecutionException;
@@ -29,4 +30,6 @@ public interface SharePointFacadeInterface {
     ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
 
     ObjectDataResponse fetchDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
+
+    ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties);
 }

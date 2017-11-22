@@ -5,6 +5,7 @@ import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
+import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.microsoft.services.sharepoint.*;
@@ -122,5 +123,10 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
+        return null;
     }
 }

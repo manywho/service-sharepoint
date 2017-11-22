@@ -58,6 +58,7 @@ public class AzureHttpClient {
         try {
             HttpPost httpPost = new HttpPost(uri);
 
+
             List<NameValuePair> formParams = new ArrayList<>();
 
             formParams.add(new BasicNameValuePair("grant_type", grantType));

@@ -64,8 +64,7 @@ public class DataController extends AbstractDataController {
             throw new RuntimeException(String.format("Type \"%s\" not supported", objectDataRequest.getObjectDataType().getDeveloperName()));
         }
 
-        // we can only save the element if the list id exist
-        throw new RuntimeException("not supported");
+        return typeItemManager.saveTypeItems(getAuthenticatedWho(), objectDataRequest);
 
     }
 }

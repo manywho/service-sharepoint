@@ -20,12 +20,16 @@ public class TypeItemManager {
     public ObjectDataResponse loadTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        authenticatedWho.getToken();
-        objectDataRequest.getObjectDataType().getDeveloperName();
-        objectDataRequest.getObjectDataType().getProperties();
-
         return sharePointFacade.fetchDynamicType(null, authenticatedWho.getToken(),
                 objectDataRequest.getObjectDataType().getDeveloperName(),
                 objectDataRequest.getObjectDataType().getProperties());
+    }
+
+    public ObjectDataResponse saveTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
+        SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
+
+        return sharePointFacade.saveDynamicType(null, authenticatedWho.getToken(),
+                objectDataRequest.getObjectDataType().getDeveloperName(),
+                objectDataRequest.getObjectData().get(0).getProperties());
     }
 }
