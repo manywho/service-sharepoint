@@ -261,10 +261,10 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
             ClientEntity clientEntityFields = getClientEntityModification(properties);
             ClientEntity clientEntity = client.getObjectFactory().newEntity(new FullQualifiedName("microsoft.graph", "items"));
 
-            clientEntity.getProperties().add(client.getObjectFactory().newDeepInsertEntity("fields",
-                    //client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue()))
-                    client.getObjectFactory().new("fields", clientEntityFields)
-            );
+//            clientEntity.getProperties().add(client.getObjectFactory().newDeepInsertEntity("fields",
+//                    //client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue()))
+//                    client.getObjectFactory().new("fields", clientEntityFields)
+//            );
 
             ODataEntityCreateRequest<ClientEntity> req = cudRequestFactory.getEntityCreateRequest(itemUri, clientEntity);
             req.addCustomHeader("Authorization", String.format("Bearer %s", token));
