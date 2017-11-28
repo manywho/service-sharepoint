@@ -170,7 +170,7 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoDynamicObject(SPListItem spList, ObjectDataTypePropertyCollection properties) {
+    public MObject buildManyWhoDynamicObject(SPList spList, ObjectDataTypePropertyCollection properties) {
         PropertyCollection mobjectProperties = new PropertyCollection();
 
         for (ObjectDataTypeProperty p: properties) {

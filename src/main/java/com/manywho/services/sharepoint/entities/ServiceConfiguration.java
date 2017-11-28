@@ -18,6 +18,16 @@ public class ServiceConfiguration {
     @Property("Only For Groups")
     private String onlyGroups;
 
+    public ServiceConfiguration(){}
+
+    public ServiceConfiguration(String username, String password, String host, Boolean includeDefaultLists, String onlyGroups) {
+        this.username = username;
+        this.password = password;
+        this.host = host;
+        this.includeDefaultLists = includeDefaultLists;
+        this.onlyGroups = onlyGroups;
+    }
+
     public String getUsername() {return username;}
 
     public String getPassword() {

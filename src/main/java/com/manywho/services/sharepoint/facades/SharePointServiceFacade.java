@@ -108,14 +108,17 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
-        ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
+        Query query = new Query();
+        query.select("Id");
+        
+        ListenableFuture<List<SPList>> listsFuture = client.getLists(query);
 
         try {
             ObjectCollection objectCollection = new ObjectCollection();
             List<SPList> lists = listsFuture.get();
 
             for (SPList spList : lists) {
-                objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(spList, ""));
+                objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(spList, properties));
             }
 
             return new ObjectDataResponse(objectCollection);
@@ -128,7 +131,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     @Override
     public ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
         return null;
-    }
+     }
 
     @Override
     public ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
