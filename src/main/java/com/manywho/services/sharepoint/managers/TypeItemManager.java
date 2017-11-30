@@ -5,7 +5,7 @@ import com.manywho.sdk.entities.run.EngineValueCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 
@@ -23,7 +23,7 @@ public class TypeItemManager {
     public ObjectDataResponse loadTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        return sharePointFacade.fetchItemsDynamicType(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
+        return sharePointFacade.fetchTypesFromLists(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
                 authenticatedWho.getToken(), objectDataRequest.getObjectDataType().getDeveloperName(),
                 objectDataRequest.getObjectDataType().getProperties());
     }
@@ -31,7 +31,7 @@ public class TypeItemManager {
     public ObjectDataResponse saveTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        return sharePointFacade.saveDynamicType(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
+        return sharePointFacade.saveTypeList(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
                 authenticatedWho.getToken(), objectDataRequest.getObjectDataType().getDeveloperName(),
                 objectDataRequest.getObjectData().get(0).getProperties());
     }

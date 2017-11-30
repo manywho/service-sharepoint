@@ -5,7 +5,7 @@ import com.manywho.sdk.entities.draw.elements.type.TypeElement;
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.*;
 import com.manywho.sdk.enums.ContentType;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
@@ -92,7 +92,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token) {
+    public TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token) {
         TypeElementCollection typeElements = new TypeElementCollection();
         String groupFilter= String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')+and+mailNickname+eq+'%s'", configuration.getOnlyGroups());
 
@@ -223,7 +223,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
         String entryPoint = String.format("%s/items", developerName);
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).expand("fields").build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
@@ -234,7 +234,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
                 .appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
@@ -252,7 +252,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
+    public ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
         String itemId = null;
 
         if (Strings.isNullOrEmpty(properties.getContentValue("ID"))) {
@@ -288,7 +288,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
             propertyCollection.add(prop);
         });
 
-        return fetchItemDynamicType(configuration, token, developerName, itemId, propertyCollection);
+        return fetchTypeFromList(configuration, token, developerName, itemId, propertyCollection);
     }
 
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {

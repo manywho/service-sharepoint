@@ -9,7 +9,7 @@ import com.manywho.sdk.enums.AuthenticationStatus;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.oauth.AuthResponse;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import com.manywho.services.sharepoint.oauth.SharepointProvider;

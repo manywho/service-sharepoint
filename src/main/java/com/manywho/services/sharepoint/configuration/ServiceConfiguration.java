@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.entities;
+package com.manywho.services.sharepoint.configuration;
 
 import com.manywho.sdk.services.annotations.Property;
 

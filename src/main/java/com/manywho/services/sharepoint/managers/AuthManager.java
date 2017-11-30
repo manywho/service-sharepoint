@@ -10,7 +10,7 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.AuthenticationService;
 import com.manywho.services.sharepoint.services.AuthorizationService;
 import org.scribe.oauth.OAuthService;

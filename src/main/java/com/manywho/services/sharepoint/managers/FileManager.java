@@ -3,7 +3,7 @@ package com.manywho.services.sharepoint.managers;
 import com.manywho.sdk.entities.run.elements.type.FileDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;

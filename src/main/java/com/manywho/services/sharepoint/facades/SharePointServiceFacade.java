@@ -6,7 +6,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.microsoft.services.sharepoint.*;
 import org.glassfish.jersey.media.multipart.BodyPart;
@@ -59,7 +59,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token) {
+    public TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token) {
         throw new RuntimeException("fetch types for all sites is not implemented for apps");
     }
 
@@ -105,8 +105,8 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName,
-                                                    ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
+                                                  ObjectDataTypePropertyCollection properties) {
 
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
@@ -129,12 +129,12 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
         return null;
      }
 
     @Override
-    public ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
+    public ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
         return null;
     }
 }

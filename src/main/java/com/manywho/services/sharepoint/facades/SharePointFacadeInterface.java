@@ -4,7 +4,7 @@ import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import java.util.concurrent.ExecutionException;
 
@@ -17,7 +17,7 @@ public interface SharePointFacadeInterface {
 
     ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType);
 
-    TypeElementCollection fetchTypesListsForAllSites(ServiceConfiguration configuration, String token);
+    TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token);
 
     ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList);
 
@@ -29,9 +29,9 @@ public interface SharePointFacadeInterface {
 
     ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
 
-    ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
+    ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
 
-    ObjectDataResponse fetchItemDynamicType(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties);
+    ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties);
 
-    ObjectDataResponse saveDynamicType(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties);
+    ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties);
 }

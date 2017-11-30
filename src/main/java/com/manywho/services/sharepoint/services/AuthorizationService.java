@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 public class AuthorizationService {
-    //private BoxClient boxClient;
     private ObjectMapperService objectMapperService;
     private ApplicationConfiguration securityConfiguration;
 

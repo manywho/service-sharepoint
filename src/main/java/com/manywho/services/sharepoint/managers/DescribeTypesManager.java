@@ -2,7 +2,7 @@ package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -33,7 +33,7 @@ public class DescribeTypesManager {
                     configuration.getUsername(),
                     configuration.getPassword());
 
-           return this.sharePointOdataFacade.fetchTypesListsForAllSites(configuration, authenticationResult.getAccessToken());
+           return this.sharePointOdataFacade.fetchAllListTypes(configuration, authenticationResult.getAccessToken());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

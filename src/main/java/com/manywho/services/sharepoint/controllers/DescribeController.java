@@ -11,7 +11,7 @@ import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.annotations.AuthorizationRequired;
 import com.manywho.sdk.services.controllers.AbstractController;
 import com.manywho.sdk.services.describe.DescribeServiceBuilder;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.managers.DescribeTypesManager;
 import org.apache.commons.lang3.StringUtils;
 

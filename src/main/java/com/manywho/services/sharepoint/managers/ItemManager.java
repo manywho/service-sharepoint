@@ -5,7 +5,7 @@ import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.services.sharepoint.entities.ServiceConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import org.apache.commons.lang3.StringUtils;
 
