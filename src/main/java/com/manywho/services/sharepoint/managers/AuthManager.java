@@ -14,7 +14,6 @@ import com.manywho.services.sharepoint.entities.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.AuthenticationService;
 import com.manywho.services.sharepoint.services.AuthorizationService;
 import org.scribe.oauth.OAuthService;
-
 import javax.inject.Inject;
 
 public class AuthManager {

@@ -105,20 +105,20 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+    public ObjectDataResponse fetchItemsDynamicType(ServiceConfiguration configuration, String token, String developerName,
+                                                    ObjectDataTypePropertyCollection properties) {
+
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
-        Query query = new Query();
-        query.select("Id");
-        
-        ListenableFuture<List<SPList>> listsFuture = client.getLists(query);
 
         try {
-            ObjectCollection objectCollection = new ObjectCollection();
-            List<SPList> lists = listsFuture.get();
+            ListenableFuture<List<SPListItem>> listItems = client.getListItems(developerName, new Query());
+            List<SPListItem> items = listItems.get();
 
-            for (SPList spList : lists) {
-                objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(spList, properties));
+            ObjectCollection objectCollection = new ObjectCollection();
+
+            for (SPListItem spListItem : items) {
+                objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(developerName, spListItem, properties));
             }
 
             return new ObjectDataResponse(objectCollection);

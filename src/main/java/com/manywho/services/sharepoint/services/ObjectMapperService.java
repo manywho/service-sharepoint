@@ -92,15 +92,15 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoSharePointListObject(SPList siteEntity, String siteId) {
+    public MObject buildManyWhoSharePointListObject(SPList listEntity, String siteId) {
         PropertyCollection properties = new PropertyCollection();
 
-        properties.add(new Property("ID", siteEntity.getId()));
-        properties.add(new Property("Created Date Time", siteEntity.getData("Created").toString()));
-        properties.add(new Property("Last Modified Date Time", siteEntity.getData("LastItemUserModifiedDate").toString()));
-        properties.add(new Property("Description", siteEntity.getData("Description").toString()));
-        properties.add(new Property("Name", siteEntity.getData("Title").toString()));
-        java.lang.Object metadata =siteEntity.getData("__metadata");
+        properties.add(new Property("ID", listEntity.getId()));
+        properties.add(new Property("Created Date Time", listEntity.getData("Created").toString()));
+        properties.add(new Property("Last Modified Date Time", listEntity.getData("LastItemUserModifiedDate").toString()));
+        properties.add(new Property("Description", listEntity.getData("Description").toString()));
+        properties.add(new Property("Name", listEntity.getData("Title").toString()));
+        java.lang.Object metadata =listEntity.getData("__metadata");
         String url = null;
 
         try {
@@ -114,7 +114,7 @@ public class ObjectMapperService {
 
         Object object = new Object();
         object.setDeveloperName(SharePointList.NAME);
-        object.setExternalId(String.format("%s#%s", siteEntity.getId(), siteId));
+        object.setExternalId(String.format("%s#%s", listEntity.getId(), siteId));
         object.setProperties(properties);
 
         return object;
@@ -170,20 +170,24 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoDynamicObject(SPList spList, ObjectDataTypePropertyCollection properties) {
-        PropertyCollection mobjectProperties = new PropertyCollection();
 
-        for (ObjectDataTypeProperty p: properties) {
-            if (!Objects.equals(p.getDeveloperName(), "ID")) {
-//                mobjectProperties.add(new Property(p.getDeveloperName(), siteEntity.getProperty(p.getDeveloperName()).getValue().asPrimitive()));
+    public MObject buildManyWhoDynamicObject(String developerName, SPListItem spListItem, ObjectDataTypePropertyCollection properties) {
+        Object object = new Object();
+        PropertyCollection mobjectProperties = new PropertyCollection();
+        String externalId = "";
+
+        for (ObjectDataTypeProperty property: properties) {
+            externalId = spListItem.getGUID();
+
+            if (Objects.equals(property.getDeveloperName(), "ID")) {
+                mobjectProperties.add(new Property("ID", externalId));
+            } else {
+                mobjectProperties.add(new Property(property.getDeveloperName(), spListItem.getData(property.getDeveloperName())));
             }
         }
 
-//        mobjectProperties.add(new Property("ID", siteEntity.getId().toString()));
-
-        Object object = new Object();
-        object.setDeveloperName(Item.NAME);
-//        object.setExternalId(siteEntity.getId().toString());
+        object.setDeveloperName(developerName);
+        object.setExternalId(externalId);
         object.setProperties(mobjectProperties);
 
         return object;
