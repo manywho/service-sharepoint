@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.oauth;
 
+import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -22,7 +23,7 @@ public class AzureHttpClient {
     public AuthResponse getAccessTokenByAuthCode(String authCode, String redirectUri, String clientId,
                                                  String clientSecret, String resource) {
         try {
-            HttpPost httpPost = new HttpPost(String.format("%s/%s", SharepointProvider.AUTHORITY_URI, "oauth2/token"));
+            HttpPost httpPost = new HttpPost(String.format("%s/%s", ServiceConfigurationImpl.AUTHORITY_URI, "oauth2/token"));
 
             List<NameValuePair> formParams = new ArrayList<>();
 
@@ -44,11 +45,11 @@ public class AzureHttpClient {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                //httpclient.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
@@ -75,11 +76,11 @@ public class AzureHttpClient {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                httpclient.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }

@@ -3,53 +3,49 @@ package com.manywho.services.sharepoint.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.entities.security.AuthenticationCredentials;
-import com.manywho.sdk.enums.AuthenticationStatus;
-import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.sdk.api.run.EngineValue;
+import com.manywho.sdk.api.security.AuthenticatedWhoResult;
+import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
 import com.manywho.services.sharepoint.oauth.AuthResponse;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
-import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import org.json.JSONObject;
-
 import javax.inject.Inject;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public class AuthenticationService {
     public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
-    private ApplicationConfiguration securityConfiguration;
+    private ServiceConfigurationImpl securityConfiguration;
     private AzureHttpClient azureHttpClient;
-    private PropertyCollectionParser propertyParser;
 
     @Inject
-    public AuthenticationService(ApplicationConfiguration securityConfiguration, AzureHttpClient azureHttpClient, PropertyCollectionParser propertyParser) {
+    public AuthenticationService(ServiceConfigurationImpl securityConfiguration, AzureHttpClient azureHttpClient) {
         this.securityConfiguration = securityConfiguration;
         this.azureHttpClient = azureHttpClient;
-        this.propertyParser = propertyParser;
     }
 
-    public AuthenticatedWhoResult getAuthenticatedWhoResult(AbstractOauth2Provider provider, AuthenticationCredentials credentials) throws Exception {
+    public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) throws Exception {
         AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
-                SharepointProvider.REDIRECT_URI,
+                ServiceConfigurationImpl.REDIRECT_URI,
                 securityConfiguration.getOauth2ClientId(),
                 securityConfiguration.getOauth2ClientSecret(),
                 RESOURCE_ID);
 
         JWT jwt = JWT.decode(authResponse.getAccess_token());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
-        authenticatedWhoResult.setDirectoryId( provider.getName());
-        authenticatedWhoResult.setDirectoryName( provider.getName());
+        authenticatedWhoResult.setDirectoryId("SharePoint");
+        authenticatedWhoResult.setDirectoryName("SharePoint");
         authenticatedWhoResult.setEmail(jwt.getClaim("unique_name").asString());
         authenticatedWhoResult.setFirstName(jwt.getClaim("given_name").asString());
-        authenticatedWhoResult.setIdentityProvider(provider.getName());
+        authenticatedWhoResult.setIdentityProvider(securityConfiguration.getOauth2ClientId());
         authenticatedWhoResult.setLastName(jwt.getClaim("family_name").asString());
-        authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
-        authenticatedWhoResult.setTenantName(provider.getClientId());
+        authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
+        authenticatedWhoResult.setTenantName(securityConfiguration.getOauth2ClientId());
         authenticatedWhoResult.setToken( jwt.getToken());
+        //tod use here userid from jwt
         authenticatedWhoResult.setUserId( "9c102602-1474-11e7-93ae-92361f002671");
         authenticatedWhoResult.setUsername(jwt.getClaim("unique_name").asString());
 
@@ -75,8 +71,8 @@ public class AuthenticationService {
     }
 
 
-    public AuthenticatedWhoResult getAuthenticatedWhoResult(AuthenticationCredentials credentials) throws Exception {
-        ServiceConfiguration configuration = propertyParser.parse(credentials.getConfigurationValues(), ServiceConfiguration.class);
+    public AuthenticatedWhoResult getAuthenticatedWhoResultByContextToken(AuthenticationCredentials credentials) throws Exception {
+        //ApplicationConfiguration configuration = propertyParser.from(credentials.getConfigurationValues());
         Algorithm algorithm = Algorithm.HMAC256(securityConfiguration.getAppSecret());
 //        JWTVerifier verifier = JWT.require(algorithm)
 //                .withIssuer("00000001-0000-0000-c000-000000000000@f1cd6ef0-f210-4c39-8471-15f8929b25ce")
@@ -97,7 +93,10 @@ public class AuthenticationService {
         String uri = "https://accounts.accesscontrol.windows.net/tokens/OAuth/2";
         String grant_type = "refresh_token";
 
-        String domain = configuration.getHost().replace("https://", "");
+
+        String domain = getHostFromCredentials(credentials)
+                .replace("https://", "");
+
         String resource = String.format("%s/%s@%s", targetPrincipalName, domain, realm);
         AuthResponse response = azureHttpClient.getAccessTokenByContextToken(uri, grant_type, aud,
                 securityConfiguration.getAppSecret(), refreshToken, resource);
@@ -110,12 +109,20 @@ public class AuthenticationService {
         authenticatedWhoResult.setFirstName("username");
         authenticatedWhoResult.setIdentityProvider("SharePoint Add-In");
         authenticatedWhoResult.setLastName("User Last Name");
-        authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
+        authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName("SharePoint Add-In");
         authenticatedWhoResult.setToken( response.getAccess_token());
+        // todo get userId by token
         authenticatedWhoResult.setUserId(UUID.randomUUID().toString());
         authenticatedWhoResult.setUsername("username");
 
         return authenticatedWhoResult;
+    }
+
+    private String getHostFromCredentials(AuthenticationCredentials credentials) {
+        Optional<EngineValue> host = credentials.getConfigurationValues().stream()
+                .filter(p -> Objects.equals(p.getDeveloperName(), "Host")).findFirst();
+
+        return host.get().getContentValue();
     }
 }

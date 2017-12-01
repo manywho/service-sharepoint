@@ -1,44 +1,99 @@
 package com.manywho.services.sharepoint.types;
 
-import com.manywho.sdk.entities.draw.elements.type.*;
-import com.manywho.sdk.enums.ContentType;
-import com.manywho.sdk.services.describe.types.AbstractType;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.services.types.Type;
 
-public class Item extends AbstractType{
+@Type.Element(name = "Item", summary = "Details about a Item")
+public class Item implements Type{
     public final static String NAME = "Item";
 
-    @Override
-    public TypeElementBindingCollection getBindings() {
-        return new TypeElementBindingCollection() {{
-            add(new TypeElementBinding(NAME, "Details about a Item", NAME, new TypeElementPropertyBindingCollection() {{
-                add(new TypeElementPropertyBinding("ID", "ID"));
-                add(new TypeElementPropertyBinding("Created Date Time", "Created Date Time"));
-                add(new TypeElementPropertyBinding("Last Modified Date Time", "Last Modified Date Time"));
-                add(new TypeElementPropertyBinding("e Tag", "e Tag"));
-                add(new TypeElementPropertyBinding("Web URL", "Web URL"));
-                add(new TypeElementPropertyBinding("List Item ID", "List Item Id"));
-                add(new TypeElementPropertyBinding("Site ID", "Site ID"));
-                add(new TypeElementPropertyBinding("List ID", "List ID"));
-            }}));
-        }};
+    @Type.Identifier
+    @Type.Property(name = "ID", contentType = ContentType.String, bound = false)
+    private String id;
+
+    @Type.Property(name = "Created Date Time", contentType = ContentType.String, bound = false)
+    private String createdDateTime;
+
+    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String, bound = false)
+    private String modifiedDateTime;
+
+    @Type.Property(name = "e Tag", contentType = ContentType.String, bound = false)
+    private String eTag;
+
+    @Type.Property(name = "Web URL", contentType = ContentType.String, bound = false)
+    private String webUrl;
+
+    @Type.Property(name = "List Item ID", contentType = ContentType.String, bound = false)
+    private String listItemId;
+
+    @Type.Property(name = "Site ID", contentType = ContentType.String, bound = false)
+    private String siteId;
+
+    @Type.Property(name = "List ID", contentType = ContentType.String, bound = false)
+    private String listId;
+
+
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public String getDeveloperName() {
-        return Item.NAME;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    @Override
-    public TypeElementPropertyCollection getProperties() {
-        return new TypeElementPropertyCollection() {{
-            add(new TypeElementProperty("ID", ContentType.String));
-            add(new TypeElementProperty("Created Date Time", ContentType.DateTime));
-            add(new TypeElementProperty("Last Modified Date Time", ContentType.DateTime));
-            add(new TypeElementProperty("e Tag", ContentType.String));
-            add(new TypeElementProperty("Web URL", ContentType.String));
-            add(new TypeElementProperty("List Item ID", ContentType.String));
-            add(new TypeElementProperty("Site ID", ContentType.String));
-            add(new TypeElementProperty("List ID", ContentType.String));
-        }};
+    public String getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(String createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public String getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(String modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String geteTag() {
+        return eTag;
+    }
+
+    public void seteTag(String eTag) {
+        this.eTag = eTag;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
+    }
+
+    public String getListItemId() {
+        return listItemId;
+    }
+
+    public void setListItemId(String listItemId) {
+        this.listItemId = listItemId;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
     }
 }

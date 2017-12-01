@@ -1,8 +1,7 @@
 package com.manywho.services.sharepoint.services;
 
-import com.manywho.sdk.entities.run.elements.type.Property;
-import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import com.manywho.sdk.enums.*;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.api.run.elements.type.Property;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
@@ -15,11 +14,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 
 public class DynamicTypesService {
-    public static void patchDynamicType(String token, String uri, PropertyCollection properties) {
+    public static void patchDynamicType(String token, String uri, List<Property> properties) {
         CloseableHttpClient httpclient =  HttpClients.createDefault();
         try {
             HttpPatch httpPatch = new HttpPatch(uri);
@@ -79,7 +79,7 @@ public class DynamicTypesService {
         }
     }
 
-    private static String getJsonObject(PropertyCollection properties) {
+    private static String getJsonObject(List<Property> properties) {
         StringBuilder response = new StringBuilder();
         boolean first = true;
         response.append("{");

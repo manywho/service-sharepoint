@@ -1,14 +1,15 @@
 package com.manywho.services.sharepoint.facades;
 
-import com.google.common.base.Strings;
-import com.manywho.sdk.entities.draw.elements.type.TypeElement;
-import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
-import com.manywho.sdk.entities.run.elements.type.*;
-import com.manywho.sdk.enums.ContentType;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.api.draw.elements.type.TypeElement;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
+import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
+import com.manywho.services.sharepoint.types.SharePointList;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -18,7 +19,6 @@ import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.core.ODataClientFactory;
-import org.glassfish.jersey.media.multipart.BodyPart;
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
+    public List<MObject> fetchSites(ApplicationConfiguration configuration, String token) throws ExecutionException, InterruptedException {
         //this line should work but it doesn't
         //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
         // we fetch groups
@@ -58,7 +58,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return responseSites(listSitesByGroups, "");
     }
 
-    private List<ClientEntity> fetchSiteByGroup(ServiceConfiguration configuration, String token, String groupId) {
+    private List<ClientEntity> fetchSiteByGroup(ApplicationConfiguration configuration, String token, String groupId) {
         String urlEntity = String.format("groups/%s/sites/root", groupId);
         List<ClientEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
@@ -67,7 +67,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token, String parentId) {
+    public List<MObject> fetchSites(ApplicationConfiguration configuration, String token, String parentId) {
         String url = String.format("sites/%s/sites", parentId);
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, url);
 
@@ -75,16 +75,16 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id) {
+    public MObject fetchSite(ApplicationConfiguration configuration, String token, String id) {
         String urlEntity = String.format("sites/%s", id);
         List<ClientEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
 
-        return responseSites(sites, "");
+        return responseSites(sites, "").get(0);
     }
 
     @Override
-    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType) {
+    public List<SharePointList> fetchLists(ApplicationConfiguration configuration, String token, String idSite, boolean fullType) {
         String urlEntity = String.format("sites/%s/lists", idSite);
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
@@ -92,9 +92,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token) {
-        TypeElementCollection typeElements = new TypeElementCollection();
-        String groupFilter= String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')+and+mailNickname+eq+'%s'", configuration.getOnlyGroups());
+    public List<TypeElement> fetchAllListTypes(ApplicationConfiguration configuration, String token) {
+        List<TypeElement> typeElements = new ArrayList<>();
+        String groupFilter = String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')+and+mailNickname+eq+'%s'", configuration.getOnlyGroups());
 
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, groupFilter);
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
@@ -172,7 +172,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
             if (property.getProperty("name") != null && Objects.equals(property.getProperty("name").getValue().asPrimitive().toString(), "ID")) {
                 //
 
-                typeBuilder.addProperty("ID", ContentType.String,  "ID");
+                typeBuilder.addProperty("ID", ContentType.String, "ID");
             }
 
         }
@@ -184,46 +184,48 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList) {
+    public SharePointList fetchList(ApplicationConfiguration configuration, String token, String idSite, String idList) {
         String entryPoint = String.format("sites/%s/lists/%s", idSite, idList);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
         List<ClientEntity> lists = new ArrayList<>();
         lists.add(0, entitySetResponse.getBody());
 
-        return responseLists(lists, idSite, false);
+        return responseLists(lists, idSite, false).get(0);
     }
 
     @Override
-    public ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token) {
+    public List<SharePointList> fetchListsRoot(ApplicationConfiguration configuration, String token) {
         return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "", false);
     }
 
     @Override
-    public ObjectDataResponse fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
         String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
         List<ClientEntity> items = new ArrayList<>();
         items.add(0, entitySetResponse.getBody());
 
-        return responseItems(items, siteId, listId);
+        return responseItems(items, siteId, listId).get(0);
     }
 
     @Override
-    public ObjectDataResponse fetchItems(ServiceConfiguration configuration, String token, String siteId, String listId) {
+    public List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId) {
         String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
         return responseItems(entitySetResponse.getBody().getEntities(), siteId, listId);
     }
-
-    public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-        fileSharePointService.uploadSmallFile(token, path, bodyPart);
-        return new ObjectDataResponse();
-    }
+//
+//    public MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
+//        fileSharePointService.uploadSmallFile(token, path, bodyPart);
+//        return new ObjectDataResponse();
+//    }
 
     @Override
-    public ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties) {
+    public List<MObject> fetchTypesFromLists(ApplicationConfiguration configuration, String token, String developerName,
+                                             List<ObjectDataTypeProperty> properties) {
+
         String entryPoint = String.format("%s/items", developerName);
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).expand("fields").build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
@@ -234,7 +236,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+    public MObject fetchTypeFromList(ApplicationConfiguration configuration, String token, String developerName,
+                                     String itemId, List<ObjectDataTypeProperty> properties) {
+
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
                 .appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
@@ -248,41 +252,51 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         List<ClientEntity> items = new ArrayList<>();
         items.add(0, entityResponse.getBody());
 
-        return responseDynamicTypes(items, properties);
+        return responseDynamicTypes(items, properties).get(0);
     }
 
     @Override
-    public ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
+    public MObject updateTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
+
+        URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+                .appendEntitySetSegment("items")
+                .appendEntitySetSegment(id)
+                .appendEntitySetSegment("fields")
+                .build();
+
+        DynamicTypesService.patchDynamicType(token, itemUri.toString(), properties);
+
+        List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
+        properties.forEach(p -> {
+            ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
+            prop.setDeveloperName(p.getDeveloperName());
+            propertyCollection.add(prop);
+        });
+
+        return fetchTypeFromList(configuration, token, developerName, id, propertyCollection);
+    }
+
+
+    @Override
+    public MObject createTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties) {
         String itemId = null;
 
-        if (Strings.isNullOrEmpty(properties.getContentValue("ID"))) {
-            URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
-                    .appendEntitySetSegment("items")
-                    .build();
+        URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+                .appendEntitySetSegment("items")
+                .build();
 
-            itemId = DynamicTypesService.insertDynamicType(token, itemUri.toString());
+        itemId = DynamicTypesService.insertDynamicType(token, itemUri.toString());
 
-            URI itemUriUpdate = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
-                    .appendEntitySetSegment("items")
-                    .appendEntitySetSegment(itemId)
-                    .appendEntitySetSegment("fields")
-                    .build();
+        URI itemUriUpdate = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+                .appendEntitySetSegment("items")
+                .appendEntitySetSegment(itemId)
+                .appendEntitySetSegment("fields")
+                .build();
 
-            DynamicTypesService.patchDynamicType(token, itemUriUpdate.toString(), properties);
-        } else {
-            itemId = properties.getContentValue("ID");
+        DynamicTypesService.patchDynamicType(token, itemUriUpdate.toString(), properties);
 
-            URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
-                    .appendEntitySetSegment("items")
-                    .appendEntitySetSegment(itemId)
-                    .appendEntitySetSegment("fields")
-                    .build();
-
-            DynamicTypesService.patchDynamicType(token, itemUri.toString(), properties);
-        }
-
-        ObjectDataTypePropertyCollection propertyCollection = new ObjectDataTypePropertyCollection();
-        properties.forEach(p->{
+        List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
+        properties.forEach(p -> {
             ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
             prop.setDeveloperName(p.getDeveloperName());
             propertyCollection.add(prop);
@@ -307,43 +321,44 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return entitySetRequest.execute();
     }
 
-    private ObjectDataResponse responseSites(List<ClientEntity> sites, String parentId) {
-        ObjectCollection objectCollection = new ObjectCollection();
+    private List<MObject> responseSites(List<ClientEntity> sites, String parentId) {
+        List<MObject> objectCollection = new ArrayList<>();
 
         for (ClientEntity siteEntity : sites) {
             objectCollection.add(this.objectMapperService.buildManyWhoSiteObject(siteEntity, parentId));
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return objectCollection;
     }
 
-    private ObjectDataResponse responseItems(List<ClientEntity> sites, String siteId, String listId) {
-        ObjectCollection objectCollection = new ObjectCollection();
+    private List<MObject> responseItems(List<ClientEntity> sites, String siteId, String listId) {
+        List<MObject> objectCollection = new ArrayList<>();
 
         for (ClientEntity siteEntity : sites) {
             objectCollection.add(this.objectMapperService.buildManyWhoItemObject(siteEntity, siteId, listId));
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return objectCollection;
     }
 
-    private ObjectDataResponse responseLists(List<ClientEntity> lists, String siteId, boolean fullType) {
-        ObjectCollection objectCollection = new ObjectCollection();
+    private List<SharePointList> responseLists(List<ClientEntity> lists, String siteId, boolean fullType) {
+        List<SharePointList> objectCollection = new ArrayList<>();
 
         for (ClientEntity listEntity : lists) {
-            objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(listEntity, siteId, fullType));
+            objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(listEntity, siteId));
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return objectCollection;
     }
 
-    private ObjectDataResponse responseDynamicTypes(List<ClientEntity> items, ObjectDataTypePropertyCollection properties) {
-        ObjectCollection objectCollection = new ObjectCollection();
+    private List<MObject> responseDynamicTypes(List<ClientEntity> items, List<ObjectDataTypeProperty> properties) {
+        List<MObject> objectCollection = new ArrayList<>();
 
         for (ClientEntity itemEntity : items) {
-            objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(itemEntity.getNavigationLink("fields").asInlineEntity().getEntity().getProperties(), properties));
+            objectCollection.add(objectMapperService.buildManyWhoDynamicObject(itemEntity.getNavigationLink("fields")
+                    .asInlineEntity().getEntity().getProperties(), properties));
         }
 
-        return new ObjectDataResponse(objectCollection);
+        return objectCollection;
     }
 }
