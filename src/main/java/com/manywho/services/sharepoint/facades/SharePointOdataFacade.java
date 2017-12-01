@@ -9,6 +9,8 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -94,16 +96,33 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     @Override
     public TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token) {
         TypeElementCollection typeElements = new TypeElementCollection();
-        String groupFilter= String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')+and+mailNickname+eq+'%s'", configuration.getOnlyGroups());
+        String groupFilter= String.format("groups?$filter=groupTypes/any(c:c+eq+'Unified')");
 
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, groupFilter);
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
+
+        Flowable<ClientEntity> batches = Flowable.fromIterable(listGroups);
+
+        List<TypeElement> typeElements1 = batches.parallel()
+                .runOn(Schedulers.computation())
+                .map(group -> fetchTypeElementsByGroup(configuration, token, group))
+                .flatMap(Flowable::fromIterable)
+                .sequential()
+                .toList()
+                .blockingGet();
+
+
+        typeElements.addAll(typeElements1);
+
+        return typeElements;
+    }
+
+    private TypeElementCollection fetchTypeElementsByGroup(ServiceConfiguration configuration, String token, ClientEntity group){
+        TypeElementCollection typeElements = new TypeElementCollection();
         List<ClientEntity> listSitesByGroups = new ArrayList<>();
 
-        for (ClientEntity group : listGroups) {
-            List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
-            listSitesByGroups.addAll(sites);
-        }
+        List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
+        listSitesByGroups.addAll(sites);
 
         for (ClientEntity site : listSitesByGroups) {
             String siteName = site.getProperty("name").getValue().toString();
@@ -116,14 +135,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                 ClientValue infoList = list.getProperty("list").getValue();
                 String displayName = infoList.asComplex().get("template").getValue().asPrimitive().toString();
 
-                if (!configuration.getIncludeDefaultLists()) {
-                    if (Objects.equals("genericList", displayName)) {
-                        TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
-                        if (typeElement != null) {
-                            typeElements.add(typeElement);
-                        }
-                    }
-                } else {
+                if (Objects.equals("genericList", displayName)) {
                     TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
                     if (typeElement != null) {
                         typeElements.add(typeElement);
@@ -134,6 +146,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
         return typeElements;
     }
+
+
+
 
     private TypeElement getTypeElement(String token, String siteId, String siteName, ClientEntity list) {
         String listName = list.getProperty("name").getValue().toString();

@@ -41,8 +41,6 @@ public class TypeItemManager {
         String username = null;
         String password = null;
         String host = null;
-        Boolean includeDefaultList = false;
-        String onlyGroups = "";
 
         for (EngineValue value:engineValues) {
             switch (value.getDeveloperName()){
@@ -55,15 +53,9 @@ public class TypeItemManager {
                 case "Host":
                     host = value.getContentValue();
                     break;
-                case "include Default Lists?":
-                    includeDefaultList = "True".equals(value.getContentValue());
-                    break;
-                case "Only For Groups":
-                    onlyGroups = value.getContentValue();
-                    break;
             }
         }
 
-        return new ServiceConfiguration(username, password, host, includeDefaultList, onlyGroups);
+        return new ServiceConfiguration(username, password, host);
     }
 }
