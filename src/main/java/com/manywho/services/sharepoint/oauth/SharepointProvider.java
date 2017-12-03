@@ -10,6 +10,7 @@ public class SharepointProvider extends AbstractOauth2Provider {
     private final ApplicationConfiguration configuration;
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
+    public static final String IDENTITY_NAME = "SharePoint Service";
 
     @Inject
     public SharepointProvider(ApplicationConfiguration configuration) {
@@ -18,7 +19,7 @@ public class SharepointProvider extends AbstractOauth2Provider {
 
     @Override
     public String getName() {
-        return "sharepoint-manywho";
+        return IDENTITY_NAME;
     }
 
     @Override

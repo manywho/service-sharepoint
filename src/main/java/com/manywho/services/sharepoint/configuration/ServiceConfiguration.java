@@ -12,6 +12,9 @@ public class ServiceConfiguration {
     @Property("Host")
     private String host;
 
+    @Property("Authentication Strategy")
+    private String strategy;
+
     public ServiceConfiguration(){}
 
     public ServiceConfiguration(String username, String password, String host) {
@@ -27,4 +30,6 @@ public class ServiceConfiguration {
     }
 
     public String getHost() {return host;}
+
+    public String getStrategy() { return strategy; }
 }

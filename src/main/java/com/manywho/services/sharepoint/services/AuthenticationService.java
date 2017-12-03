@@ -16,6 +16,7 @@ import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.UUID;
 
 public class AuthenticationService {
@@ -113,6 +114,15 @@ public class AuthenticationService {
         authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName("SharePoint Add-In");
         authenticatedWhoResult.setToken( response.getAccess_token());
+
+        if (Objects.equals(configuration.getStrategy(), "SuperUser")) {
+            authenticatedWhoResult.setIdentityProvider(SharepointProvider.IDENTITY_NAME);
+            String token = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword())
+                    .getAccessToken();
+
+            authenticatedWhoResult.setToken(token);
+        }
+
         authenticatedWhoResult.setUserId(UUID.randomUUID().toString());
         authenticatedWhoResult.setUsername("username");
 

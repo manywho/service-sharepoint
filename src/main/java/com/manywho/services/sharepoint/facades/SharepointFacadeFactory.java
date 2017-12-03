@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 
+import com.manywho.services.sharepoint.oauth.SharepointProvider;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -18,7 +19,7 @@ public class SharepointFacadeFactory {
     }
 
     public SharePointFacadeInterface get(String typeIdentityProvider) {
-        if (typeIdentityProvider.equals("sharepoint-manywho")) {
+        if (typeIdentityProvider.equals(SharepointProvider.IDENTITY_NAME)) {
 
             return sharePointOdataFacade;
         } else {
