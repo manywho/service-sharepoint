@@ -107,7 +107,11 @@ public class DynamicTypesService {
                     response.append(String.format("\"%s\": %s",name, p.getContentValue()));
                     break;
                 case Boolean:
-                    response.append(String.format("\"%s\": %s",name, p.getContentValue()));
+                    String boolValue = "false";
+                    if(Objects.equals(p.getContentValue().toLowerCase(), "true")) {
+                        boolValue = "true";
+                    }
+                    response.append(String.format("\"%s\": %s",name, boolValue));
                     break;
                 default:
                     response.append(String.format("\"%s\": \"%s\"",name, p.getContentValue()));
