@@ -189,8 +189,8 @@ public class ObjectMapperService {
     public DriveItem buildManyWhoDriveItemObject(ClientEntity driveItemEntity, String driveId, String parentDriveItemId) {
 
         DriveItem item = new DriveItem();
+        item.setId(String.format("%s#%s", driveId, driveItemEntity.getProperty("id").getValue()));
 
-        item.setId(driveItemEntity.getProperty("id").getValue().toString());
         item.setDriveId(driveId);
         if (driveItemEntity.getProperty("folder") != null) {
             item.setType("folder");

@@ -8,6 +8,7 @@ import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.files.facade.DriveFacade;
 import com.manywho.services.sharepoint.files.types.DriveItem;
+import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -50,8 +51,10 @@ public class DriveItemDatabase implements Database<ApplicationConfiguration, Dri
                 return driveFacade.fetchDriveItemsRoot(configuration, authenticatedWhoProvider.get().getToken(),
                         driveId.get().getContentValue());
             } else {
+                String parentItemId = FileIdExtractor.extractDriveItemId(driveItemId.get().getContentValue());
+
                 return driveFacade.fetchDriveItems(configuration, authenticatedWhoProvider.get().getToken(),
-                        driveId.get().getContentValue(), driveItemId.get().getContentValue());
+                        driveId.get().getContentValue(), parentItemId);
             }
         }
 
