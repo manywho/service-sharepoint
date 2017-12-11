@@ -8,30 +8,31 @@ public class Item implements Type{
     public final static String NAME = "Item";
 
     @Type.Identifier
-    @Type.Property(name = "ID", contentType = ContentType.String, bound = false)
     private String id;
 
-    @Type.Property(name = "Created Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Item ID", contentType = ContentType.String)
+    private String itemId;
+
+    @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
 
-    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
     private String modifiedDateTime;
 
-    @Type.Property(name = "e Tag", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "e Tag", contentType = ContentType.String)
     private String eTag;
 
-    @Type.Property(name = "Web URL", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Web URL", contentType = ContentType.String)
     private String webUrl;
 
-    @Type.Property(name = "List Item ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "List Item ID", contentType = ContentType.String)
     private String listItemId;
 
-    @Type.Property(name = "Site ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Site ID", contentType = ContentType.String)
     private String siteId;
 
-    @Type.Property(name = "List ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "List ID", contentType = ContentType.String)
     private String listId;
-
 
     public String getId() {
         return id;
@@ -39,6 +40,14 @@ public class Item implements Type{
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public String getCreatedDateTime() {

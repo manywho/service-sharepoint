@@ -14,11 +14,9 @@ public class ApplicationConfiguration implements Configuration {
     @Configuration.Setting(name="Host",  contentType = ContentType.String)
     private String host;
 
-    @Configuration.Setting(name="Include Default Lists?",  contentType = ContentType.Boolean)
     private Boolean includeDefaultLists;
 
-    @Configuration.Setting(name="Only For Groups",  contentType = ContentType.String)
-    private String onlyGroups;
+        private String onlyGroups;
 
 
     public String getUsername() {

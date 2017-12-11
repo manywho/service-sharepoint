@@ -8,28 +8,27 @@ public class SharePointList implements Type {
     public final static String NAME = "SharePointList";
 
     @Type.Identifier
-    @Type.Property(name = "ID", contentType = ContentType.String, bound = false)
     private String id;
 
-    @Type.Property(name = "List ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "List ID", contentType = ContentType.String)
     private String listId;
 
-    @Type.Property(name = "Name", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Name", contentType = ContentType.String)
     private String name;
 
-    @Type.Property(name = "Created Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
 
-    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
     private String modifiedDateTime;
 
-    @Type.Property(name = "Description", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Description", contentType = ContentType.String)
     private String description;
 
-    @Type.Property(name = "Web URL", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Web URL", contentType = ContentType.String)
     private String webUrl;
 
-    @Type.Property(name = "Site ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Site ID", contentType = ContentType.String)
     private String siteId;
 
 

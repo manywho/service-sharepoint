@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.services;
 
+import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
@@ -70,7 +71,13 @@ public class ObjectMapperService {
         sharePointList.setDescription(sharepointListEntity.getProperty("description").getValue().toString());
         sharePointList.setName(sharepointListEntity.getProperty("name").getValue().toString());
         sharePointList.setWebUrl(sharepointListEntity.getProperty("webUrl").getValue().toString());
-        sharePointList.setSiteId(siteId);
+
+        if (Strings.isNullOrEmpty(siteId)) {
+            sharePointList.setSiteId("root");
+        } else {
+            sharePointList.setSiteId(siteId);
+        }
+        sharePointList.setId(String.format("%s#%s", sharePointList.getSiteId(), sharePointList.getListId()));
 
         return sharePointList;
     }
@@ -105,7 +112,7 @@ public class ObjectMapperService {
     public MObject buildManyWhoItemObject(ClientEntity siteEntity, String siteId, String listId) {
         List<Property> properties = new ArrayList<>();
 
-        properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));
+        properties.add(new Property("Item ID", siteEntity.getProperty("id").getValue().toString()));
         properties.add(new Property("Created Date Time", siteEntity.getProperty("createdDateTime").getValue().toString()));
         properties.add(new Property("Last Modified Date Time", siteEntity.getProperty("lastModifiedDateTime").getValue().toString()));
         properties.add(new Property("e Tag", siteEntity.getProperty("eTag").getValue().toString()));

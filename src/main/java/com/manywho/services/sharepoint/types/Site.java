@@ -10,28 +10,28 @@ public class Site implements Type{
     @Identifier
     private String id;
 
-    @Type.Property(name = "Site ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Site ID", contentType = ContentType.String)
     private String idSite;
 
-    @Type.Property(name = "Created Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
 
-    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
     private String modifiedDateTime;
 
-    @Type.Property(name = "Description", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Description", contentType = ContentType.String)
     private String description;
 
-    @Type.Property(name = "Name", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Name", contentType = ContentType.String)
     private String name;
 
-    @Type.Property(name = "Web URL", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Web URL", contentType = ContentType.String)
     private String webUrl;
 
-    @Type.Property(name = "Site ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Site ID", contentType = ContentType.String)
     private String siteId;
 
-    @Type.Property(name = "Parent ID", contentType = ContentType.String, bound = false)
+    @Type.Property(name = "Parent ID", contentType = ContentType.String)
     private String parentId;
 
     public String getIdSite() {

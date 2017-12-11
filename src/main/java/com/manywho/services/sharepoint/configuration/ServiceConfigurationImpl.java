@@ -8,6 +8,7 @@ public class ServiceConfigurationImpl {
 
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
+    public static final String AUTH_TYPE = "sharepoint-manywho";
 
     @Inject
     public ServiceConfigurationImpl(ServiceConfigurationDefault serviceConfigurationDefault) {
@@ -15,7 +16,7 @@ public class ServiceConfigurationImpl {
     }
 
     public String getName() {
-        return "sharepoint-manywho";
+        return AUTH_TYPE;
     }
 
     public String getOauth2ClientId() {
@@ -37,7 +38,7 @@ public class ServiceConfigurationImpl {
 
     public String getAuthorizationUrl() {
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
-                AUTHORITY_URI, this.getAppId(), "User.Read" , "code");
+                AUTHORITY_URI, this.getOauth2ClientId(), "User.Read" , "code");
     }
 
 }

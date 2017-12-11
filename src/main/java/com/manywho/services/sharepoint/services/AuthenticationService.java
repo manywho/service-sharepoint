@@ -40,7 +40,7 @@ public class AuthenticationService {
         authenticatedWhoResult.setDirectoryName("SharePoint");
         authenticatedWhoResult.setEmail(jwt.getClaim("unique_name").asString());
         authenticatedWhoResult.setFirstName(jwt.getClaim("given_name").asString());
-        authenticatedWhoResult.setIdentityProvider(securityConfiguration.getOauth2ClientId());
+        authenticatedWhoResult.setIdentityProvider(securityConfiguration.getName());
         authenticatedWhoResult.setLastName(jwt.getClaim("family_name").asString());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(securityConfiguration.getOauth2ClientId());
