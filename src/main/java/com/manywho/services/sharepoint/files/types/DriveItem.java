@@ -1,9 +1,7 @@
-package com.manywho.services.sharepoint.drive.types;
+package com.manywho.services.sharepoint.files.types;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;
-
-import javax.inject.Inject;
 
 @Type.Element(name = "Drive Item", summary = "Details about a Drive Item")
 public class DriveItem implements Type {

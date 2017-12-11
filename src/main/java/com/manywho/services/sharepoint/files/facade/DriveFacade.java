@@ -1,8 +1,8 @@
-package com.manywho.services.sharepoint.drive.facade;
+package com.manywho.services.sharepoint.files.facade;
 
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.drive.types.Drive;
-import com.manywho.services.sharepoint.drive.types.DriveItem;
+import com.manywho.services.sharepoint.files.types.Drive;
+import com.manywho.services.sharepoint.files.types.DriveItem;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
 import org.apache.olingo.client.api.ODataClient;

@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.drive;
+package com.manywho.services.sharepoint.files;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -6,8 +6,8 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.drive.facade.DriveFacade;
-import com.manywho.services.sharepoint.drive.types.DriveItem;
+import com.manywho.services.sharepoint.files.facade.DriveFacade;
+import com.manywho.services.sharepoint.files.types.DriveItem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
