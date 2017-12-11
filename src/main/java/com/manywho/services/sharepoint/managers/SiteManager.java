@@ -1,39 +1,39 @@
 package com.manywho.services.sharepoint.managers;
 
-import com.manywho.sdk.entities.run.elements.type.ListFilterWhere;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.sdk.api.run.elements.type.ListFilter;
+import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
+import com.manywho.services.sharepoint.types.Site;
 import org.apache.commons.lang3.StringUtils;
-
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class SiteManager {
-    private PropertyCollectionParser propertyParser;
     private SharePointOdataFacade sharePointFacade;
 
     @Inject
-    public SiteManager(PropertyCollectionParser propertyParser, SharePointOdataFacade sharePointFacade) {
-        this.propertyParser = propertyParser;
+    public SiteManager(SharePointOdataFacade sharePointFacade) {
         this.sharePointFacade = sharePointFacade;
     }
 
-    public ObjectDataResponse loadSites(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) throws Exception {
-        ServiceConfiguration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), ServiceConfiguration.class);
+    public Site loadSite(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+                                  ObjectDataType objectDataRequest, String id) throws Exception {
 
-        if (objectDataRequest.getListFilter() != null && StringUtils.isNotEmpty(objectDataRequest.getListFilter().getId())) {
-            return sharePointFacade.fetchSite(configuration, authenticatedWho.getToken(), objectDataRequest.getListFilter().getId());
-        }
+        return sharePointFacade.fetchSite(configuration, authenticatedWho.getToken(), id);
+    }
+
+    public List<Site> loadSites(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration, ListFilter filter) {
 
         Optional<ListFilterWhere> parentId;
 
-        if (objectDataRequest.getListFilter() != null && objectDataRequest.getListFilter().getWhere() != null) {
-            parentId  = objectDataRequest.getListFilter().getWhere().stream()
+        if (filter!= null && filter.getWhere() != null) {
+            parentId  = filter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 

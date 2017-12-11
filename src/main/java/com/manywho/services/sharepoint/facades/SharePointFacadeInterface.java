@@ -1,37 +1,42 @@
 package com.manywho.services.sharepoint.facades;
 
-import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
-import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import org.glassfish.jersey.media.multipart.BodyPart;
+import com.manywho.sdk.api.draw.elements.type.TypeElement;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
+import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.types.SharePointList;
+import com.manywho.services.sharepoint.types.Site;
+
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface SharePointFacadeInterface {
-    ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException;
+    List<Site> fetchSites(ApplicationConfiguration configuration, String token) throws ExecutionException, InterruptedException;
 
-    ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token, String parentId);
+    List<Site> fetchSites(ApplicationConfiguration configuration, String token, String parentId);
 
-    ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id);
+    Site fetchSite(ApplicationConfiguration configuration, String token, String id);
 
-    ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType);
+    List<SharePointList> fetchLists(ApplicationConfiguration configuration, String token, String idSite, boolean fullType);
 
-    TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token);
+    List<TypeElement> fetchAllListTypes(ApplicationConfiguration configuration, String token);
 
-    ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList);
+    SharePointList fetchList(ApplicationConfiguration configuration, String token, String idSite, String idList);
 
-    ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token);
+    List<SharePointList> fetchListsRoot(ApplicationConfiguration configuration, String token);
 
-    ObjectDataResponse fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId);
+    MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId);
 
-    ObjectDataResponse fetchItems(ServiceConfiguration configuration, String token, String siteId, String listId);
+    List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId);
 
-    ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
+//    MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
 
-    ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, ObjectDataTypePropertyCollection properties);
+    List<MObject> fetchTypesFromLists(ApplicationConfiguration configuration, String token, String developerName, List<ObjectDataTypeProperty>  properties);
 
-    ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties);
+    MObject fetchTypeFromList(ApplicationConfiguration configuration, String token, String developerName, String itemId, List<ObjectDataTypeProperty> properties);
 
-    ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties);
+    MObject updateTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties, String id);
+
+    MObject createTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties);
 }

@@ -1,15 +1,15 @@
 package com.manywho.services.sharepoint.managers;
 
-import com.manywho.sdk.entities.run.EngineValue;
-import com.manywho.sdk.entities.run.EngineValueCollection;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.sdk.api.run.elements.type.ListFilter;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class TypeItemManager {
 
@@ -20,42 +20,28 @@ public class TypeItemManager {
         this.sharepointFacadeFactory = sharepointFacadeFactory;
     }
 
-    public ObjectDataResponse loadTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
+    public List<MObject> loadTypeItems(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+                                       ObjectDataType objectDataRequest, ListFilter filter) {
+
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        return sharePointFacade.fetchTypesFromLists(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
-                authenticatedWho.getToken(), objectDataRequest.getObjectDataType().getDeveloperName(),
-                objectDataRequest.getObjectDataType().getProperties());
+        return sharePointFacade.fetchTypesFromLists(configuration, authenticatedWho.getToken(),
+                objectDataRequest.getDeveloperName(), objectDataRequest.getProperties());
     }
 
-    public ObjectDataResponse saveTypeItems(AuthenticatedWho authenticatedWho, ObjectDataRequest objectDataRequest) {
+    public MObject loadTypeItem(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+                                       ObjectDataType objectDataRequest, String id) {
+
         SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-        return sharePointFacade.saveTypeList(getServiceConfiguration(objectDataRequest.getConfigurationValues()),
-                authenticatedWho.getToken(), objectDataRequest.getObjectDataType().getDeveloperName(),
-                objectDataRequest.getObjectData().get(0).getProperties());
+        return sharePointFacade.fetchTypeFromList(configuration, authenticatedWho.getToken(),
+                objectDataRequest.getDeveloperName(), id,  objectDataRequest.getProperties());
     }
 
+    public MObject updateTypeItem(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration, MObject objectDataRequest) {
+        SharePointFacadeInterface sharePointFacade = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider());
 
-    private ServiceConfiguration getServiceConfiguration(EngineValueCollection engineValues) {
-        String username = null;
-        String password = null;
-        String host = null;
-
-        for (EngineValue value:engineValues) {
-            switch (value.getDeveloperName()){
-                case "Username":
-                    username = value.getContentValue();
-                    break;
-                case "Password":
-                    password = value.getContentValue();
-                    break;
-                case "Host":
-                    host = value.getContentValue();
-                    break;
-            }
-        }
-
-        return new ServiceConfiguration(username, password, host);
+        return sharePointFacade.createTypeList(configuration, authenticatedWho.getToken(), objectDataRequest.getDeveloperName(),
+                objectDataRequest.getProperties());
     }
 }

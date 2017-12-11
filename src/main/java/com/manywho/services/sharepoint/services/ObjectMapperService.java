@@ -1,7 +1,9 @@
 package com.manywho.services.sharepoint.services;
 
-import com.manywho.sdk.entities.run.elements.type.*;
-import com.manywho.sdk.entities.run.elements.type.Object;
+import com.google.common.base.Strings;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
+import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
@@ -12,14 +14,15 @@ import org.apache.olingo.client.api.domain.ClientProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ObjectMapperService {
     public Object buildManyWhoFileSystemObject(ClientEntity fileItem) {
-
-        PropertyCollection properties = new PropertyCollection();
+        MObject object = new MObject();
+        List<Property> properties = new ArrayList<>();
 //        properties.add(new Property("Kind", FilenameUtils.getExtension(fileItem.getName())));
         properties.add(new Property("ID", fileItem.getProperty("id").getValue().toString()));
 //        properties.add(new Property("Mime Type"));
@@ -30,7 +33,7 @@ public class ObjectMapperService {
 //        properties.add(new Property("Download Uri", fileItem.getWebUrl()));
 //        properties.add(new Property("Embed Uri"));
         properties.add(new Property("Icon Uri"));
-        Object object = new Object();
+
         object.setDeveloperName("$File");
         object.setExternalId(fileItem.getProperty("id").getValue().toString());
         object.setProperties(properties);
@@ -39,67 +42,55 @@ public class ObjectMapperService {
     }
 
 
-    public Object buildManyWhoSiteObject(ClientEntity siteItem, String parentId) {
-        PropertyCollection properties = new PropertyCollection();
+    public Site buildManyWhoSiteObject(ClientEntity siteItem, String parentId) {
+        Site site = new Site();
 
-        properties.add(new Property("ID", siteItem.getProperty("id").getValue().toString()));
-        properties.add(new Property("Created Date Time", siteItem.getProperty("createdDateTime").getValue().toString()));
-        properties.add(new Property("Last Modified Date Time", siteItem.getProperty("lastModifiedDateTime").getValue().toString()));
-        properties.add(new Property("Description", siteItem.getProperty("description").getValue().toString()));
-        properties.add(new Property("Name", siteItem.getProperty("name").getValue().toString()));
-        properties.add(new Property("Web URL", siteItem.getProperty("webUrl").getValue().toString()));
-        properties.add(new Property("Site ID", siteItem.getProperty("id").getValue().toString()));
-        properties.add(new Property("Parent ID", parentId));
+        site.setId( siteItem.getProperty("id").getValue().toString());
+        site.setIdSite(siteItem.getProperty("id").getValue().toString());
+        site.setCreatedDateTime(siteItem.getProperty("createdDateTime").getValue().toString());
+        site.setModifiedDateTime(siteItem.getProperty("lastModifiedDateTime").getValue().toString());
+        site.setDescription(siteItem.getProperty("description").getValue().toString());
+        site.setIdSite(siteItem.getProperty("id").getValue().toString());
+        site.setName(siteItem.getProperty("name").getValue().toString());
+        site.setParentId(parentId);
 
-        Object object = new Object();
-        object.setDeveloperName(Site.NAME);
-        object.setExternalId(siteItem.getProperty("id").getValue().toString());
-        object.setProperties(properties);
-
-        return object;
-    }
-
-    public MObject buildManyWhoSharePointListObject(ClientEntity sharepointListEntity, String siteId, boolean fullType) {
-        PropertyCollection properties = new PropertyCollection();
-
-        properties.add(new Property("ID", sharepointListEntity.getProperty("id").getValue().toString()));
-        properties.add(new Property("Created Date Time", sharepointListEntity.getProperty("createdDateTime").getValue().toString()));
-        properties.add(new Property("Last Modified Date Time", sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString()));
-        properties.add(new Property("Description", sharepointListEntity.getProperty("description").getValue().toString()));
-        properties.add(new Property("Name", sharepointListEntity.getProperty("name").getValue().toString()));
-        properties.add(new Property("Web URL", sharepointListEntity.getProperty("webUrl").getValue().toString()));
-        properties.add(new Property("Site ID", siteId));
-
-        Object object = new Object();
-        object.setDeveloperName(SharePointList.NAME);
-
-        if (fullType) {
-            object.setDeveloperName(sharepointListEntity.getProperty("name").getValue().toString());
-            PropertyCollection customProperties = new PropertyCollection();
-
-            sharepointListEntity.getProperties().stream().filter(
-                    p -> !p.getName().equals("id") && !p.getName().equals("createdDateTime") &&
-                            !p.getName().equals("lastModifiedDateTime") && !p.getName().equals("description") &&
-                            !p.getName().equals("name") && !p.getName().equals("webUrl"))
-
-                    .forEach( p -> customProperties.add(new Property(p.getName(), p.getValue().toString())));
-
+        if(Strings.isNullOrEmpty(parentId)) {
+            site.setParentId("root");
         }
 
-        object.setExternalId(String.format("%s#%s", sharepointListEntity.getProperty("id").getValue().toString(), siteId));
-        object.setProperties(properties);
+        site.setWebUrl(siteItem.getProperty("webUrl").getValue().toString());
 
-        return object;
+        return site;
     }
 
-    public MObject buildManyWhoSharePointListObject(SPList listEntity, String siteId) {
-        PropertyCollection properties = new PropertyCollection();
+    public SharePointList buildManyWhoSharePointListObject(ClientEntity sharepointListEntity, String siteId) {
+        SharePointList sharePointList = new SharePointList();
 
-        properties.add(new Property("ID", listEntity.getId()));
-        properties.add(new Property("Created Date Time", listEntity.getData("Created").toString()));
-        properties.add(new Property("Last Modified Date Time", listEntity.getData("LastItemUserModifiedDate").toString()));
-        properties.add(new Property("Description", listEntity.getData("Description").toString()));
-        properties.add(new Property("Name", listEntity.getData("Title").toString()));
+        sharePointList.setListId(sharepointListEntity.getProperty("id").getValue().toString());
+        sharePointList.setCreatedDateTime(sharepointListEntity.getProperty("createdDateTime").getValue().toString());
+        sharePointList.setModifiedDateTime(sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString());
+        sharePointList.setDescription(sharepointListEntity.getProperty("description").getValue().toString());
+        sharePointList.setName(sharepointListEntity.getProperty("name").getValue().toString());
+        sharePointList.setWebUrl(sharepointListEntity.getProperty("webUrl").getValue().toString());
+
+        if (Strings.isNullOrEmpty(siteId)) {
+            sharePointList.setSiteId("root");
+        } else {
+            sharePointList.setSiteId(siteId);
+        }
+        sharePointList.setId(String.format("%s#%s", sharePointList.getSiteId(), sharePointList.getListId()));
+
+        return sharePointList;
+    }
+
+    public SharePointList buildManyWhoSharePointListObject(SPList listEntity, String siteId) {
+        SharePointList list = new SharePointList();
+        list.setListId(listEntity.getId());
+        list.setCreatedDateTime(listEntity.getData("Created").toString());
+        list.setModifiedDateTime(listEntity.getData("LastItemUserModifiedDate").toString());
+        list.setDescription(listEntity.getData("Description").toString());
+        list.setName(listEntity.getData("Title").toString());
+
         java.lang.Object metadata =listEntity.getData("__metadata");
         String url = null;
 
@@ -109,22 +100,20 @@ public class ObjectMapperService {
             e.printStackTrace();
         }
 
-        properties.add(new Property("Web URL", url));
-        properties.add(new Property("Site ID", siteId));
+        list.setSiteId(siteId);
+        list.setWebUrl(url);
+        list.setId(String.format("%s#%s", listEntity.getId(), siteId));
 
-        Object object = new Object();
-        object.setDeveloperName(SharePointList.NAME);
-        object.setExternalId(String.format("%s#%s", listEntity.getId(), siteId));
-        object.setProperties(properties);
+        list.setListId(listEntity.getId());
 
-        return object;
+        return list;
     }
 
 
     public MObject buildManyWhoItemObject(ClientEntity siteEntity, String siteId, String listId) {
-        PropertyCollection properties = new PropertyCollection();
+        List<Property> properties = new ArrayList<>();
 
-        properties.add(new Property("ID", siteEntity.getProperty("id").getValue().toString()));
+        properties.add(new Property("Item ID", siteEntity.getProperty("id").getValue().toString()));
         properties.add(new Property("Created Date Time", siteEntity.getProperty("createdDateTime").getValue().toString()));
         properties.add(new Property("Last Modified Date Time", siteEntity.getProperty("lastModifiedDateTime").getValue().toString()));
         properties.add(new Property("e Tag", siteEntity.getProperty("eTag").getValue().toString()));
@@ -133,7 +122,7 @@ public class ObjectMapperService {
         properties.add(new Property("Site ID", siteId));
         properties.add(new Property("List ID", listId));
 
-        Object object = new Object();
+        MObject object = new MObject();
         object.setDeveloperName(Item.NAME);
         object.setExternalId(String.format("%s#%s", listId, siteEntity.getProperty("id").getValue().toString()));
         object.setProperties(properties);
@@ -141,8 +130,8 @@ public class ObjectMapperService {
         return object;
     }
 
-    public MObject buildManyWhoDynamicObject(List<ClientProperty> clientProperties, ObjectDataTypePropertyCollection properties) {
-        PropertyCollection mobjectProperties = new PropertyCollection();
+    public MObject buildManyWhoDynamicObject(List<ClientProperty> clientProperties, List<ObjectDataTypeProperty> properties) {
+        List<Property> mobjectProperties = new ArrayList<>();
         String externalId = null;
 
         for (ObjectDataTypeProperty property: properties) {
@@ -162,7 +151,7 @@ public class ObjectMapperService {
             }
         }
 
-        Object object = new Object();
+        MObject object = new MObject();
         object.setDeveloperName(Item.NAME);
         object.setExternalId(externalId);
         object.setProperties(mobjectProperties);
@@ -171,9 +160,9 @@ public class ObjectMapperService {
     }
 
 
-    public MObject buildManyWhoDynamicObject(String developerName, SPListItem spListItem, ObjectDataTypePropertyCollection properties) {
-        Object object = new Object();
-        PropertyCollection mobjectProperties = new PropertyCollection();
+    public MObject buildManyWhoDynamicObject(String developerName, SPListItem spListItem, List<ObjectDataTypeProperty> properties) {
+        MObject object = new MObject();
+        List<Property> mobjectProperties = new ArrayList<>();
         String externalId = "";
 
         for (ObjectDataTypeProperty property: properties) {

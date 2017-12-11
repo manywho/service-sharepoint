@@ -1,42 +1,98 @@
 package com.manywho.services.sharepoint.types;
 
-import com.manywho.sdk.entities.draw.elements.type.*;
-import com.manywho.sdk.enums.ContentType;
-import com.manywho.sdk.services.describe.types.AbstractType;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.services.types.Type;
 
-public class SharePointList extends AbstractType {
+@Type.Element(name = "SharePointList", summary = "Details about a SharePointList")
+public class SharePointList implements Type {
     public final static String NAME = "SharePointList";
 
-    @Override
-    public TypeElementBindingCollection getBindings() {
-        return new TypeElementBindingCollection() {{
-            add(new TypeElementBinding(NAME, "Details about a SharePointList", NAME, new TypeElementPropertyBindingCollection() {{
-                add(new TypeElementPropertyBinding("ID", "ID"));
-                add(new TypeElementPropertyBinding("Created Date Time", "Created Date Time"));
-                add(new TypeElementPropertyBinding("Last Modified Date Time", "Last Modified Date Time"));
-                add(new TypeElementPropertyBinding("Description", "Description"));
-                add(new TypeElementPropertyBinding("Name", "Name"));
-                add(new TypeElementPropertyBinding("Web URL", "Web URL"));
-                add(new TypeElementPropertyBinding("Site ID", "Site ID"));
-            }}));
-        }};
+    @Type.Identifier
+    private String id;
+
+    @Type.Property(name = "List ID", contentType = ContentType.String)
+    private String listId;
+
+    @Type.Property(name = "Name", contentType = ContentType.String)
+    private String name;
+
+    @Type.Property(name = "Created Date Time", contentType = ContentType.String)
+    private String createdDateTime;
+
+    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
+    private String modifiedDateTime;
+
+    @Type.Property(name = "Description", contentType = ContentType.String)
+    private String description;
+
+    @Type.Property(name = "Web URL", contentType = ContentType.String)
+    private String webUrl;
+
+    @Type.Property(name = "Site ID", contentType = ContentType.String)
+    private String siteId;
+
+
+    public String getId() {
+        return id;
     }
 
-    @Override
-    public String getDeveloperName() {
-        return SharePointList.NAME;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    @Override
-    public TypeElementPropertyCollection getProperties() {
-        return new TypeElementPropertyCollection() {{
-            add(new TypeElementProperty("ID", ContentType.String));
-            add(new TypeElementProperty("Created Date Time", ContentType.DateTime));
-            add(new TypeElementProperty("Last Modified Date Time", ContentType.DateTime));
-            add(new TypeElementProperty("Description", ContentType.String));
-            add(new TypeElementProperty("Name", ContentType.String));
-            add(new TypeElementProperty("Web URL", ContentType.String));
-            add(new TypeElementProperty("Site ID", ContentType.String));
-        }};
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String idList) {
+        this.listId = idList;
+    }
+
+    public String getCreatedDateTime() {
+        return createdDateTime;
+    }
+
+    public void setCreatedDateTime(String createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
+    public String getModifiedDateTime() {
+        return modifiedDateTime;
+    }
+
+    public void setModifiedDateTime(String modifiedDateTime) {
+        this.modifiedDateTime = modifiedDateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public void setWebUrl(String webUrl) {
+        this.webUrl = webUrl;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

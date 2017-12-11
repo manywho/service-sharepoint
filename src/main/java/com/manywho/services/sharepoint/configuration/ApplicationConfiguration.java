@@ -1,30 +1,41 @@
 package com.manywho.services.sharepoint.configuration;
 
-import com.manywho.sdk.services.config.ServiceConfigurationDefault;
-import com.manywho.sdk.services.config.ServiceConfigurationEnvironmentVariables;
-import com.manywho.sdk.services.config.ServiceConfigurationProperties;
+import com.manywho.sdk.api.ContentType;
+import com.manywho.sdk.services.configuration.Configuration;
 
-import javax.inject.Inject;
+public class ApplicationConfiguration implements Configuration {
 
-public class ApplicationConfiguration extends ServiceConfigurationDefault {
-    @Inject
-    public ApplicationConfiguration(ServiceConfigurationEnvironmentVariables environment, ServiceConfigurationProperties properties) {
-        super(environment, properties);
+    @Configuration.Setting(name="Username",  contentType = ContentType.String)
+    private String username;
+
+    @Configuration.Setting(name="Password", contentType = ContentType.Password)
+    private String password;
+
+    @Configuration.Setting(name="Host",  contentType = ContentType.String)
+    private String host;
+
+    @Configuration.Setting(name="Authentication Strategy",  contentType = ContentType.String)
+    private String strategy;
+
+
+    public String getUsername() {
+        return username;
     }
 
-    public String getOauth2ClientId() {
-        return this.get("oauth2.clientId");
+    public String getPassword() {
+        return password;
     }
 
-    public String getOauth2ClientSecret() {
-        return this.get("oauth2.clientSecret");
+    public String getHost() {
+        return host;
     }
 
-    public String getAppSecret() {
-        return this.get("app.clientSecret");
+    // at the moment we dont include the lists that are create by the system
+    public boolean getIncludeDefaultLists() {
+        return false;
     }
 
-    public String getAppId() {
-        return this.get("app.clientId");
+    public String getStrategy() {
+        return strategy;
     }
 }

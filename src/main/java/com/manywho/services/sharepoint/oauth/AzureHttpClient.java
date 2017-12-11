@@ -1,6 +1,7 @@
 package com.manywho.services.sharepoint.oauth;
 
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.google.inject.Inject;
+import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import org.apache.http.Consts;
@@ -11,7 +12,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
-import javax.inject.Inject;
 import javax.ws.rs.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,21 +21,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class AzureHttpClient {
-    private final static String AUTHORITY = "https://login.windows.net/common";
-    private ApplicationConfiguration applicationConfiguration;
     private CloseableHttpClient httpclient;
+    private ServiceConfigurationImpl configuration;
+    private final static String AUTHORITY = "https://login.windows.net/common";
     private final static String RESOURCE_GRAPH = "00000003-0000-0000-c000-000000000000";
 
     @Inject
-    public AzureHttpClient(ApplicationConfiguration applicationConfiguration){
-        this.applicationConfiguration = applicationConfiguration;
+    public AzureHttpClient(ServiceConfigurationImpl configuration){
         this.httpclient = HttpClients.createDefault();
+        this.configuration = configuration;
     }
 
     public AuthResponse getAccessTokenByAuthCode(String authCode, String redirectUri, String clientId,
                                                  String clientSecret, String resource) {
         try {
-            HttpPost httpPost = new HttpPost(String.format("%s/%s", SharepointProvider.AUTHORITY_URI, "oauth2/token"));
+            HttpPost httpPost = new HttpPost(String.format("%s/%s", ServiceConfigurationImpl.AUTHORITY_URI, "oauth2/token"));
 
             List<NameValuePair> formParams = new ArrayList<>();
 
@@ -57,11 +57,11 @@ public class AzureHttpClient {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                //httpclient.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
@@ -88,16 +88,16 @@ public class AzureHttpClient {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            try {
-                httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                httpclient.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
     public AuthenticationResult getAccessTokenFromUserCredentials(String username,
-                                                                   String password) throws Exception {
+                                                                  String password) throws Exception {
         AuthenticationContext context;
         AuthenticationResult result = null;
         ExecutorService service = null;
@@ -105,7 +105,7 @@ public class AzureHttpClient {
             service = Executors.newFixedThreadPool(1);
             context = new AuthenticationContext(AUTHORITY, false, service);
             Future<AuthenticationResult> future = context.acquireToken(
-                    RESOURCE_GRAPH, applicationConfiguration.getOauth2ClientId(), username, password,
+                    RESOURCE_GRAPH, configuration.getOauth2ClientId(), username, password,
                     null);
             result = future.get();
         } finally {
@@ -118,4 +118,5 @@ public class AzureHttpClient {
 
         return result;
     }
+
 }

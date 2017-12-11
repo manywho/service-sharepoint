@@ -1,20 +1,22 @@
 package com.manywho.services.sharepoint.facades;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.manywho.sdk.entities.draw.elements.type.TypeElementCollection;
-import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataTypePropertyCollection;
-import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.sdk.api.draw.elements.type.TypeElement;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
+import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import com.manywho.services.sharepoint.types.SharePointList;
+import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.*;
-import org.glassfish.jersey.media.multipart.BodyPart;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class SharePointServiceFacade implements SharePointFacadeInterface {
+
     private ObjectMapperService objectMapperService;
 
     @Inject
@@ -23,35 +25,35 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
+    public List<Site> fetchSites(ApplicationConfiguration configuration, String token) throws ExecutionException, InterruptedException {
         return null;
     }
 
     @Override
-    public ObjectDataResponse fetchSites(ServiceConfiguration configuration, String token, String parentId) {
+    public List<Site> fetchSites(ApplicationConfiguration configuration, String token, String parentId) {
         return null;
     }
 
     @Override
-    public ObjectDataResponse fetchSite(ServiceConfiguration configuration, String token, String id) {
+    public Site fetchSite(ApplicationConfiguration configuration, String token, String id) {
         return null;
     }
 
     @Override
-    public ObjectDataResponse fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType) {
+    public List<SharePointList> fetchLists(ApplicationConfiguration configuration, String token, String idSite, boolean fullType) {
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
         ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
 
         try {
-            ObjectCollection objectCollection = new ObjectCollection();
+            List<SharePointList> objectCollection = new ArrayList<>();
             List<SPList> lists = listsFuture.get();
 
             for (SPList spList : lists) {
                 objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(spList, idSite));
             }
 
-            return new ObjectDataResponse(objectCollection);
+            return objectCollection;
 
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -59,30 +61,30 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public TypeElementCollection fetchAllListTypes(ServiceConfiguration configuration, String token) {
+    public List<TypeElement> fetchAllListTypes(ApplicationConfiguration configuration, String token) {
         throw new RuntimeException("fetch types for all sites is not implemented for apps");
     }
 
     @Override
-    public ObjectDataResponse fetchList(ServiceConfiguration configuration, String token, String idSite, String idList) {
+    public SharePointList fetchList(ApplicationConfiguration configuration, String token, String idSite, String idList) {
         return null;
     }
 
     @Override
-    public ObjectDataResponse fetchListsRoot(ServiceConfiguration configuration, String token) {
+    public List<SharePointList> fetchListsRoot(ApplicationConfiguration configuration, String token) {
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
         ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
 
         try {
-            ObjectCollection objectCollection = new ObjectCollection();
+            List<SharePointList> objectCollection = new ArrayList<>();
             List<SPList> lists = listsFuture.get();
 
             for (SPList spList : lists) {
                 objectCollection.add(this.objectMapperService.buildManyWhoSharePointListObject(spList, ""));
             }
 
-            return new ObjectDataResponse(objectCollection);
+            return objectCollection;
 
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -90,23 +92,23 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
         return null;
     }
 
     @Override
-    public ObjectDataResponse fetchItems(ServiceConfiguration configuration, String token, String siteId, String listId) {
+    public List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId) {
         return null;
     }
 
-    @Override
-    public ObjectDataResponse uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-        return null;
-    }
+//    @Override
+//    public MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
+//        return null;
+//    }
 
     @Override
-    public ObjectDataResponse fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
-                                                  ObjectDataTypePropertyCollection properties) {
+    public List<MObject> fetchTypesFromLists(ApplicationConfiguration configuration, String token, String developerName,
+                                             List<ObjectDataTypeProperty>  properties) {
 
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);
@@ -115,13 +117,13 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
             ListenableFuture<List<SPListItem>> listItems = client.getListItems(developerName, new Query());
             List<SPListItem> items = listItems.get();
 
-            ObjectCollection objectCollection = new ObjectCollection();
+            List<MObject> objectCollection = new ArrayList<>();
 
             for (SPListItem spListItem : items) {
                 objectCollection.add(this.objectMapperService.buildManyWhoDynamicObject(developerName, spListItem, properties));
             }
 
-            return new ObjectDataResponse(objectCollection);
+            return objectCollection;
 
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -129,12 +131,17 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public ObjectDataResponse fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, ObjectDataTypePropertyCollection properties) {
+    public MObject fetchTypeFromList(ApplicationConfiguration configuration, String token, String developerName, String itemId, List<ObjectDataTypeProperty> properties) {
         return null;
      }
 
     @Override
-    public ObjectDataResponse saveTypeList(ServiceConfiguration configuration, String token, String developerName, PropertyCollection properties) {
+    public MObject updateTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
+        return null;
+    }
+
+    @Override
+    public MObject createTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties) {
         return null;
     }
 }

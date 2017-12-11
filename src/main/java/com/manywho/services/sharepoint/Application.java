@@ -1,17 +1,25 @@
 package com.manywho.services.sharepoint;
 
-import com.manywho.sdk.services.BaseApplication;
+import com.manywho.sdk.services.servers.EmbeddedServer;
+import com.manywho.sdk.services.servers.Servlet3Server;
+import com.manywho.sdk.services.servers.undertow.UndertowServer;
+
 import javax.ws.rs.ApplicationPath;
 
 @ApplicationPath("/")
-public class Application extends BaseApplication {
+public class Application extends Servlet3Server {
+
     public Application() {
-        registerSdk()
-                .packages("com.manywho.services.sharepoint")
-                .register(new ApplicationBinder());
+        this.addModule(new ApplicationModule());
+        this.setApplication(Application.class);
+        this.start();
     }
 
-    public static void main(String[] args) {
-        startServer(new Application(), "api/sharepoint/1");
+    public static void main(String[] args) throws Exception {
+        EmbeddedServer server = new UndertowServer();
+
+        server.addModule(new ApplicationModule());
+        server.setApplication(Application.class);
+        server.start("api/sharepoint/1");
     }
 }
