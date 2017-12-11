@@ -3,7 +3,7 @@ package com.manywho.services.sharepoint.types;
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;
 
-@Type.Element(name = "Item", summary = "Details about a Item")
+@Type.Element(name = "Item", summary = "Details about an Item")
 public class Item implements Type{
     public final static String NAME = "Item";
 

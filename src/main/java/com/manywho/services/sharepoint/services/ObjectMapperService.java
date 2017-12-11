@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.services.sharepoint.drive.types.Drive;
+import com.manywho.services.sharepoint.drive.types.DriveItem;
 import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
@@ -172,6 +174,43 @@ public class ObjectMapperService {
         return object;
     }
 
+
+    public Drive buildManyWhoDriveObject(ClientEntity itemEntity) {
+
+        Drive item = new Drive();
+
+        item.setId(itemEntity.getProperty("id").getValue().toString());
+        item.setDriveType(itemEntity.getProperty("driveType").getValue().toString());
+        item.setName(itemEntity.getProperty("name").getValue().toString());
+
+        return item;
+    }
+
+    public DriveItem buildManyWhoDriveItemObject(ClientEntity driveItemEntity, String driveId, String parentDriveItemId) {
+
+        DriveItem item = new DriveItem();
+
+        item.setId(driveItemEntity.getProperty("id").getValue().toString());
+        item.setDriveId(driveId);
+        if (driveItemEntity.getProperty("folder") != null) {
+            item.setType("folder");
+        } else if (driveItemEntity.getProperty("file") != null) {
+            item.setType("file");
+        } else if (driveItemEntity.getProperty("image") != null) {
+            item.setType("image");
+        } else if (driveItemEntity.getProperty("photo") != null) {
+            item.setType("photo");
+        } else {
+            item.setType("unknown");
+        }
+
+        item.setDriveItemParent(parentDriveItemId);
+
+        item.setName(driveItemEntity.getProperty("name").getValue().toString());
+
+        return item;
+    }
+
 //
 //    public Object buildManyWhoObjectFile(File file, String content) {
 //        PropertyCollection properties = new PropertyCollection();
@@ -213,4 +252,6 @@ public class ObjectMapperService {
 //
 //        return object;
 //    }
+
+
 }
