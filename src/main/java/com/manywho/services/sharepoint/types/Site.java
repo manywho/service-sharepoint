@@ -8,10 +8,8 @@ public class Site implements Type{
     public final static String NAME = "Site";
 
     @Identifier
+    @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
-
-    @Type.Property(name = "Site ID", contentType = ContentType.String)
-    private String idSite;
 
     @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
@@ -30,14 +28,6 @@ public class Site implements Type{
 
     @Type.Property(name = "Parent ID", contentType = ContentType.String)
     private String parentId;
-
-    public String getIdSite() {
-        return idSite;
-    }
-
-    public void setIdSite(String idSite) {
-        this.idSite = idSite;
-    }
 
     public String getCreatedDateTime() {
         return createdDateTime;

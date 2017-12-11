@@ -46,11 +46,9 @@ public class ObjectMapperService {
         Site site = new Site();
 
         site.setId( siteItem.getProperty("id").getValue().toString());
-        site.setIdSite(siteItem.getProperty("id").getValue().toString());
         site.setCreatedDateTime(siteItem.getProperty("createdDateTime").getValue().toString());
         site.setModifiedDateTime(siteItem.getProperty("lastModifiedDateTime").getValue().toString());
         site.setDescription(siteItem.getProperty("description").getValue().toString());
-        site.setIdSite(siteItem.getProperty("id").getValue().toString());
         site.setName(siteItem.getProperty("name").getValue().toString());
         site.setParentId(parentId);
 
@@ -66,7 +64,6 @@ public class ObjectMapperService {
     public SharePointList buildManyWhoSharePointListObject(ClientEntity sharepointListEntity, String siteId) {
         SharePointList sharePointList = new SharePointList();
 
-        sharePointList.setListId(sharepointListEntity.getProperty("id").getValue().toString());
         sharePointList.setCreatedDateTime(sharepointListEntity.getProperty("createdDateTime").getValue().toString());
         sharePointList.setModifiedDateTime(sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString());
         sharePointList.setDescription(sharepointListEntity.getProperty("description").getValue().toString());
@@ -78,14 +75,14 @@ public class ObjectMapperService {
         } else {
             sharePointList.setSiteId(siteId);
         }
-        sharePointList.setId(String.format("%s#%s", sharePointList.getSiteId(), sharePointList.getListId()));
+
+        sharePointList.setId(String.format("%s#%s", sharePointList.getSiteId(), sharepointListEntity.getProperty("id").getValue().toString()));
 
         return sharePointList;
     }
 
     public SharePointList buildManyWhoSharePointListObject(SPList listEntity, String siteId) {
         SharePointList list = new SharePointList();
-        list.setListId(listEntity.getId());
         list.setCreatedDateTime(listEntity.getData("Created").toString());
         list.setModifiedDateTime(listEntity.getData("LastItemUserModifiedDate").toString());
         list.setDescription(listEntity.getData("Description").toString());
@@ -104,30 +101,23 @@ public class ObjectMapperService {
         list.setWebUrl(url);
         list.setId(String.format("%s#%s", listEntity.getId(), siteId));
 
-        list.setListId(listEntity.getId());
-
         return list;
     }
 
 
-    public MObject buildManyWhoItemObject(ClientEntity siteEntity, String siteId, String listId) {
-        List<Property> properties = new ArrayList<>();
+    public Item buildManyWhoItemObject(ClientEntity itemEntity, String siteId, String listId) {
 
-        properties.add(new Property("Item ID", siteEntity.getProperty("id").getValue().toString()));
-        properties.add(new Property("Created Date Time", siteEntity.getProperty("createdDateTime").getValue().toString()));
-        properties.add(new Property("Last Modified Date Time", siteEntity.getProperty("lastModifiedDateTime").getValue().toString()));
-        properties.add(new Property("e Tag", siteEntity.getProperty("eTag").getValue().toString()));
-        properties.add(new Property("Web URL", siteEntity.getProperty("webUrl").getValue().toString()));
-        properties.add(new Property("List Item ID", siteEntity.getProperty("listItemId").getValue().toString()));
-        properties.add(new Property("Site ID", siteId));
-        properties.add(new Property("List ID", listId));
+        Item item = new Item();
 
-        MObject object = new MObject();
-        object.setDeveloperName(Item.NAME);
-        object.setExternalId(String.format("%s#%s", listId, siteEntity.getProperty("id").getValue().toString()));
-        object.setProperties(properties);
+        item.setId(itemEntity.getProperty("id").getValue().toString());
+        item.setCreatedDateTime(itemEntity.getProperty("createdDateTime").getValue().toString());
+        item.setModifiedDateTime(itemEntity.getProperty("lastModifiedDateTime").getValue().toString());
+        item.setWebUrl(itemEntity.getProperty("webUrl").getValue().toString());
+        item.setSiteId(siteId);
+        item.setListId(listId);
+        item.setId(String.format("%s#%s#%s", siteId, listId, itemEntity.getProperty("id").getValue().toString()));
 
-        return object;
+        return item;
     }
 
     public MObject buildManyWhoDynamicObject(List<ClientProperty> clientProperties, List<ObjectDataTypeProperty> properties) {

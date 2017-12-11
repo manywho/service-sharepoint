@@ -8,10 +8,8 @@ public class SharePointList implements Type {
     public final static String NAME = "SharePointList";
 
     @Type.Identifier
+    @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
-
-    @Type.Property(name = "List ID", contentType = ContentType.String)
-    private String listId;
 
     @Type.Property(name = "Name", contentType = ContentType.String)
     private String name;
@@ -38,14 +36,6 @@ public class SharePointList implements Type {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getListId() {
-        return listId;
-    }
-
-    public void setListId(String idList) {
-        this.listId = idList;
     }
 
     public String getCreatedDateTime() {
@@ -95,4 +85,5 @@ public class SharePointList implements Type {
     public void setName(String name) {
         this.name = name;
     }
+
 }

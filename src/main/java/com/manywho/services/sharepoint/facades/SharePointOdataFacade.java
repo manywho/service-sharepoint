@@ -9,8 +9,10 @@ import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
+import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
+import com.manywho.services.sharepoint.utilities.IdExtractor;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -25,7 +27,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class SharePointOdataFacade implements SharePointFacadeInterface {
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
@@ -203,7 +204,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public Item fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
         String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
@@ -214,8 +215,11 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId) {
+    public List<Item> fetchItems(ApplicationConfiguration configuration, String token, String listIdUnique) {
+        String siteId = IdExtractor.extractSiteId(listIdUnique);
+        String listId = IdExtractor.extractListId(listIdUnique);
         String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
+
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
         return responseItems(entitySetResponse.getBody().getEntities(), siteId, listId);
@@ -335,8 +339,8 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return objectCollection;
     }
 
-    private List<MObject> responseItems(List<ClientEntity> sites, String siteId, String listId) {
-        List<MObject> objectCollection = new ArrayList<>();
+    private List<Item> responseItems(List<ClientEntity> sites, String siteId, String listId) {
+        List<Item> objectCollection = new ArrayList<>();
 
         for (ClientEntity siteEntity : sites) {
             objectCollection.add(this.objectMapperService.buildManyWhoItemObject(siteEntity, siteId, listId));

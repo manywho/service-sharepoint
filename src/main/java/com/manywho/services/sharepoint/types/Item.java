@@ -8,10 +8,8 @@ public class Item implements Type{
     public final static String NAME = "Item";
 
     @Type.Identifier
+    @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
-
-    @Type.Property(name = "Item ID", contentType = ContentType.String)
-    private String itemId;
 
     @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
@@ -19,14 +17,8 @@ public class Item implements Type{
     @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
     private String modifiedDateTime;
 
-    @Type.Property(name = "e Tag", contentType = ContentType.String)
-    private String eTag;
-
     @Type.Property(name = "Web URL", contentType = ContentType.String)
     private String webUrl;
-
-    @Type.Property(name = "List Item ID", contentType = ContentType.String)
-    private String listItemId;
 
     @Type.Property(name = "Site ID", contentType = ContentType.String)
     private String siteId;
@@ -40,14 +32,6 @@ public class Item implements Type{
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
     }
 
     public String getCreatedDateTime() {
@@ -66,28 +50,12 @@ public class Item implements Type{
         this.modifiedDateTime = modifiedDateTime;
     }
 
-    public String geteTag() {
-        return eTag;
-    }
-
-    public void seteTag(String eTag) {
-        this.eTag = eTag;
-    }
-
     public String getWebUrl() {
         return webUrl;
     }
 
     public void setWebUrl(String webUrl) {
         this.webUrl = webUrl;
-    }
-
-    public String getListItemId() {
-        return listItemId;
-    }
-
-    public void setListItemId(String listItemId) {
-        this.listItemId = listItemId;
     }
 
     public String getSiteId() {

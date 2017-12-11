@@ -7,6 +7,7 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
+import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.microsoft.services.sharepoint.*;
@@ -92,12 +93,12 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public Item fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
         return null;
     }
 
     @Override
-    public List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId) {
+    public List<Item> fetchItems(ApplicationConfiguration configuration, String token, String listId) {
         return null;
     }
 

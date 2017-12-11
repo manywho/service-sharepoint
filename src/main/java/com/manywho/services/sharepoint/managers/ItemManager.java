@@ -7,6 +7,7 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
+import com.manywho.services.sharepoint.types.Item;
 import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ItemManager {
         this.sharePointFacade = sharePointFacade;
     }
 
-    public MObject loadItem(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+    public Item loadItem(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
                                    ObjectDataType objectDataRequest, String id) throws Exception {
         // get item id
         String itemId = id;
@@ -34,8 +35,8 @@ public class ItemManager {
     }
 
 
-    public List<MObject> loadItems(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
-                                   ObjectDataType objectDataRequest, ListFilter filter) throws Exception {
+    public List<Item> loadItems(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+                                ListFilter filter) {
 
         Optional<ListFilterWhere> itemOptional = Optional.empty();
         Optional<ListFilterWhere> siteOptional = Optional.empty();
@@ -46,26 +47,13 @@ public class ItemManager {
             listOptional  = filter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "List ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
-
-            siteOptional  = filter.getWhere().stream()
-                    .filter(p -> Objects.equals(p.getColumnName(), "Site ID") && !StringUtils.isEmpty(p.getContentValue()))
-                    .findFirst();
-
-            itemOptional  = filter.getWhere().stream()
-                    .filter(p -> Objects.equals(p.getColumnName(), "ID") && !StringUtils.isEmpty(p.getContentValue()))
-                    .findFirst();
-        }
-
-        if (!siteOptional.isPresent()) {
-            throw new RuntimeException("Site ID is mandatory");
         }
 
         if (!listOptional.isPresent()) {
             throw new RuntimeException("List ID is mandatory");
         }
 
-        return sharePointFacade.fetchItems(configuration, authenticatedWho.getToken(), siteOptional.get().getContentValue(),
-                listOptional.get().getContentValue());
+        return sharePointFacade.fetchItems(configuration, authenticatedWho.getToken(), listOptional.get().getContentValue());
     }
 
 }

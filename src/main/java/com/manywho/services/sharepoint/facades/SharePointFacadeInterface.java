@@ -5,6 +5,7 @@ import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 
@@ -26,9 +27,9 @@ public interface SharePointFacadeInterface {
 
     List<SharePointList> fetchListsRoot(ApplicationConfiguration configuration, String token);
 
-    MObject fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId);
+    Item fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId);
 
-    List<MObject> fetchItems(ApplicationConfiguration configuration, String token, String siteId, String listId);
+    List<Item> fetchItems(ApplicationConfiguration configuration, String token, String listUniqueId);
 
 //    MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart);
 
