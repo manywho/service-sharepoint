@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.managers.ItemManager;
 import com.manywho.services.sharepoint.types.Item;
 
 import java.util.List;
 
-public class ItemDatabase implements Database<ApplicationConfiguration, Item> {
+public class ItemDatabase implements Database<ServiceConfiguration, Item> {
 
     private ItemManager itemManager;
     private AuthenticatedWhoProvider authenticatedWhoProvider;
@@ -22,42 +22,42 @@ public class ItemDatabase implements Database<ApplicationConfiguration, Item> {
     }
 
     @Override
-    public Item find(ApplicationConfiguration configuration, String s) {
+    public Item find(ServiceConfiguration configuration, String s) {
         return null;
     }
 
     @Override
-    public List<Item> findAll(ApplicationConfiguration configuration, ListFilter listFilter) {
+    public List<Item> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         return itemManager.loadItems(authenticatedWhoProvider.get(), configuration, listFilter);
     }
 
     @Override
-    public Item create(ApplicationConfiguration configuration, Item item) {
+    public Item create(ServiceConfiguration configuration, Item item) {
         return null;
     }
 
     @Override
-    public List<Item> create(ApplicationConfiguration configuration, List<Item> list) {
+    public List<Item> create(ServiceConfiguration configuration, List<Item> list) {
         return null;
     }
 
     @Override
-    public void delete(ApplicationConfiguration configuration, Item item) {
+    public void delete(ServiceConfiguration configuration, Item item) {
 
     }
 
     @Override
-    public void delete(ApplicationConfiguration configuration, List<Item> list) {
+    public void delete(ServiceConfiguration configuration, List<Item> list) {
 
     }
 
     @Override
-    public Item update(ApplicationConfiguration configuration, Item item) {
+    public Item update(ServiceConfiguration configuration, Item item) {
         return null;
     }
 
     @Override
-    public List<Item> update(ApplicationConfiguration configuration, List<Item> list) {
+    public List<Item> update(ServiceConfiguration configuration, List<Item> list) {
         return null;
     }
 }

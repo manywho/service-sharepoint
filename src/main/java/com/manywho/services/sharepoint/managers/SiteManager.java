@@ -2,10 +2,9 @@ package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
-import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.manywho.services.sharepoint.types.Site;
 import org.apache.commons.lang3.StringUtils;
@@ -22,13 +21,13 @@ public class SiteManager {
         this.sharePointFacade = sharePointFacade;
     }
 
-    public Site loadSite(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+    public Site loadSite(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration,
                                   ObjectDataType objectDataRequest, String id) throws Exception {
 
         return sharePointFacade.fetchSite(configuration, authenticatedWho.getToken(), id);
     }
 
-    public List<Site> loadSites(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration, ListFilter filter) {
+    public List<Site> loadSites(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration, ListFilter filter) {
 
         Optional<ListFilterWhere> parentId;
 

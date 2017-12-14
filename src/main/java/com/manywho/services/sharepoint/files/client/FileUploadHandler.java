@@ -7,8 +7,8 @@ import com.manywho.sdk.services.files.FileHandler;
 import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.sdk.services.types.system.$File;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.files.client.responses.SessionCreated;
 import com.manywho.services.sharepoint.files.client.responses.SessionResponseHandler;
 import com.manywho.services.sharepoint.files.client.responses.UploadResponseHandler;
@@ -27,15 +27,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.tika.Tika;
 import org.apache.tika.io.TikaInputStream;
-
 import java.io.IOException;
 import java.util.List;
 
-public class FileUploadHandler implements FileHandler<ApplicationConfiguration> {
-
+public class FileUploadHandler implements FileHandler<ServiceConfiguration> {
 
     private CloseableHttpClient httpclient;
-    private ServiceConfigurationImpl configuration;
+    private AppConfiguration configuration;
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0";
     private AuthenticatedWhoProvider authenticatedWhoProvider;
     private final Tika tika;
@@ -43,7 +41,7 @@ public class FileUploadHandler implements FileHandler<ApplicationConfiguration> 
     static private Integer MAX_FILE_SIZE = 62914560;
 
     @Inject
-    public FileUploadHandler(AuthenticatedWhoProvider authenticatedWhoProvider, ServiceConfigurationImpl configuration,
+    public FileUploadHandler(AuthenticatedWhoProvider authenticatedWhoProvider, AppConfiguration configuration,
                              Tika tika) {
         this.httpclient = HttpClients.createDefault();
         this.configuration = configuration;
@@ -52,12 +50,12 @@ public class FileUploadHandler implements FileHandler<ApplicationConfiguration> 
     }
 
     @Override
-    public List<$File> findAll(ApplicationConfiguration configuration, FileListFilter listFilter, String path) {
+    public List<$File> findAll(ServiceConfiguration configuration, FileListFilter listFilter, String path) {
         return Lists.newArrayList();
     }
 
     @Override
-    public $File upload(ApplicationConfiguration configuration, String path, FileUpload upload) {
+    public $File upload(ServiceConfiguration configuration, String path, FileUpload upload) {
         String driveId = FileIdExtractor.extractDriveIdFromFileId(path);
         String itemId = FileIdExtractor.extractDriveItemIdFromFileId(path);
 

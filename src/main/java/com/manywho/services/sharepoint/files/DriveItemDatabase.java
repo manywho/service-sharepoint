@@ -5,7 +5,7 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.files.facade.DriveFacade;
 import com.manywho.services.sharepoint.files.types.DriveItem;
 import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class DriveItemDatabase implements Database<ApplicationConfiguration, DriveItem> {
+public class DriveItemDatabase implements Database<ServiceConfiguration, DriveItem> {
 
     private AuthenticatedWhoProvider authenticatedWhoProvider;
     private DriveFacade driveFacade;
@@ -27,12 +27,12 @@ public class DriveItemDatabase implements Database<ApplicationConfiguration, Dri
     }
 
     @Override
-    public DriveItem find(ApplicationConfiguration configuration, String s) {
+    public DriveItem find(ServiceConfiguration configuration, String s) {
         return null;
     }
 
     @Override
-    public List<DriveItem> findAll(ApplicationConfiguration configuration, ListFilter listFilter) {
+    public List<DriveItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
 
         if (listFilter != null && listFilter.getWhere() != null) {
             Optional<ListFilterWhere> driveId  = listFilter.getWhere().stream()
@@ -62,32 +62,32 @@ public class DriveItemDatabase implements Database<ApplicationConfiguration, Dri
     }
 
     @Override
-    public DriveItem create(ApplicationConfiguration configuration, DriveItem drive) {
+    public DriveItem create(ServiceConfiguration configuration, DriveItem drive) {
         return null;
     }
 
     @Override
-    public List<DriveItem> create(ApplicationConfiguration configuration, List<DriveItem> list) {
+    public List<DriveItem> create(ServiceConfiguration configuration, List<DriveItem> list) {
         return null;
     }
 
     @Override
-    public void delete(ApplicationConfiguration configuration, DriveItem drive) {
+    public void delete(ServiceConfiguration configuration, DriveItem drive) {
 
     }
 
     @Override
-    public void delete(ApplicationConfiguration configuration, List<DriveItem> list) {
+    public void delete(ServiceConfiguration configuration, List<DriveItem> list) {
 
     }
 
     @Override
-    public DriveItem update(ApplicationConfiguration configuration, DriveItem drive) {
+    public DriveItem update(ServiceConfiguration configuration, DriveItem drive) {
         return null;
     }
 
     @Override
-    public List<DriveItem> update(ApplicationConfiguration configuration, List<DriveItem> list) {
+    public List<DriveItem> update(ServiceConfiguration configuration, List<DriveItem> list) {
         return null;
     }
 }

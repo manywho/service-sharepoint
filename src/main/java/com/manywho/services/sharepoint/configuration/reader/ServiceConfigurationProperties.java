@@ -1,8 +1,8 @@
-package com.manywho.services.sharepoint.configuration;
+package com.manywho.services.sharepoint.configuration.reader;
 
 import java.util.Properties;
 
-public class ServiceConfigurationProperties implements ServiceConfiguration {
+public class ServiceConfigurationProperties implements ServiceConfigurationInterface {
     protected Properties properties;
 
     public ServiceConfigurationProperties() {

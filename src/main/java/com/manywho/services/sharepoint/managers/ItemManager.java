@@ -2,10 +2,9 @@ package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
-import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.manywho.services.sharepoint.types.Item;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +21,7 @@ public class ItemManager {
         this.sharePointFacade = sharePointFacade;
     }
 
-    public Item loadItem(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+    public Item loadItem(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration,
                                    ObjectDataType objectDataRequest, String id) throws Exception {
         // get item id
         String itemId = id;
@@ -35,7 +34,7 @@ public class ItemManager {
     }
 
 
-    public List<Item> loadItems(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+    public List<Item> loadItems(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration,
                                 ListFilter filter) {
 
         Optional<ListFilterWhere> itemOptional = Optional.empty();

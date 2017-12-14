@@ -2,10 +2,8 @@ package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
-import com.manywho.sdk.api.run.elements.type.MObject;
-import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import com.manywho.services.sharepoint.types.SharePointList;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +20,7 @@ public class ListManager {
         this.sharepointFacadeFactory = sharepointFacadeFactory;
     }
 
-    public SharePointList loadList(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration,
+    public SharePointList loadList(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration,
                                    String id) {
 
             String[] parts = id.split("#");
@@ -35,7 +33,7 @@ public class ListManager {
     }
 
 
-    public List<SharePointList> loadLists(AuthenticatedWho authenticatedWho, ApplicationConfiguration configuration, ListFilter filter) {
+    public List<SharePointList> loadLists(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration, ListFilter filter) {
 
         if (filter != null && filter.getWhere() != null) {
             Optional<ListFilterWhere> siteId  = filter.getWhere().stream()

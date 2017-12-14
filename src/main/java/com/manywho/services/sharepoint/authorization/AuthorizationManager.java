@@ -9,23 +9,23 @@ import com.manywho.sdk.services.configuration.ConfigurationParser;
 import com.manywho.sdk.services.types.TypeBuilder;
 import com.manywho.sdk.services.types.system.$User;
 import com.manywho.sdk.services.types.system.AuthorizationAttribute;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 
 public class AuthorizationManager {
     private final ConfigurationParser configurationParser;
-    private final ServiceConfigurationImpl configuration;
+    private final AppConfiguration configuration;
     private final TypeBuilder typeBuilder;
 
     @Inject
-    public AuthorizationManager(ConfigurationParser configurationParser, TypeBuilder typeBuilder, ServiceConfigurationImpl configuration) {
+    public AuthorizationManager(ConfigurationParser configurationParser, TypeBuilder typeBuilder, AppConfiguration configuration) {
         this.configuration = configuration;
         this.configurationParser = configurationParser;
         this.typeBuilder = typeBuilder;
     }
 
     public ObjectDataResponse authorization(AuthenticatedWho authenticatedWho, ObjectDataRequest request) {
-        ApplicationConfiguration applicationConfiguration = configurationParser.from(request);
+        ServiceConfiguration serviceConfiguration = configurationParser.from(request);
 
 //        var client = Clients.builder()
 //                .setClientCredentials(new TokenClientCredentials(configuration.getApiKey()))
@@ -122,7 +122,7 @@ public class AuthorizationManager {
 
     public ObjectDataResponse groups(ObjectDataRequest request) {
         return null;
-//        ApplicationConfiguration configuration = configurationParser.from(request);
+//        ServiceConfiguration configuration = configurationParser.from(request);
 //
 //        var client = OktaClientFactory.create(configuration);
 //
@@ -145,7 +145,7 @@ public class AuthorizationManager {
 
     public ObjectDataResponse users(ObjectDataRequest request) {
         return null;
-//        ApplicationConfiguration configuration = configurationParser.from(request);
+//        ServiceConfiguration configuration = configurationParser.from(request);
 //
 //        var client = OktaClientFactory.create(configuration);
 //

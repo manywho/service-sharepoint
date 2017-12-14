@@ -1,9 +1,11 @@
-package com.manywho.services.sharepoint.configuration;
+package com.manywho.services.sharepoint;
 
+
+import com.manywho.services.sharepoint.configuration.reader.ServiceConfigurationDefault;
 
 import javax.inject.Inject;
 
-public class ServiceConfigurationImpl {
+public class AppConfiguration {
     private ServiceConfigurationDefault serviceConfigurationDefault;
 
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
@@ -11,7 +13,7 @@ public class ServiceConfigurationImpl {
     public static final String AUTH_TYPE = "SharePoint Service";
 
     @Inject
-    public ServiceConfigurationImpl(ServiceConfigurationDefault serviceConfigurationDefault) {
+    public AppConfiguration(ServiceConfigurationDefault serviceConfigurationDefault) {
         this.serviceConfigurationDefault = serviceConfigurationDefault;
     }
 

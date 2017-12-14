@@ -1,7 +1,7 @@
 package com.manywho.services.sharepoint.oauth;
 
 import com.google.inject.Inject;
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import org.apache.http.Consts;
@@ -22,12 +22,12 @@ import java.util.concurrent.Future;
 
 public class AzureHttpClient {
     private CloseableHttpClient httpclient;
-    private ServiceConfigurationImpl configuration;
+    private AppConfiguration configuration;
     private final static String AUTHORITY = "https://login.windows.net/common";
     private final static String RESOURCE_GRAPH = "00000003-0000-0000-c000-000000000000";
 
     @Inject
-    public AzureHttpClient(ServiceConfigurationImpl configuration){
+    public AzureHttpClient(AppConfiguration configuration){
         this.httpclient = HttpClients.createDefault();
         this.configuration = configuration;
     }
@@ -35,7 +35,7 @@ public class AzureHttpClient {
     public AuthResponse getAccessTokenByAuthCode(String authCode, String redirectUri, String clientId,
                                                  String clientSecret, String resource) {
         try {
-            HttpPost httpPost = new HttpPost(String.format("%s/%s", ServiceConfigurationImpl.AUTHORITY_URI, "oauth2/token"));
+            HttpPost httpPost = new HttpPost(String.format("%s/%s", AppConfiguration.AUTHORITY_URI, "oauth2/token"));
 
             List<NameValuePair> formParams = new ArrayList<>();
 

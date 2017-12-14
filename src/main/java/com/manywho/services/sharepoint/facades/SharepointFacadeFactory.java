@@ -1,6 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -20,7 +20,7 @@ public class SharepointFacadeFactory {
     }
 
     public SharePointFacadeInterface get(String typeIdentityProvider) {
-        if (typeIdentityProvider.equals(ServiceConfigurationImpl.AUTH_TYPE)) {
+        if (typeIdentityProvider.equals(AppConfiguration.AUTH_TYPE)) {
 
             return sharePointOdataFacade;
         } else {

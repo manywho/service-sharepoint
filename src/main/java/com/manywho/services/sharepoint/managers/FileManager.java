@@ -1,6 +1,5 @@
 package com.manywho.services.sharepoint.managers;
 
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.manywho.services.sharepoint.services.FileService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
@@ -24,7 +23,7 @@ public class FileManager {
 
 //    public ObjectDataResponse uploadFile(String token, FileDataRequest fileDataRequest, FormDataMultiPart formDataMultiPart) throws Exception {
 //        BodyPart bodyPart = fileService.getFilePart(formDataMultiPart);
-//        ServiceConfigurationImpl configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), ServiceConfigurationImpl.class);
+//        AppConfiguration configuration = propertyParser.parse(fileDataRequest.getConfigurationValues(), AppConfiguration.class);
 //
 //        if (bodyPart != null) {
 //            return sharePointFacade.uploadFileToSharePoint(token, fileDataRequest.getResourcePath(), bodyPart);

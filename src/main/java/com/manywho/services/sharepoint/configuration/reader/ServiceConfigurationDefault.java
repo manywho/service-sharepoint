@@ -1,12 +1,12 @@
-package com.manywho.services.sharepoint.configuration;
+package com.manywho.services.sharepoint.configuration.reader;
 
 import com.google.common.base.CaseFormat;
 
 import javax.inject.Inject;
 
-public class ServiceConfigurationDefault implements ServiceConfiguration {
-    private ServiceConfiguration environment;
-    private ServiceConfiguration properties;
+public class ServiceConfigurationDefault implements ServiceConfigurationInterface {
+    private ServiceConfigurationInterface environment;
+    private ServiceConfigurationInterface properties;
 
     @Inject
     public ServiceConfigurationDefault(ServiceConfigurationEnvironmentVariables environment,

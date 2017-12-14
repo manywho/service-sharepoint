@@ -1,8 +1,8 @@
 package com.manywho.services.sharepoint.managers;
 
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -18,16 +18,23 @@ public class DescribeTypesManager {
 
     private final static String AUTHORITY = "https://login.windows.net/common";
     private final static String RESOURCE_GRAPH = "00000003-0000-0000-c000-000000000000";
-    private ServiceConfigurationImpl applicationConfiguration;
+    private AppConfiguration applicationConfiguration;
     private SharePointOdataFacade sharePointOdataFacade;
 
     @Inject
-    public DescribeTypesManager(ServiceConfigurationImpl configuration, SharePointOdataFacade sharePointOdataFacade) {
+    public DescribeTypesManager(AppConfiguration configuration, SharePointOdataFacade sharePointOdataFacade) {
         this.applicationConfiguration = configuration;
         this.sharePointOdataFacade = sharePointOdataFacade;
     }
 
-    public List<TypeElement> getTypeElements(ApplicationConfiguration configuration) {
+    /**
+     *  This method is used in the description, each list created by the user will be a dynamic type in the sharepoint
+     *  service
+     *
+     * @param configuration
+     * @return
+     */
+    public List<TypeElement> getTypeElements(ServiceConfiguration configuration) {
 
         try {
             AuthenticationResult authenticationResult  = getAccessTokenFromUserCredentials(RESOURCE_GRAPH,

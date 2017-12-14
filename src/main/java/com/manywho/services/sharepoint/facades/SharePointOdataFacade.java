@@ -5,7 +5,7 @@ import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
 import com.manywho.services.sharepoint.services.file.FileSharePointService;
@@ -13,6 +13,8 @@ import com.manywho.services.sharepoint.types.Item;
 import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.Site;
 import com.manywho.services.sharepoint.utilities.IdExtractor;
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -44,7 +46,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ApplicationConfiguration configuration, String token) {
+    public List<Site> fetchSites(ServiceConfiguration configuration, String token) {
         //this line should work but it doesn't
         //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
         // we fetch groups
@@ -60,7 +62,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return responseSites(listSitesByGroups, "");
     }
 
-    private List<ClientEntity> fetchSiteByGroup(ApplicationConfiguration configuration, String token, String groupId) {
+    private List<ClientEntity> fetchSiteByGroup(ServiceConfiguration configuration, String token, String groupId) {
         String urlEntity = String.format("groups/%s/sites/root", groupId);
         List<ClientEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
@@ -69,7 +71,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ApplicationConfiguration configuration, String token, String parentId) {
+    public List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId) {
         String url = String.format("sites/%s/sites", parentId);
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, url);
 
@@ -77,7 +79,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public Site fetchSite(ApplicationConfiguration configuration, String token, String id) {
+    public Site fetchSite(ServiceConfiguration configuration, String token, String id) {
         String urlEntity = String.format("sites/%s", id);
         List<ClientEntity> sites = new ArrayList<>();
         sites.add(0, getEntitySetResponse(token, urlEntity).getBody());
@@ -86,7 +88,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<SharePointList> fetchLists(ApplicationConfiguration configuration, String token, String idSite, boolean fullType) {
+    public List<SharePointList> fetchLists(ServiceConfiguration configuration, String token, String idSite, boolean fullType) {
         String urlEntity = String.format("sites/%s/lists", idSite);
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
 
@@ -94,18 +96,35 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<TypeElement> fetchAllListTypes(ApplicationConfiguration configuration, String token) {
-        List<TypeElement> typeElements = new ArrayList<>();
-        String groupFilter = "groups?$filter=groupTypes/any(c:c+eq+'Unified')";
+    public List<TypeElement> fetchAllListTypes(ServiceConfiguration configuration, String token) {
+        List<TypeElement>  typeElements = new ArrayList<>();
+        String groupFilter= "groups?$filter=groupTypes/any(c:c+eq+'Unified')";
 
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, groupFilter);
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
+
+        Flowable<ClientEntity> batches = Flowable.fromIterable(listGroups);
+
+        List<TypeElement> typeElements1 = batches.parallel()
+                .runOn(Schedulers.computation())
+                .map(group -> fetchTypeElementsByGroup(configuration, token, group))
+                .flatMap(Flowable::fromIterable)
+                .sequential()
+                .toList()
+                .blockingGet();
+
+
+        typeElements.addAll(typeElements1);
+
+        return typeElements;
+    }
+
+    private List<TypeElement> fetchTypeElementsByGroup(ServiceConfiguration configuration, String token, ClientEntity group){
+        List<TypeElement> typeElements = new ArrayList<>();
         List<ClientEntity> listSitesByGroups = new ArrayList<>();
 
-        for (ClientEntity group : listGroups) {
-            List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
-            listSitesByGroups.addAll(sites);
-        }
+        List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
+        listSitesByGroups.addAll(sites);
 
         for (ClientEntity site : listSitesByGroups) {
             String siteName = site.getProperty("name").getValue().toString();
@@ -118,14 +137,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                 ClientValue infoList = list.getProperty("list").getValue();
                 String displayName = infoList.asComplex().get("template").getValue().asPrimitive().toString();
 
-                if (!configuration.getIncludeDefaultLists()) {
-                    if (Objects.equals("genericList", displayName)) {
-                        TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
-                        if (typeElement != null) {
-                            typeElements.add(typeElement);
-                        }
-                    }
-                } else {
+                if (Objects.equals("genericList", displayName)) {
                     TypeElement typeElement = getTypeElement(token, siteId, siteName, list);
                     if (typeElement != null) {
                         typeElements.add(typeElement);
@@ -136,9 +148,6 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
         return typeElements;
     }
-
-
-
 
     private TypeElement getTypeElement(String token, String siteId, String siteName, ClientEntity list) {
         String listName = list.getProperty("name").getValue().toString();
@@ -189,7 +198,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public SharePointList fetchList(ApplicationConfiguration configuration, String token, String idSite, String idList) {
+    public SharePointList fetchList(ServiceConfiguration configuration, String token, String idSite, String idList) {
         String entryPoint = String.format("sites/%s/lists/%s", idSite, idList);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
         List<ClientEntity> lists = new ArrayList<>();
@@ -199,12 +208,12 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<SharePointList> fetchListsRoot(ApplicationConfiguration configuration, String token) {
+    public List<SharePointList> fetchListsRoot(ServiceConfiguration configuration, String token) {
         return responseLists(getEntitiesSetResponse(token, "sites/root/lists").getBody().getEntities(), "", false);
     }
 
     @Override
-    public Item fetchItem(ApplicationConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public Item fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
         String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
@@ -215,7 +224,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Item> fetchItems(ApplicationConfiguration configuration, String token, String listIdUnique) {
+    public List<Item> fetchItems(ServiceConfiguration configuration, String token, String listIdUnique) {
         String siteId = IdExtractor.extractSiteId(listIdUnique);
         String listId = IdExtractor.extractListId(listIdUnique);
         String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
@@ -226,7 +235,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<MObject> fetchTypesFromLists(ApplicationConfiguration configuration, String token, String developerName,
+    public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
                                              List<ObjectDataTypeProperty> properties) {
 
         String entryPoint = String.format("%s/items", developerName);
@@ -239,7 +248,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public MObject fetchTypeFromList(ApplicationConfiguration configuration, String token, String developerName,
+    public MObject fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName,
                                      String itemId, List<ObjectDataTypeProperty> properties) {
 
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
@@ -259,7 +268,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public MObject updateTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
+    public MObject updateTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
 
         URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
@@ -281,7 +290,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
 
     @Override
-    public MObject createTypeList(ApplicationConfiguration configuration, String token, String developerName, List<Property> properties) {
+    public MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties) {
         String itemId = null;
 
         URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)

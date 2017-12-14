@@ -1,7 +1,6 @@
 package com.manywho.services.sharepoint.files.facade;
 
-import com.manywho.sdk.services.types.system.$File;
-import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
+import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.files.types.Drive;
 import com.manywho.services.sharepoint.files.types.DriveItem;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
@@ -34,7 +33,7 @@ public class DriveFacade {
         this.fileSharePointService = fileSharePointService;
     }
 
-    public List<Drive> fetchDrives(ApplicationConfiguration configuration, String token) {
+    public List<Drive> fetchDrives(ServiceConfiguration configuration, String token) {
         String urlEntity = String.format("/me/drives");
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
@@ -50,20 +49,20 @@ public class DriveFacade {
         return listDrives;
     }
 
-    public List<DriveItem> fetchDriveItemsRoot(ApplicationConfiguration configuration, String token, String driveId) {
+    public List<DriveItem> fetchDriveItemsRoot(ServiceConfiguration configuration, String token, String driveId) {
         String path = String.format("/drives/%s/root/children", driveId);
 
         return fetchDriveItemsInternal(configuration, token, path, driveId, "root");
     }
 
-    public List<DriveItem> fetchDriveItems(ApplicationConfiguration configuration, String token, String driveId, String parentDriveItemId) {
+    public List<DriveItem> fetchDriveItems(ServiceConfiguration configuration, String token, String driveId, String parentDriveItemId) {
         String path = String.format("/drives/%s/items/%s/children", driveId, parentDriveItemId);
 
         return fetchDriveItemsInternal(configuration, token, path, driveId, parentDriveItemId);
     }
 
-    private List<DriveItem> fetchDriveItemsInternal(ApplicationConfiguration configuration, String token, String path,
-                                                   String driveId, String parentItemId) {
+    private List<DriveItem> fetchDriveItemsInternal(ServiceConfiguration configuration, String token, String path,
+                                                    String driveId, String parentItemId) {
 
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(path).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);

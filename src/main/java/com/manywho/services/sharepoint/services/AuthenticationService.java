@@ -6,7 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.manywho.sdk.api.run.EngineValue;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
-import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
+import com.manywho.services.sharepoint.AppConfiguration;
 import com.manywho.services.sharepoint.oauth.AuthResponse;
 import com.manywho.services.sharepoint.oauth.AzureHttpClient;
 import org.json.JSONObject;
@@ -17,11 +17,11 @@ import java.util.UUID;
 
 public class AuthenticationService {
     public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
-    private ServiceConfigurationImpl serviceConfiguration;
+    private AppConfiguration serviceConfiguration;
     private AzureHttpClient azureHttpClient;
 
     @Inject
-    public AuthenticationService(ServiceConfigurationImpl serviceConfiguration, AzureHttpClient azureHttpClient) {
+    public AuthenticationService(AppConfiguration serviceConfiguration, AzureHttpClient azureHttpClient) {
         this.serviceConfiguration = serviceConfiguration;
         this.azureHttpClient = azureHttpClient;
     }
@@ -29,7 +29,7 @@ public class AuthenticationService {
     public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) throws Exception {
         AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
-                ServiceConfigurationImpl.REDIRECT_URI,
+                AppConfiguration.REDIRECT_URI,
                 serviceConfiguration.getOauth2ClientId(),
                 serviceConfiguration.getOauth2ClientSecret(),
                 RESOURCE_ID);
@@ -40,7 +40,7 @@ public class AuthenticationService {
         authenticatedWhoResult.setDirectoryName("SharePoint");
         authenticatedWhoResult.setEmail(jwt.getClaim("unique_name").asString());
         authenticatedWhoResult.setFirstName(jwt.getClaim("given_name").asString());
-        authenticatedWhoResult.setIdentityProvider(ServiceConfigurationImpl.AUTH_TYPE);
+        authenticatedWhoResult.setIdentityProvider(AppConfiguration.AUTH_TYPE);
         authenticatedWhoResult.setLastName(jwt.getClaim("family_name").asString());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(serviceConfiguration.getOauth2ClientId());
@@ -114,7 +114,7 @@ public class AuthenticationService {
 
 
         if (Objects.equals(getConfigValue(credentials, "Authentication Strategy"), "SuperUser")) {
-            authenticatedWhoResult.setIdentityProvider(ServiceConfigurationImpl.AUTH_TYPE);
+            authenticatedWhoResult.setIdentityProvider(AppConfiguration.AUTH_TYPE);
             String token = azureHttpClient.getAccessTokenFromUserCredentials(getConfigValue(credentials, "Username"), getConfigValue(credentials, "Password"))
                     .getAccessToken();
 

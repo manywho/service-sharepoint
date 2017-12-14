@@ -1,8 +1,8 @@
-package com.manywho.services.sharepoint.configuration;
+package com.manywho.services.sharepoint.configuration.reader;
 
 import java.util.Map;
 
-public class ServiceConfigurationEnvironmentVariables implements ServiceConfiguration {
+public class ServiceConfigurationEnvironmentVariables implements ServiceConfigurationInterface {
     protected Map<String, String> environmentVariables;
 
     public ServiceConfigurationEnvironmentVariables() {
