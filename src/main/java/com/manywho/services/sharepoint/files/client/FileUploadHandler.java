@@ -9,30 +9,26 @@ import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.configuration.ServiceConfigurationImpl;
-import com.manywho.services.sharepoint.files.client.responses.*;
+import com.manywho.services.sharepoint.files.client.responses.SessionCreated;
+import com.manywho.services.sharepoint.files.client.responses.SessionResponseHandler;
+import com.manywho.services.sharepoint.files.client.responses.UploadResponseHandler;
+import com.manywho.services.sharepoint.files.client.responses.UploadStatus;
 import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.tika.Tika;
 import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public class FileUploadHandler implements FileHandler<ApplicationConfiguration> {
@@ -142,51 +138,6 @@ public class FileUploadHandler implements FileHandler<ApplicationConfiguration> 
 
         throw new RuntimeException("problem uploading file");
     }
-
-
-
-//
-//    private String uploadFileRaw(String url, FileUpload upload) {
-//
-//        byte[] bytes;
-//        try {
-//            bytes = IOUtils.toByteArray(upload.getContent());
-//        } catch (IOException e) {
-//            throw new RuntimeException("Problem uploading file");
-//        }
-//
-//        HttpPut httpPut = new HttpPut(url);
-//
-//        int off = 0;
-//        int BUFFER_SIZE = 327680;
-//        int size = bytes.length;
-//
-//        do {
-//            int toUpload = off + BUFFER_SIZE - 1;
-//
-//            if (toUpload >= size) {
-//                toUpload = size -1;
-//            }
-//
-//            ByteArrayEntity byteArrayEntity = new ByteArrayEntity(bytes, off, toUpload - off + 1);
-//
-//            httpPut.setHeader("Content-Range", String.format("bytes %s-%s/%s", off, toUpload , size));
-//            httpPut.setEntity(byteArrayEntity);
-//            try {
-//                UploadStatus uploadStatus = (UploadStatus) httpclient.execute(httpPut, new UploadResponseHandler());
-//                if (uploadStatus.isUploadFinished()) {
-//                    return uploadStatus.getId();
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            off =  off + BUFFER_SIZE;
-//        } while (off < size);
-//
-//        throw new RuntimeException("Problem uploading file");
-//    }
-
 
     private SessionCreated getSession(String token, String driveId, String itemId, String filename) {
 
