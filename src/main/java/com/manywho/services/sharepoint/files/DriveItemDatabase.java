@@ -51,7 +51,7 @@ public class DriveItemDatabase implements Database<ApplicationConfiguration, Dri
                 return driveFacade.fetchDriveItemsRoot(configuration, authenticatedWhoProvider.get().getToken(),
                         driveId.get().getContentValue());
             } else {
-                String parentItemId = FileIdExtractor.extractDriveItemId(driveItemId.get().getContentValue());
+                String parentItemId = FileIdExtractor.extractDriveItemIdFromUniqueId(driveItemId.get().getContentValue());
 
                 return driveFacade.fetchDriveItems(configuration, authenticatedWhoProvider.get().getToken(),
                         driveId.get().getContentValue(), parentItemId);

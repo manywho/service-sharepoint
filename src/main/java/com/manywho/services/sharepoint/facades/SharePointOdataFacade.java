@@ -224,11 +224,6 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
         return responseItems(entitySetResponse.getBody().getEntities(), siteId, listId);
     }
-//
-//    public MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-//        fileSharePointService.uploadSmallFile(token, path, bodyPart);
-//        return new ObjectDataResponse();
-//    }
 
     @Override
     public List<MObject> fetchTypesFromLists(ApplicationConfiguration configuration, String token, String developerName,

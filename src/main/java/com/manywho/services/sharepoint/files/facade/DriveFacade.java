@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.files.facade;
 
+import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.configuration.ApplicationConfiguration;
 import com.manywho.services.sharepoint.files.types.Drive;
 import com.manywho.services.sharepoint.files.types.DriveItem;
@@ -61,7 +62,7 @@ public class DriveFacade {
         return fetchDriveItemsInternal(configuration, token, path, driveId, parentDriveItemId);
     }
 
-    public List<DriveItem> fetchDriveItemsInternal(ApplicationConfiguration configuration, String token, String path,
+    private List<DriveItem> fetchDriveItemsInternal(ApplicationConfiguration configuration, String token, String path,
                                                    String driveId, String parentItemId) {
 
         URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(path).build();
