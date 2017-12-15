@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.authorization;
+package com.manywho.services.sharepoint.auth.authorization;
 
 import com.google.inject.Provider;
 import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;

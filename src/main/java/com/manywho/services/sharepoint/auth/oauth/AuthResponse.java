@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.oauth;
+package com.manywho.services.sharepoint.auth.oauth;
 
 public class AuthResponse {
     private String id_token;

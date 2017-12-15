@@ -8,9 +8,6 @@ import com.manywho.sdk.services.database.RawDatabase;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.managers.TypeItemManager;
-import com.manywho.services.sharepoint.types.Item;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.types.Site;
 
 import java.util.List;
 

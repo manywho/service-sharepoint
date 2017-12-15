@@ -20,7 +20,7 @@ public class SharepointFacadeFactory {
     }
 
     public SharePointFacadeInterface get(String typeIdentityProvider) {
-        if (typeIdentityProvider.equals(AppConfiguration.AUTH_TYPE)) {
+        if (typeIdentityProvider.equals(AppConfiguration.ODATA_TYPE)) {
 
             return sharePointOdataFacade;
         } else {

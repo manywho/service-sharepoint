@@ -2,16 +2,14 @@ package com.manywho.services.sharepoint.facades;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
+import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.DynamicTypesService;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
-import com.manywho.services.sharepoint.services.file.FileSharePointService;
-import com.manywho.services.sharepoint.types.Item;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.types.Site;
+import com.manywho.services.sharepoint.types.*;
 import com.manywho.services.sharepoint.utilities.IdExtractor;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
@@ -35,14 +33,40 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
-    private FileSharePointService fileSharePointService;
 
     @Inject
-    public SharePointOdataFacade(ObjectMapperService objectMapperService, FileSharePointService fileSharePointService) {
+    public SharePointOdataFacade(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
-        this.fileSharePointService = fileSharePointService;
+    }
+
+    @Override
+    public List<Group> fetchGroups(ServiceConfiguration configuration, String token, ListFilter listFilter) {
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups?$filter=groupTypes/any(c:c+eq+'Unified')");
+        List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
+
+        List<Group> objectCollection = new ArrayList<>();
+
+        for (ClientEntity groupEntity : listGroups) {
+            objectCollection.add(this.objectMapperService.buildManyWhoGroupObject(groupEntity));
+        }
+
+        return objectCollection;
+    }
+
+    @Override
+    public List<User> fetchUsers(ServiceConfiguration configuration, String token, ListFilter listFilter) {
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users");
+        List<ClientEntity> listUsers = sitesEntitySetResponse.getBody().getEntities();
+
+        List<User> objectCollection = new ArrayList<>();
+
+        for (ClientEntity userEntity : listUsers) {
+            objectCollection.add(this.objectMapperService.buildManyWhoUserObject(userEntity));
+        }
+
+        return objectCollection;
     }
 
     @Override
@@ -315,6 +339,15 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         });
 
         return fetchTypeFromList(configuration, token, developerName, itemId, propertyCollection);
+    }
+
+    @Override
+    public String getUserId(ServiceConfiguration configuration, String token) {
+        URI uri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment("me").build();
+
+        ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(uri);
+        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        return entitySetRequest.execute().getBody().getProperty("id").getValue().toString();
     }
 
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {

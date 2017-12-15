@@ -7,8 +7,8 @@ import com.manywho.sdk.api.run.EngineValue;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
 import com.manywho.services.sharepoint.AppConfiguration;
-import com.manywho.services.sharepoint.oauth.AuthResponse;
-import com.manywho.services.sharepoint.oauth.AzureHttpClient;
+import com.manywho.services.sharepoint.auth.oauth.AuthResponse;
+import com.manywho.services.sharepoint.auth.oauth.AzureHttpClient;
 import org.json.JSONObject;
 import javax.inject.Inject;
 import java.util.Objects;
@@ -40,7 +40,7 @@ public class AuthenticationService {
         authenticatedWhoResult.setDirectoryName("SharePoint");
         authenticatedWhoResult.setEmail(jwt.getClaim("unique_name").asString());
         authenticatedWhoResult.setFirstName(jwt.getClaim("given_name").asString());
-        authenticatedWhoResult.setIdentityProvider(AppConfiguration.AUTH_TYPE);
+        authenticatedWhoResult.setIdentityProvider(AppConfiguration.ODATA_TYPE);
         authenticatedWhoResult.setLastName(jwt.getClaim("family_name").asString());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(serviceConfiguration.getOauth2ClientId());
@@ -114,7 +114,7 @@ public class AuthenticationService {
 
 
         if (Objects.equals(getConfigValue(credentials, "Authentication Strategy"), "SuperUser")) {
-            authenticatedWhoResult.setIdentityProvider(AppConfiguration.AUTH_TYPE);
+            authenticatedWhoResult.setIdentityProvider(AppConfiguration.ODATA_TYPE);
             String token = azureHttpClient.getAccessTokenFromUserCredentials(getConfigValue(credentials, "Username"), getConfigValue(credentials, "Password"))
                     .getAccessToken();
 

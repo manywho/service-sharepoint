@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.authentication;
+package com.manywho.services.sharepoint.auth.authentication;
 
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;

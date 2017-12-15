@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.oauth;
+package com.manywho.services.sharepoint.auth.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;

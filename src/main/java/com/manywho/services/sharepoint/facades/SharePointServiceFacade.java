@@ -2,14 +2,13 @@ package com.manywho.services.sharepoint.facades;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
+import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.services.ObjectMapperService;
-import com.manywho.services.sharepoint.types.Item;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.types.Site;
+import com.manywho.services.sharepoint.types.*;
 import com.microsoft.services.sharepoint.*;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -26,18 +25,28 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
+    public List<Group> fetchGroups(ServiceConfiguration configuration, String token, ListFilter listFilter) {
+        throw new RuntimeException("fetch groups is not implemented for apps");
+    }
+
+    @Override
+    public List<User> fetchUsers(ServiceConfiguration configuration, String token, ListFilter listFilter) {
+        throw new RuntimeException("fetch users is not implemented for apps");
+    }
+
+    @Override
     public List<Site> fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
-        return null;
+        throw new RuntimeException("fetch sites is not implemented for apps");
     }
 
     @Override
     public List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId) {
-        return null;
+        throw new RuntimeException("fetch sites is not implemented for apps");
     }
 
     @Override
     public Site fetchSite(ServiceConfiguration configuration, String token, String id) {
-        return null;
+        throw new RuntimeException("fetch site is not implemented for apps");
     }
 
     @Override
@@ -68,7 +77,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
 
     @Override
     public SharePointList fetchList(ServiceConfiguration configuration, String token, String idSite, String idList) {
-        return null;
+        throw new RuntimeException("fetch a list is not implemented for apps");
     }
 
     @Override
@@ -94,18 +103,14 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
 
     @Override
     public Item fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
-        return null;
+        throw new RuntimeException("fetch item is not implemented for apps");
     }
 
     @Override
     public List<Item> fetchItems(ServiceConfiguration configuration, String token, String listId) {
-        return null;
+        throw new RuntimeException("fetch items is not implemented for apps");
     }
 
-//    @Override
-//    public MObject uploadFileToSharePoint(String token, String path, BodyPart bodyPart) {
-//        return null;
-//    }
 
     @Override
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
@@ -133,16 +138,32 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
 
     @Override
     public MObject fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, List<ObjectDataTypeProperty> properties) {
-        return null;
+        throw new RuntimeException("fetch types from list is not implemented for apps");
      }
 
     @Override
     public MObject updateTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
-        return null;
+        throw new RuntimeException("update a type is not implemented for apps");
     }
 
     @Override
     public MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties) {
+        throw new RuntimeException("create a new item for a list is not implemented for apps");
+    }
+
+    @Override
+    public String getUserId(ServiceConfiguration configuration, String token) {
+        Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
+        ListClient client = new ListClient(configuration.getHost(), "" , credentials);
+        ListenableFuture<String> properties = client.getUserProperties();
+        try {
+            String property = properties.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 }

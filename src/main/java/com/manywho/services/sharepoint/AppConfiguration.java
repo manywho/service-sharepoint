@@ -10,7 +10,7 @@ public class AppConfiguration {
 
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
-    public static final String AUTH_TYPE = "SharePoint Service";
+    public static final String ODATA_TYPE = "SharePoint Service";
 
     @Inject
     public AppConfiguration(ServiceConfigurationDefault serviceConfigurationDefault) {
@@ -18,7 +18,7 @@ public class AppConfiguration {
     }
 
     public String getName() {
-        return AUTH_TYPE;
+        return ODATA_TYPE;
     }
 
     public String getOauth2ClientId() {

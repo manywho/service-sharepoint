@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.oauth;
+package com.manywho.services.sharepoint.auth.oauth;
 
 import com.google.inject.Inject;
 import com.manywho.services.sharepoint.AppConfiguration;

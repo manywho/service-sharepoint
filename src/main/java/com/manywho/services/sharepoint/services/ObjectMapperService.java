@@ -6,43 +6,19 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.files.types.Drive;
 import com.manywho.services.sharepoint.files.types.DriveItem;
-import com.manywho.services.sharepoint.types.Item;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.types.Site;
+import com.manywho.services.sharepoint.types.*;
 import com.microsoft.services.sharepoint.SPList;
 import com.microsoft.services.sharepoint.SPListItem;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ObjectMapperService {
-    public Object buildManyWhoFileSystemObject(ClientEntity fileItem) {
-        MObject object = new MObject();
-        List<Property> properties = new ArrayList<>();
-//        properties.add(new Property("Kind", FilenameUtils.getExtension(fileItem.getName())));
-        properties.add(new Property("ID", fileItem.getProperty("id").getValue().toString()));
-//        properties.add(new Property("Mime Type"));
-//        properties.add(new Property("Name", fileItem.getProperty("name").getValue().toString()));
-//        properties.add(new Property("Description", fileItem.getProperty("name").getValue().toString()));
-//        properties.add(new Property("Date Created", fileItem.getDateTimeCreated()));
-//        properties.add(new Property("Date Modified", fileItem.getDateTimeLastModified()));
-//        properties.add(new Property("Download Uri", fileItem.getWebUrl()));
-//        properties.add(new Property("Embed Uri"));
-        properties.add(new Property("Icon Uri"));
-
-        object.setDeveloperName("$File");
-        object.setExternalId(fileItem.getProperty("id").getValue().toString());
-        object.setProperties(properties);
-
-        return object;
-    }
-
 
     public Site buildManyWhoSiteObject(ClientEntity siteItem, String parentId) {
         Site site = new Site();
@@ -211,47 +187,30 @@ public class ObjectMapperService {
         return item;
     }
 
-//
-//    public Object buildManyWhoObjectFile(File file, String content) {
-//        PropertyCollection properties = new PropertyCollection();
-//        properties.add(new Property("ID", file.getServerRelativeUrl()));
-//        properties.add(new Property("Name", file.getName()));
-//        properties.add(new Property("Description", file.getTitle()));
-//        properties.add(new Property("Content", content));
-//
-//        properties.add(new Property("Parent Folder", content));
-//        properties.add(new Property("Comments", content));
-//
-//        properties.add(new Property("Created At", file.getCreatedTime()));
-//        properties.add(new Property("Modified At", file.getLastModifiedTime()));
-//
-//        Object object = new Object();
-//        object.setDeveloperName(com.manywho.services.sharepoint.types.File.NAME);
-//        object.setExternalId(file.getServerRelativeUrl());
-//        object.setProperties(properties);
-//
-//        return object;
-//    }
-//
-//    public MObject buildManyWhoObjectFolder(Folder folderSharepoint) {
-//        SharePointList<com.manywho.services.sharepoint.types.File> files = null;
-//
-//
-//        PropertyCollection properties = new PropertyCollection();
-//        properties.add(new Property("ID", folderSharepoint.getServerRelativeUrl()));
-//        properties.add(new Property("Name", folderSharepoint.getName()));
-//        properties.add(new Property("Description", folderSharepoint.getName()));
-//        properties.add(new Property("Files", files));
-//        properties.add(new Property("Created At", folderSharepoint.getCreatedTime()));
-//        properties.add(new Property("Modified At", folderSharepoint.getLastModifiedTime()));
-//
-//        Object object = new Object();
-//        object.setDeveloperName(com.manywho.services.sharepoint.types.Folder.NAME);
-//        object.setExternalId(folderSharepoint.getServerRelativeUrl());
-//        object.setProperties(properties);
-//
-//        return object;
-//    }
+    public Group buildManyWhoGroupObject(ClientEntity groupEntity) {
+        Group group = new Group();
 
+        group.setId( groupEntity.getProperty("id").getValue().toString());
+        group.setDescription(groupEntity.getProperty("description").getValue().toString());
+        group.setDisplayName(groupEntity.getProperty("displayName").getValue().toString());
+        
+        return group;
+    }
 
+    public User buildManyWhoUserObject(ClientEntity userEntity) {
+        User group = new User();
+
+        group.setId( userEntity.getProperty("id").getValue().toString());
+        group.setDisplayName(userEntity.getProperty("displayName").getValue().toString());
+        group.setGivenName(userEntity.getProperty("givenName").getValue().toString());
+        group.setJobTitle(userEntity.getProperty("jobTitle").getValue().toString());
+        group.setMail(userEntity.getProperty("mail").getValue().toString());
+        group.setMobilePhone(userEntity.getProperty("mobilePhone").getValue().toString());
+        group.setOfficeLocation(userEntity.getProperty("officeLocation").getValue().toString());
+        group.setPreferredLanguage(userEntity.getProperty("preferredLanguage").getValue().toString());
+        group.setSurname(userEntity.getProperty("surname").getValue().toString());
+        group.setUserPrincipalName(userEntity.getProperty("userPrincipalName").getValue().toString());
+
+        return group;
+    }
 }
