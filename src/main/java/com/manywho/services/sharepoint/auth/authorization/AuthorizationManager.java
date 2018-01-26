@@ -14,27 +14,28 @@ import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.sdk.services.utils.Streams;
 import com.manywho.services.sharepoint.AppConfiguration;
-import com.manywho.services.sharepoint.auth.oauth.AzureHttpClient;
+import com.manywho.services.sharepoint.auth.oauth.AuthResponse;
+import com.manywho.services.sharepoint.auth.oauth.AuthenticationClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.services.sharepoint.constants.ApiConstants;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import com.manywho.services.sharepoint.types.Group;
-import com.microsoft.aad.adal4j.AuthenticationResult;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import static com.manywho.services.sharepoint.AppConfiguration.ODATA_TYPE;
 
 public class AuthorizationManager {
     private final ConfigurationParser configurationParser;
     private final AppConfiguration configuration;
     private final TypeBuilder typeBuilder;
     private SharepointFacadeFactory sharepointFacadeFactory;
-    private AzureHttpClient azureHttpClient;
+    private AuthenticationClient azureHttpClient;
 
     @Inject
     public AuthorizationManager(ConfigurationParser configurationParser, TypeBuilder typeBuilder,
                                 AppConfiguration configuration, SharepointFacadeFactory sharepointFacadeFactory,
-                                AzureHttpClient azureHttpClient) {
+                                AuthenticationClient azureHttpClient) {
 
         this.configuration = configuration;
         this.configurationParser = configurationParser;
@@ -102,8 +103,9 @@ public class AuthorizationManager {
                 }
 
 //              // We need to check if the authenticated user is a member of one of the given groups, by group ID
+                // we use graph for that tassk
               if (request.getAuthorization().hasGroups()) {
-                  List<Group> groups = sharepointFacadeFactory.get(authenticatedWho.getIdentityProvider())
+                  List<Group> groups = sharepointFacadeFactory.get(ApiConstants.AUTHENTICATION_TYPE_AZURE_AD)
                           .fetchGroups(serviceConfiguration, authenticatedWho.getToken(), null);
 
                     // If the user is a member of no groups, then they're automatically not authorized
@@ -147,14 +149,14 @@ public class AuthorizationManager {
 
         ServiceConfiguration configuration = configurationParser.from(request);
 
-        AuthenticationResult authenticationResult = null;
+        AuthResponse authenticationResult = null;
         try {
             authenticationResult = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
         } catch (Exception e) {
-            throw new RuntimeException("Not possible to get credentials");
+            throw new RuntimeException("Error fetching a valid token with the username and password", e);
         }
 
-        SharePointFacadeInterface sharePointFacadeInterface = sharepointFacadeFactory.get(ODATA_TYPE);
+        SharePointFacadeInterface sharePointFacadeInterface = sharepointFacadeFactory.get(ApiConstants.AUTHENTICATION_TYPE_AZURE_AD);
 
 
         // Build the required AuthorizationGroup objects out of the groups that Okta tells us about
@@ -176,17 +178,13 @@ public class AuthorizationManager {
 
     public ObjectDataResponse users(ObjectDataRequest request) {
         ServiceConfiguration configuration = configurationParser.from(request);
-        SharePointFacadeInterface sharePointFacadeInterface = sharepointFacadeFactory.get(ODATA_TYPE);
+        SharePointFacadeInterface sharePointFacadeInterface = sharepointFacadeFactory.get(ApiConstants.AUTHENTICATION_TYPE_AZURE_AD);
 
-        AuthenticationResult authenticationResult = null;
-        try {
-            authenticationResult = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
-        } catch (Exception e) {
-            throw new RuntimeException("Not possible to get credentials");
-        }
+        AuthResponse authResponse = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
+
 
         // Build the required AuthorizationUser objects out of the users that Okta tells us about
-        List<AuthorizationUser> users = Streams.asStream(sharePointFacadeInterface.fetchUsers(configuration, authenticationResult.getAccessToken(), null).iterator())
+        List<AuthorizationUser> users = Streams.asStream(sharePointFacadeInterface.fetchUsers(configuration, authResponse.getAccessToken(), null).iterator())
                 .map(user -> new AuthorizationUser(
                         user.getId(),
                         user.getDisplayName(),

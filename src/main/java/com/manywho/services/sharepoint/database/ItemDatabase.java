@@ -5,7 +5,7 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.managers.ItemManager;
+import com.manywho.services.sharepoint.database.items.ItemManager;
 import com.manywho.services.sharepoint.types.Item;
 
 import java.util.List;

@@ -1,22 +1,23 @@
-package com.manywho.services.sharepoint.managers;
+package com.manywho.services.sharepoint.database.lists;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import com.manywho.services.sharepoint.types.SharePointList;
+import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import org.apache.commons.lang3.StringUtils;
+
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ListManager {
+public class SharepointListManager {
     private SharepointFacadeFactory sharepointFacadeFactory;
 
     @Inject
-    public ListManager(SharepointFacadeFactory sharepointFacadeFactory) {
+    public SharepointListManager(SharepointFacadeFactory sharepointFacadeFactory) {
         this.sharepointFacadeFactory = sharepointFacadeFactory;
     }
 

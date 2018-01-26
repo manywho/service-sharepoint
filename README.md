@@ -13,6 +13,9 @@ Known limitations:
 - the limit of the files to be uploaded is 60MiB
 - the token from the Add-in works but then the service use a odata calls, Super User approach
 
+To authorize Boomi Flow app for all the organization the admin should give permissions following this link:
+
+https://login.microsoftonline.com/common/oauth2/authorize?client_id=332de6ad-b5a7-4102-9cea-259f5aba0eba&response_type=code&redirect_uri=https%3A%2F%2Fflow.manywho.com%2Fapi%2Frun%2F1%2Foauth2&nonce=1234&resource=00000002-0000-0000-c000-000000000000&prompt=admin_consent
 
 #### Running
 

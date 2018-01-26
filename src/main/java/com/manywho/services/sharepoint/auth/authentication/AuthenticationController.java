@@ -3,7 +3,6 @@ package com.manywho.services.sharepoint.auth.authentication;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
 import com.manywho.sdk.services.controllers.AbstractAuthenticationController;
-import com.manywho.services.sharepoint.services.AuthenticationService;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
@@ -11,10 +10,10 @@ import javax.ws.rs.Path;
 
 @Path("/authentication")
 public class AuthenticationController extends AbstractAuthenticationController {
-    private final AuthenticationService authenticationService;
+    private final UserFetcher authenticationService;
 
     @Inject
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(UserFetcher authenticationService) {
         this.authenticationService = authenticationService;
     }
 

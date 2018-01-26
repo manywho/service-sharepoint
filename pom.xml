@@ -7,7 +7,6 @@
     <groupId>com.manywho.services</groupId>
     <artifactId>sharepoint</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <repositories>
         <repository>
             <snapshots>
@@ -18,7 +17,6 @@
             <url>http://dl.bintray.com/msopentech/Maven</url>
         </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.manywho.sdk</groupId>
@@ -35,13 +33,11 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.4</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
             <version>4.5.4</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
@@ -58,19 +54,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
             <version>2.0.7</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>adal4j</artifactId>
-            <version>0.0.3</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-commons-api</artifactId>
@@ -81,44 +69,32 @@
             <artifactId>odata-commons-core</artifactId>
             <version>4.4.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-api</artifactId>
             <version>4.4.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.olingo</groupId>
             <artifactId>odata-client-core</artifactId>
             <version>4.4.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.github.scribejava</groupId>
             <artifactId>scribejava-apis</artifactId>
             <version>4.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.microsoft.services</groupId>
-            <artifactId>graph-services-java</artifactId>
-            <version>0.2.5</version>
-        </dependency>
-
         <dependency>
             <groupId>com.microsoft.services</groupId>
             <artifactId>files-services-java</artifactId>
             <version>1.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>com.microsoft.services</groupId>
             <artifactId>sharepoint-services-java</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

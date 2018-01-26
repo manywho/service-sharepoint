@@ -1,6 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 
-import com.manywho.services.sharepoint.AppConfiguration;
+import com.manywho.services.sharepoint.constants.ApiConstants;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
@@ -20,7 +20,8 @@ public class SharepointFacadeFactory {
     }
 
     public SharePointFacadeInterface get(String typeIdentityProvider) {
-        if (typeIdentityProvider.equals(AppConfiguration.ODATA_TYPE)) {
+
+        if (typeIdentityProvider.equals(ApiConstants.AUTHENTICATION_TYPE_AZURE_AD)) {
 
             return sharePointOdataFacade;
         } else {

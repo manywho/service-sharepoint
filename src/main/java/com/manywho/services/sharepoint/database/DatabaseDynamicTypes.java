@@ -7,17 +7,17 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.RawDatabase;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.managers.TypeItemManager;
+import com.manywho.services.sharepoint.database.dynamic.DynamicTypeManager;
 
 import java.util.List;
 
 public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
-    private TypeItemManager typeItemManager;
+    private DynamicTypeManager typeItemManager;
     private AuthenticatedWhoProvider authenticatedWhoProvider;
 
     @Inject
-    public DatabaseDynamicTypes(TypeItemManager typeItemManager, AuthenticatedWhoProvider authenticatedWhoProvider)
+    public DatabaseDynamicTypes(DynamicTypeManager typeItemManager, AuthenticatedWhoProvider authenticatedWhoProvider)
     {
         this.typeItemManager = typeItemManager;
         this.authenticatedWhoProvider = authenticatedWhoProvider;

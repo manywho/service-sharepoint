@@ -1,54 +1,73 @@
 package com.manywho.services.sharepoint.auth.oauth;
 
-public class AuthResponse {
-    private String id_token;
-    private String token_type;
-    private String scope;
-    private String expires_in;
-    private String ext_expires_in;
-    private String expires_on;
-    private String not_before;
-    private String resource;
-    private String access_token;
-    private String refresh_token;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public String getId_token() {
-        return id_token;
+public class AuthResponse {
+    @JsonProperty("id_token")
+    private String idToken;
+
+    @JsonProperty("token_type")
+    private String tokenType;
+
+    private String scope;
+
+    @JsonProperty("expires_in")
+    private String expiresIn;
+
+    @JsonProperty("ext_expires_in")
+    private String extExpiresIn;
+
+    @JsonProperty("expires_on")
+    private String expiresOn;
+
+    @JsonProperty("not_before")
+    private String notBefore;
+
+    private String resource;
+
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("refresh_token")
+    private String refreshToken;
+
+    public String getIdToken() {
+        return idToken;
     }
 
-    public String getToken_type() {
-        return token_type;
+    public String getTokenType() {
+        return tokenType;
     }
 
     public String getScope() {
         return scope;
     }
 
-    public String getExpires_in() {
-        return expires_in;
+    public String getExpiresIn() {
+        return expiresIn;
     }
 
-    public String getExt_expires_in() {
-        return ext_expires_in;
+    public String getExtExpiresIn() {
+        return extExpiresIn;
     }
 
-    public String getExpires_on() {
-        return expires_on;
+    public String getExpiresOn() {
+        return expiresOn;
     }
 
-    public String getNot_before() {
-        return not_before;
+    public String getNotBefore() {
+        return notBefore;
     }
 
     public String getResource() {
         return resource;
     }
 
-    public String getAccess_token() {
-        return access_token;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public String getRefresh_token() {
-        return refresh_token;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 }

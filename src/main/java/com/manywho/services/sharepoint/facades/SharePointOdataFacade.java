@@ -7,8 +7,10 @@ import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.services.DynamicTypesService;
-import com.manywho.services.sharepoint.services.ObjectMapperService;
+import com.manywho.services.sharepoint.constants.ApiConstants;
+import com.manywho.services.sharepoint.types.SharePointList;
+import com.manywho.services.sharepoint.database.dynamic.DynamicTypesService;
+import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.types.*;
 import com.manywho.services.sharepoint.utilities.IdExtractor;
 import io.reactivex.Flowable;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class SharePointOdataFacade implements SharePointFacadeInterface {
-    private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
+
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
@@ -183,8 +185,10 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                 .setTableName(String.format("sites/%s/lists/%s", siteId, list.getProperty("id").getValue().asPrimitive().toString()));
 
         // should be possible extends=columns in list but for some reason I can not access to those properties with olingo
-        ODataRetrieveResponse<ClientEntitySet> oDataRetrieveResponse = getEntitiesSetResponse(token, list.getNavigationLink("columns").getLink().toString().replace(GRAPH_ENDPOINT, ""));
+        ODataRetrieveResponse<ClientEntitySet> oDataRetrieveResponse = getEntitiesSetResponse(token, list.getNavigationLink("columns")
+                .getLink().toString().replace(ApiConstants.GRAPH_ENDPOINT_BETA, ""));
         List<ClientEntity> properties = oDataRetrieveResponse.getBody().getEntities();
+
         for (ClientEntity property : properties) {
             ContentType contentType = null;
 
@@ -263,7 +267,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                                              List<ObjectDataTypeProperty> properties) {
 
         String entryPoint = String.format("%s/items", developerName);
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).expand("fields").build();
+        URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(entryPoint).expand("fields").build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
@@ -275,7 +279,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     public MObject fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName,
                                      String itemId, List<ObjectDataTypeProperty> properties) {
 
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT)
+        URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA)
                 .appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(itemId)
@@ -294,7 +298,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     @Override
     public MObject updateTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties, String id) {
 
-        URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(id)
                 .appendEntitySetSegment("fields")
@@ -317,13 +321,13 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     public MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties) {
         String itemId = null;
 
-        URI itemUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
                 .build();
 
         itemId = DynamicTypesService.insertDynamicType(token, itemUri.toString());
 
-        URI itemUriUpdate = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(developerName)
+        URI itemUriUpdate = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(itemId)
                 .appendEntitySetSegment("fields")
@@ -343,7 +347,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
     @Override
     public String getUserId(ServiceConfiguration configuration, String token) {
-        URI uri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment("me").build();
+        URI uri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment("me").build();
 
         ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(uri);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
@@ -351,7 +355,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
+        URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
 
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
@@ -360,7 +364,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     private ODataRetrieveResponse<ClientEntity> getEntitySetResponse(String token, String entryPoint) {
-        URI entityUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).build();
+        URI entityUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(entryPoint).build();
         ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(entityUri);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         return entitySetRequest.execute();

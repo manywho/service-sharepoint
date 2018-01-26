@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.managers;
+package com.manywho.services.sharepoint.database.dynamic;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
@@ -11,12 +11,12 @@ import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
 import javax.inject.Inject;
 import java.util.List;
 
-public class TypeItemManager {
+public class DynamicTypeManager {
 
     private SharepointFacadeFactory sharepointFacadeFactory;
 
     @Inject
-    public TypeItemManager(SharepointFacadeFactory sharepointFacadeFactory){
+    public DynamicTypeManager(SharepointFacadeFactory sharepointFacadeFactory){
         this.sharepointFacadeFactory = sharepointFacadeFactory;
     }
 

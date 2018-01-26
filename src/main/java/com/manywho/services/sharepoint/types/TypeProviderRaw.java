@@ -5,7 +5,7 @@ import com.manywho.sdk.api.describe.DescribeServiceRequest;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.sdk.services.types.TypeProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.managers.DescribeTypesManager;
+import com.manywho.services.sharepoint.database.dynamic.DescribeDynamicTypesManager;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -14,10 +14,10 @@ import java.util.Objects;
 
 public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
 
-    private DescribeTypesManager describeTypesManager;
+    private DescribeDynamicTypesManager describeTypesManager;
 
     @Inject
-    public TypeProviderRaw(DescribeTypesManager describeTypesManager) {
+    public TypeProviderRaw(DescribeDynamicTypesManager describeTypesManager) {
         this.describeTypesManager = describeTypesManager;
     }
 

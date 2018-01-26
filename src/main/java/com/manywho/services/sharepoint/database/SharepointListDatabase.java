@@ -5,18 +5,18 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.managers.ListManager;
+import com.manywho.services.sharepoint.database.lists.SharepointListManager;
 import com.manywho.services.sharepoint.types.SharePointList;
 
 import java.util.List;
 
 public class SharepointListDatabase implements Database<ServiceConfiguration, SharePointList> {
 
-    private ListManager listManager;
+    private SharepointListManager listManager;
     private AuthenticatedWhoProvider authenticatedWhoProvider;
 
     @Inject
-    public SharepointListDatabase(ListManager listManager, AuthenticatedWhoProvider authenticatedWhoProvider) {
+    public SharepointListDatabase(SharepointListManager listManager, AuthenticatedWhoProvider authenticatedWhoProvider) {
         this.listManager = listManager;
         this.authenticatedWhoProvider = authenticatedWhoProvider;
     }

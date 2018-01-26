@@ -3,8 +3,7 @@ package com.manywho.services.sharepoint.files.facade;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.files.types.Drive;
 import com.manywho.services.sharepoint.files.types.DriveItem;
-import com.manywho.services.sharepoint.services.ObjectMapperService;
-import com.manywho.services.sharepoint.services.file.FileSharePointService;
+import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
@@ -12,30 +11,30 @@ import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.core.ODataClientFactory;
+
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_BETA;
+
 public class DriveFacade {
 
-    private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/beta";
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
-    private FileSharePointService fileSharePointService;
 
     @Inject
-    public DriveFacade(ObjectMapperService objectMapperService, FileSharePointService fileSharePointService) {
+    public DriveFacade(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
-        this.fileSharePointService = fileSharePointService;
     }
 
     public List<Drive> fetchDrives(ServiceConfiguration configuration, String token) {
         String urlEntity = String.format("/me/drives");
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
@@ -64,7 +63,7 @@ public class DriveFacade {
     private List<DriveItem> fetchDriveItemsInternal(ServiceConfiguration configuration, String token, String path,
                                                     String driveId, String parentItemId) {
 
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(path).build();
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(path).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();

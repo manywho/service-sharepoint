@@ -2,24 +2,21 @@ package com.manywho.services.sharepoint;
 
 
 import com.manywho.services.sharepoint.configuration.reader.ServiceConfigurationDefault;
+import com.manywho.services.sharepoint.constants.ApiConstants;
 
 import javax.inject.Inject;
 
+import static com.manywho.services.sharepoint.constants.ApiConstants.AUTHORITY_URI;
+
 public class AppConfiguration {
     private ServiceConfigurationDefault serviceConfigurationDefault;
-
-    public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
-    public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
-    public static final String ODATA_TYPE = "SharePoint Service";
 
     @Inject
     public AppConfiguration(ServiceConfigurationDefault serviceConfigurationDefault) {
         this.serviceConfigurationDefault = serviceConfigurationDefault;
     }
 
-    public String getName() {
-        return ODATA_TYPE;
-    }
+    public String getName() { return ApiConstants.AUTHENTICATION_TYPE_AZURE_AD; }
 
     public String getOauth2ClientId() {
         return this.serviceConfigurationDefault.get("oauth2.clientId");
@@ -42,5 +39,4 @@ public class AppConfiguration {
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
                 AUTHORITY_URI, this.getOauth2ClientId(), "User.Read" , "code");
     }
-
 }

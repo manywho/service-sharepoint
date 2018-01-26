@@ -2,7 +2,6 @@ package com.manywho.services.sharepoint.files.client.responses;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
@@ -27,7 +26,7 @@ public class UploadResponseHandler implements ResponseHandler {
                 return mapper.readValue(EntityUtils.toString(entity2), UploadStatus.class);
             }
         }
-        //IOUtils.toString(httpResponse.getEntity().getContent())
+
         throw new RuntimeException(httpResponse.getStatusLine().toString());
     }
 }

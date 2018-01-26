@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.managers;
+package com.manywho.services.sharepoint.database.items;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
@@ -37,8 +37,6 @@ public class ItemManager {
     public List<Item> loadItems(AuthenticatedWho authenticatedWho, ServiceConfiguration configuration,
                                 ListFilter filter) {
 
-        Optional<ListFilterWhere> itemOptional = Optional.empty();
-        Optional<ListFilterWhere> siteOptional = Optional.empty();
         Optional<ListFilterWhere> listOptional = Optional.empty();
 
         if (filter!= null) {

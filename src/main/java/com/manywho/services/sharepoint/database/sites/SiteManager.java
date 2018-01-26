@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.managers;
+package com.manywho.services.sharepoint.database.sites;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;

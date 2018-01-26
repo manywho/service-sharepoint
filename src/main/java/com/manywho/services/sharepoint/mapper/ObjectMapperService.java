@@ -1,9 +1,10 @@
-package com.manywho.services.sharepoint.services;
+package com.manywho.services.sharepoint.mapper;
 
 import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.files.types.Drive;
 import com.manywho.services.sharepoint.files.types.DriveItem;
 import com.manywho.services.sharepoint.types.*;

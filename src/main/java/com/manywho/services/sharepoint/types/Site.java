@@ -11,6 +11,9 @@ public class Site implements Type{
     @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
 
+    @Type.Property(name="Group ID", contentType = ContentType.String)
+    private String groupId;
+
     @Type.Property(name = "Created Date Time", contentType = ContentType.String)
     private String createdDateTime;
 
@@ -83,5 +86,9 @@ public class Site implements Type{
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getGroupId() {
+        return groupId;
     }
 }

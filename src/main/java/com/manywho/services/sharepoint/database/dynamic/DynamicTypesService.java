@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.services;
+package com.manywho.services.sharepoint.database.dynamic;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.api.run.elements.type.Property;
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
-
 
 public class DynamicTypesService {
     public static void patchDynamicType(String token, String uri, List<Property> properties) {
@@ -44,7 +43,6 @@ public class DynamicTypesService {
             }
         }
     }
-
 
     public static String insertDynamicType(String token, String uri) {
         CloseableHttpClient httpclient =  HttpClients.createDefault();
