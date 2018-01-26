@@ -6,18 +6,16 @@ import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.types.SharePointList;
 import com.manywho.services.sharepoint.types.*;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public interface SharePointFacadeInterface {
     List<Group> fetchGroups(ServiceConfiguration configuration, String token, ListFilter listFilter);
 
     List<User> fetchUsers(ServiceConfiguration configuration, String token, ListFilter listFilter);
 
-    List<Site> fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException;
+    List<Site> fetchSites(ServiceConfiguration configuration, String token);
 
     List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId);
 

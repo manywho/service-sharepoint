@@ -153,7 +153,7 @@ public class AuthorizationManager {
         try {
             authenticationResult = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching a valid token with the username and password", e);
+            throw new RuntimeException("Error fetching a valid getToken with the username and password", e);
         }
 
         SharePointFacadeInterface sharePointFacadeInterface = sharepointFacadeFactory.get(ApiConstants.AUTHENTICATION_TYPE_AZURE_AD);

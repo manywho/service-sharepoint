@@ -28,7 +28,7 @@ public class HttpClient {
                 throw new RuntimeException(httpResponse.getStatusLine().toString());
             });
         } catch (IOException e) {
-            throw new RuntimeException(e.getCause());
+            throw new RuntimeException("BadResponse", e);
         }
     }
 

@@ -30,7 +30,7 @@ public class UserFetcher {
         this.azureHttpClient = azureHttpClient;
     }
 
-    public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) throws Exception {
+    public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) {
         AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
                 REDIRECT_URI,
@@ -74,7 +74,7 @@ public class UserFetcher {
         authenticatedWhoResult.setTenantName("SharePoint Add-In");
         authenticatedWhoResult.setToken( response.getAccessToken());
 
-        // todo get userId and name by token
+        // todo get userId and name by getToken
         authenticatedWhoResult.setUserId(UUID.randomUUID().toString());
         authenticatedWhoResult.setUsername("username");
 

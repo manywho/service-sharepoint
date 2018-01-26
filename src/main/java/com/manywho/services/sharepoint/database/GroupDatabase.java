@@ -3,22 +3,17 @@ package com.manywho.services.sharepoint.database;
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
-import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
-import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
+import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.types.Group;
 
 import java.util.List;
 
 public class GroupDatabase implements Database<ServiceConfiguration, Group> {
-    private AuthenticatedWhoProvider authenticatedWhoProvider;
-    private SharePointFacadeInterface sharePointFacadeInterface;
-
+    private TokenCompatibility tokenCompatibility;
     @Inject
-    public GroupDatabase(SharepointFacadeFactory sharepointFacadeFactory, AuthenticatedWhoProvider authenticatedWhoProvider) {
-        this.authenticatedWhoProvider = authenticatedWhoProvider;
-        this.sharePointFacadeInterface = sharepointFacadeFactory.get(authenticatedWhoProvider.get().getIdentityProvider());
+    public GroupDatabase(TokenCompatibility tokenCompatibility) {
+        this.tokenCompatibility = tokenCompatibility;
     }
 
     @Override
@@ -28,7 +23,8 @@ public class GroupDatabase implements Database<ServiceConfiguration, Group> {
 
     @Override
     public List<Group> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
-        return sharePointFacadeInterface.fetchGroups(configuration, authenticatedWhoProvider.get().getToken(), listFilter);
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .fetchGroups(configuration, tokenCompatibility.getToken(configuration), listFilter);
     }
 
     @Override

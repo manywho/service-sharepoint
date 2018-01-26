@@ -9,4 +9,5 @@ public class ApiConstants {
     public final static String GRAPH_ENDPOINT_BETA = "https://graph.microsoft.com/beta";
     public final static String AUTHENTICATION_TYPE_AZURE_AD = "SharePoint Service";
     public final static String AUTHENTICATION_TYPE_ADD_IN = "SharePoint Add-In";
+    public final static String AUTH_STRATEGY_SUPER_USER = "SuperUser";
 }

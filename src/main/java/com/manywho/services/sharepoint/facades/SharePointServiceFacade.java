@@ -36,7 +36,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ServiceConfiguration configuration, String token) throws ExecutionException, InterruptedException {
+    public List<Site> fetchSites(ServiceConfiguration configuration, String token) {
         throw new RuntimeException("fetch sites is not implemented for apps");
     }
 

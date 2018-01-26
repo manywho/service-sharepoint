@@ -74,7 +74,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     @Override
     public List<Site> fetchSites(ServiceConfiguration configuration, String token) {
         //this line should work but it doesn't
-        //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "sites/root/sites");
+        //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(getToken, "sites/root/sites");
         // we fetch groups
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups?$filter=groupTypes/any(c:c+eq+'Unified')");
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();

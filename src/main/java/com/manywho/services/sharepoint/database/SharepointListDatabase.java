@@ -2,33 +2,56 @@ package com.manywho.services.sharepoint.database;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
+import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
-import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.database.lists.SharepointListManager;
+import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.types.SharePointList;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SharepointListDatabase implements Database<ServiceConfiguration, SharePointList> {
-
-    private SharepointListManager listManager;
-    private AuthenticatedWhoProvider authenticatedWhoProvider;
+    private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public SharepointListDatabase(SharepointListManager listManager, AuthenticatedWhoProvider authenticatedWhoProvider) {
-        this.listManager = listManager;
-        this.authenticatedWhoProvider = authenticatedWhoProvider;
+    public SharepointListDatabase(TokenCompatibility tokenCompatibility) {
+        this.tokenCompatibility = tokenCompatibility;
     }
 
     @Override
     public SharePointList find(ServiceConfiguration configuration, String id) {
-        return listManager.loadList(authenticatedWhoProvider.get(), configuration, id);
+
+        String[] parts = id.split("#");
+
+        if (parts.length <2) {
+            throw new RuntimeException(String.format("The external id %s is wrong", id));
+        }
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .fetchList(configuration, tokenCompatibility.getToken(configuration), parts[0], parts[1]);
     }
 
     @Override
     public List<SharePointList> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
-        return listManager.loadLists(authenticatedWhoProvider.get(), configuration, listFilter);
+
+        SharePointFacadeInterface sharePointFacade = tokenCompatibility.getSharePointFacade(configuration);
+        String token = tokenCompatibility.getToken(configuration);
+
+        if (listFilter != null && listFilter.getWhere() != null) {
+            Optional<ListFilterWhere> siteId  = listFilter.getWhere().stream()
+                    .filter(p -> Objects.equals(p.getColumnName(), "Site ID") && !StringUtils.isEmpty(p.getContentValue()))
+                    .findFirst();
+
+            if (siteId.isPresent()) {
+                return  sharePointFacade
+                        .fetchLists(configuration, token, siteId.get().getContentValue(), false);
+            }
+        }
+
+        return  sharePointFacade.fetchListsRoot(configuration, token);
     }
 
     @Override

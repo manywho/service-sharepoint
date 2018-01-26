@@ -5,27 +5,26 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.RawDatabase;
-import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.database.dynamic.DynamicTypeManager;
+import com.manywho.services.sharepoint.facades.TokenCompatibility;
 
 import java.util.List;
 
 public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
-    private DynamicTypeManager typeItemManager;
-    private AuthenticatedWhoProvider authenticatedWhoProvider;
+    private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public DatabaseDynamicTypes(DynamicTypeManager typeItemManager, AuthenticatedWhoProvider authenticatedWhoProvider)
+    public DatabaseDynamicTypes(TokenCompatibility tokenCompatibility)
     {
-        this.typeItemManager = typeItemManager;
-        this.authenticatedWhoProvider = authenticatedWhoProvider;
+        this.tokenCompatibility = tokenCompatibility;
     }
 
     @Override
     public MObject create(ServiceConfiguration configuration, MObject object) {
-        return typeItemManager.createTypeItem(authenticatedWhoProvider.get(), configuration, object);
+
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .createTypeList(configuration, tokenCompatibility.getToken(configuration), object.getDeveloperName(), object.getProperties());
     }
 
     @Override
@@ -51,18 +50,23 @@ public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
-        return typeItemManager.loadTypeItem(authenticatedWhoProvider.get(), configuration, objectDataType, id);
-
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .fetchTypeFromList(configuration, tokenCompatibility.getToken(configuration),
+                        objectDataType.getDeveloperName(), id,  objectDataType.getProperties());
     }
 
     @Override
     public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, ListFilter filter) {
-        return typeItemManager.loadTypeItems(authenticatedWhoProvider.get(), configuration, objectDataType, filter);
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .fetchTypesFromLists(configuration, tokenCompatibility.getToken(configuration),
+                        objectDataType.getDeveloperName(), objectDataType.getProperties());
     }
 
     @Override
     public MObject update(ServiceConfiguration configuration, MObject object) {
-        return typeItemManager.updateTypeItem(authenticatedWhoProvider.get(), configuration, object);
+        return tokenCompatibility.getSharePointFacade(configuration)
+                .updateTypeList(configuration, tokenCompatibility.getToken(configuration), object.getDeveloperName(),
+                        object.getProperties(), object.getExternalId());
     }
 
     @Override

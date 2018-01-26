@@ -74,7 +74,7 @@ public class AuthenticationClient {
         try {
             return mapper.readValue(body, AuthResponse.class);
         } catch (IOException e) {
-            throw new RuntimeException("Error deserialization of access token");
+            throw new RuntimeException("Error deserialization of access getToken");
         }
 
     }
@@ -98,7 +98,7 @@ public class AuthenticationClient {
         try {
             return mapper.readValue(body, AuthResponse.class);
         } catch (IOException e) {
-            throw new RuntimeException("Error deserialization of access token", e);
+            throw new RuntimeException("Error deserialization of access getToken", e);
         }
     }
 
