@@ -1,10 +1,11 @@
-package com.manywho.services.sharepoint.files.types;
+package com.manywho.services.sharepoint.types;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;
 
 @Type.Element(name = "Drive Item", summary = "Details about a Drive Item")
 public class DriveItem implements Type {
+    public final static String NAME = "Drive Item";
 
     @Type.Identifier
     @Type.Property(name = "ID", contentType = ContentType.String)

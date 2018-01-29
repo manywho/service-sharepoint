@@ -67,7 +67,7 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
             return objectCollection;
 
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Fetch list error:", e);
         }
     }
 

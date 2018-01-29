@@ -1,24 +1,25 @@
-package com.manywho.services.sharepoint.files;
+package com.manywho.services.sharepoint.database;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
-import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.files.facade.DriveFacade;
-import com.manywho.services.sharepoint.files.types.Drive;
+import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.files.facade.DriveFacadeOdata;
+import com.manywho.services.sharepoint.types.Drive;
 
 import java.util.List;
 
 public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
 
-    private AuthenticatedWhoProvider authenticatedWhoProvider;
-    private DriveFacade driveFacade;
+    private DriveFacadeOdata driveFacade;
+    private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public DriveDatabase(AuthenticatedWhoProvider authenticatedWhoProvider, DriveFacade driveFacade) {
-        this.authenticatedWhoProvider = authenticatedWhoProvider;
+    public DriveDatabase(DriveFacadeOdata driveFacade, TokenCompatibility tokenCompatibility) {
+
         this.driveFacade = driveFacade;
+        this.tokenCompatibility = tokenCompatibility;
     }
 
     @Override
@@ -28,7 +29,9 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
 
     @Override
     public List<Drive> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
-        return driveFacade.fetchDrives(configuration, authenticatedWhoProvider.get().getToken());
+        tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
+
+        return driveFacade.fetchDrives(configuration, tokenCompatibility.getToken(configuration));
     }
 
     @Override

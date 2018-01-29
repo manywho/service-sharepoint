@@ -1,8 +1,8 @@
 package com.manywho.services.sharepoint.files.facade;
 
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.files.types.Drive;
-import com.manywho.services.sharepoint.files.types.DriveItem;
+import com.manywho.services.sharepoint.types.Drive;
+import com.manywho.services.sharepoint.types.DriveItem;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -19,14 +19,14 @@ import java.util.List;
 
 import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_BETA;
 
-public class DriveFacade {
+public class DriveFacadeOdata {
 
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
 
     @Inject
-    public DriveFacade(ObjectMapperService objectMapperService) {
+    public DriveFacadeOdata(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();

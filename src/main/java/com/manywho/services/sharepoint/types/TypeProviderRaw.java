@@ -10,7 +10,6 @@ import com.manywho.services.sharepoint.database.dynamic.DescribeDynamicTypesMana
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
 
@@ -24,15 +23,18 @@ public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
     @Override
     public boolean doesTypeExist(ServiceConfiguration serviceConfiguration, String type) {
         // return false for static sites
-        if (Objects.equals(type, Item.NAME) || Objects.equals(type, SharePointList.NAME)
-                || Objects.equals(type, Site.NAME) || Objects.equals(type, Group.NAME) ||
-                Objects.equals(type, User.NAME)) {
-
-            return false;
+        switch(type) {
+            case Item.NAME:
+            case SharePointList.NAME:
+            case Site.NAME:
+            case Group.NAME:
+            case User.NAME:
+            case Drive.NAME:
+            case DriveItem.NAME:
+                return false;
+            default:
+                return true;
         }
-
-        // return true for all other types
-        return true;
     }
 
     @Override

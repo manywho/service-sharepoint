@@ -90,7 +90,6 @@ public class FileClient {
 
             UploadStatus uploadStatus = mapper.readValue(httpclient.executeRequest(httpPut), UploadStatus.class);
 
-
             if (uploadStatus.isUploadFinished()) {
                 return uploadStatus.getId();
             }

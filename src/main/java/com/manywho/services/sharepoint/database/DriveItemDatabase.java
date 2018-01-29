@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files;
+package com.manywho.services.sharepoint.database;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -6,9 +6,10 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.files.facade.DriveFacade;
-import com.manywho.services.sharepoint.files.types.DriveItem;
+import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.files.facade.DriveFacadeOdata;
 import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
+import com.manywho.services.sharepoint.types.DriveItem;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -18,12 +19,15 @@ import java.util.Optional;
 public class DriveItemDatabase implements Database<ServiceConfiguration, DriveItem> {
 
     private AuthenticatedWhoProvider authenticatedWhoProvider;
-    private DriveFacade driveFacade;
+    private DriveFacadeOdata driveFacade;
+    private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public DriveItemDatabase(AuthenticatedWhoProvider authenticatedWhoProvider, DriveFacade driveFacade) {
+    public DriveItemDatabase(AuthenticatedWhoProvider authenticatedWhoProvider, DriveFacadeOdata driveFacade,
+                             TokenCompatibility tokenCompatibility) {
         this.authenticatedWhoProvider = authenticatedWhoProvider;
         this.driveFacade = driveFacade;
+        this.tokenCompatibility = tokenCompatibility;
     }
 
     @Override
@@ -33,6 +37,8 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
 
     @Override
     public List<DriveItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+
+        tokenCompatibility.addinTokenNotSupported(configuration, "search drive Item");
 
         if (listFilter != null && listFilter.getWhere() != null) {
             Optional<ListFilterWhere> driveId  = listFilter.getWhere().stream()
@@ -47,14 +53,14 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
                 throw new RuntimeException("Drive ID is mandatory");
             }
 
+            String token = tokenCompatibility.getToken(configuration);
+
             if (!driveItemId.isPresent()) {
-                return driveFacade.fetchDriveItemsRoot(configuration, authenticatedWhoProvider.get().getToken(),
-                        driveId.get().getContentValue());
+                return driveFacade.fetchDriveItemsRoot(configuration, token, driveId.get().getContentValue());
             } else {
                 String parentItemId = FileIdExtractor.extractDriveItemIdFromUniqueId(driveItemId.get().getContentValue());
 
-                return driveFacade.fetchDriveItems(configuration, authenticatedWhoProvider.get().getToken(),
-                        driveId.get().getContentValue(), parentItemId);
+                return driveFacade.fetchDriveItems(configuration, token, driveId.get().getContentValue(), parentItemId);
             }
         }
 
@@ -90,4 +96,5 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
     public List<DriveItem> update(ServiceConfiguration configuration, List<DriveItem> list) {
         return null;
     }
+
 }

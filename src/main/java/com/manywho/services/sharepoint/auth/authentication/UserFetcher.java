@@ -57,9 +57,6 @@ public class UserFetcher {
         return authenticatedWhoResult;
     }
 
-
-
-
     public AuthenticatedWhoResult getAuthenticatedWhoResultByContextToken(AuthenticationCredentials credentials) throws Exception {
         AuthResponse response = getAuthFromContextToken(credentials);
 
@@ -80,7 +77,6 @@ public class UserFetcher {
 
         return authenticatedWhoResult;
     }
-
 
     private String getTargetPrincipalName(String appctxsender) {
 
