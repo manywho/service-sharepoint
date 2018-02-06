@@ -82,14 +82,14 @@ public class DynamicTypesService {
         boolean first = true;
         response.append("{");
 
-        for (Property p: properties) {
+          for (Property p: properties) {
             if (Objects.equals(p.getDeveloperName(), "ID") ) {
-                break;
+                continue;
             }
 
             if (p.getContentType() == ContentType.DateTime) {
                 //ToDo find the problem with this field, it doesn't seems to work with postman neither
-                break;
+                continue;
             }
 
             if (!first) {
