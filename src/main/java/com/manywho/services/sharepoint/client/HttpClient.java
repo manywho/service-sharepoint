@@ -6,6 +6,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
 
 public class HttpClient {
@@ -16,19 +17,21 @@ public class HttpClient {
     }
 
     public String executeRequest(HttpRequestBase requestBase){
+
         try {
             return httpclient.execute(requestBase, (HttpResponse httpResponse) -> {
                 int status = httpResponse.getStatusLine().getStatusCode();
 
                 if (status >= 200 && status < 300) {
                     HttpEntity entity = httpResponse.getEntity();
+
                     return EntityUtils.toString(entity);
                 }
 
                 throw new RuntimeException(httpResponse.getStatusLine().toString());
             });
         } catch (IOException e) {
-            throw new RuntimeException("BadResponse", e);
+            throw new RuntimeException("Error in the deserialization from SharePoint response", e);
         }
     }
 

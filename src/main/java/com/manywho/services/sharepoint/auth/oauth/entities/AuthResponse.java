@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.auth.oauth;
+package com.manywho.services.sharepoint.auth.oauth.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

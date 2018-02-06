@@ -14,7 +14,7 @@ import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.sdk.services.utils.Streams;
 import com.manywho.services.sharepoint.AppConfiguration;
-import com.manywho.services.sharepoint.auth.oauth.AuthResponse;
+import com.manywho.services.sharepoint.auth.oauth.entities.AuthResponse;
 import com.manywho.services.sharepoint.auth.oauth.AuthenticationClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;

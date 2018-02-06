@@ -1,7 +1,7 @@
 package com.manywho.services.sharepoint.database.dynamic;
 
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
-import com.manywho.services.sharepoint.auth.oauth.AuthResponse;
+import com.manywho.services.sharepoint.auth.oauth.entities.AuthResponse;
 import com.manywho.services.sharepoint.auth.oauth.AuthenticationClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.SharePointOdataFacade;

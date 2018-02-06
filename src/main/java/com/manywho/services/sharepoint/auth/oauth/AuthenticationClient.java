@@ -3,6 +3,8 @@ package com.manywho.services.sharepoint.auth.oauth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.manywho.services.sharepoint.AppConfiguration;
+import com.manywho.services.sharepoint.auth.oauth.entities.AuthResponse;
+import com.manywho.services.sharepoint.auth.oauth.entities.UserResponse;
 import com.manywho.services.sharepoint.client.HttpClient;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;

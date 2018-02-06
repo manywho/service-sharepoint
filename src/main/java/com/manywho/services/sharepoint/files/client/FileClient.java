@@ -5,11 +5,11 @@ import com.google.inject.Inject;
 import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.client.HttpClient;
+import com.manywho.services.sharepoint.files.client.responses.FileMetadata;
 import com.manywho.services.sharepoint.files.client.responses.SessionCreated;
 import com.manywho.services.sharepoint.files.client.responses.UploadStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -18,11 +18,10 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.tika.Tika;
 import org.apache.tika.io.TikaInputStream;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
+import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_BETA;
 import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class FileClient {
@@ -40,36 +39,7 @@ public class FileClient {
         this.mapper = mapper;
     }
 
-    public $File moveFile(String token, String driveId, String itemId, String fileId, String name) {
-        String fileUrl = String.format("%s/drives/%s/items/%s", GRAPH_ENDPOINT_V1, driveId, fileId);
-
-        try {
-            HttpPatch httpPatch = new HttpPatch(fileUrl);
-
-            String jsonBody = String.format("{\"id\": \"%s\",\"name\": \"%s\",\"parentReference\":{\"id\": \"%s\"}}",
-                    fileId, name, itemId);
-
-            httpPatch.setEntity(new StringEntity(jsonBody, Consts.UTF_8));
-            httpclient.addAuthorizationHeader(httpPatch, token);
-            httpPatch.addHeader("Content-Type", "application/json");
-
-            HttpResponse response =  mapper.readValue(httpclient.executeRequest(httpPatch), HttpResponse.class);
-
-            if (response.getStatusLine().getStatusCode() >=200  && response.getStatusLine().getStatusCode() <300) {
-
-                return new $File(fileId, name);
-            }
-
-            JSONObject errorStatus = new JSONObject(IOUtils.toString(response.getEntity().getContent()));
-            throw new RuntimeException(errorStatus.getJSONObject("error").getString("message"));
-
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String uploadFileRaw(String url, FileUpload upload) {
+    public UploadStatus uploadBigFile(String url, FileUpload upload) {
         try {
             HttpPut httpPut = new HttpPut(url);
             TikaInputStream inputStream = TikaInputStream.get(upload.getContent());
@@ -91,7 +61,7 @@ public class FileClient {
             UploadStatus uploadStatus = mapper.readValue(httpclient.executeRequest(httpPut), UploadStatus.class);
 
             if (uploadStatus.isUploadFinished()) {
-                return uploadStatus.getId();
+                return uploadStatus;
             }
 
         } catch (IOException e) {
@@ -110,9 +80,7 @@ public class FileClient {
         );
 
         HttpPost httpPost = new HttpPost(fileUrl);
-
         String jsonBody = "{\"item\": {\"@microsoft.graph.conflictBehavior\": \"rename\"}}";
-
         StringEntity requestEntity = new StringEntity(jsonBody, ContentType.APPLICATION_JSON);
         httpclient.addAuthorizationHeader(httpPost, token);
 
@@ -124,5 +92,23 @@ public class FileClient {
         } catch (IOException e) {
             throw new RuntimeException("Error uploading file");
         }
+    }
+
+    public $File setFileName(String token, String driveId, String itemId, String fileId, String name) {
+        String fileUrl = String.format("%s/drives/%s/items/%s", GRAPH_ENDPOINT_BETA, driveId, fileId);
+        HttpPatch httpPatch = new HttpPatch(fileUrl);
+        httpPatch.setEntity(new StringEntity(String.format("{\"name\": \"%s\"}", name), Consts.UTF_8));
+        httpclient.addAuthorizationHeader(httpPatch, token);
+        httpPatch.addHeader("Content-Type", "application/json");
+        FileMetadata fileMetadata = null;
+
+        try {
+            fileMetadata = mapper.readValue(httpclient.executeRequest(httpPatch), FileMetadata.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error deserialization file metadata", e);
+        }
+
+        return new $File(fileMetadata.getId(), fileMetadata.getName(), fileMetadata.getMimeType(), fileMetadata.getDownloadUri());
     }
 }

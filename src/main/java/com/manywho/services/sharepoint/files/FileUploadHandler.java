@@ -1,6 +1,6 @@
 package com.manywho.services.sharepoint.files;
 
-import com.google.common.collect.Lists;
+import  com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.FileListFilter;
 import com.manywho.sdk.services.files.FileHandler;
@@ -10,6 +10,7 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.files.client.FileClient;
 import com.manywho.services.sharepoint.files.client.responses.SessionCreated;
+import com.manywho.services.sharepoint.files.client.responses.UploadStatus;
 import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
 
 import java.util.List;
@@ -34,18 +35,13 @@ public class FileUploadHandler implements FileHandler<ServiceConfiguration> {
 
     @Override
     public $File upload(ServiceConfiguration configuration, String path, FileUpload upload) {
-        String driveId = FileIdExtractor.extractDriveIdFromFileId(path);
-        String itemId = FileIdExtractor.extractDriveItemIdFromFileId(path);
-
+        String driveId = FileIdExtractor.extractDriveIdFromUniqueId(path);
+        String itemId = FileIdExtractor.extractDriveItemIdFromUniqueId(path);
         tokenCompatibility.addinTokenNotSupported(configuration, "upload file");
-
         String token = tokenCompatibility.getToken(configuration);
+        SessionCreated fileSessionCreated = fileClient.getSession(token, driveId, itemId, upload.getName());
+        UploadStatus uploadStatus = fileClient.uploadBigFile(fileSessionCreated.getUploadUrl(), upload);
 
-        SessionCreated fileSessionCreated = fileClient.getSession(token, driveId,
-                itemId, upload.getName());
-
-        String fileId = fileClient.uploadFileRaw(fileSessionCreated.getUploadUrl(), upload);
-
-        return fileClient.moveFile(token, driveId, itemId, fileId, upload.getName());
+        return fileClient.setFileName(token, driveId, itemId, uploadStatus.getId(), upload.getName());
     }
 }
