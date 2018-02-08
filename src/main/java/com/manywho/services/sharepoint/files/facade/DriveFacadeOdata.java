@@ -67,11 +67,11 @@ public class DriveFacadeOdata {
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
-        List<ClientEntity> sites = entitySetResponse.getBody().getEntities();
+        List<ClientEntity> driveItemsEntity = entitySetResponse.getBody().getEntities();
         List<DriveItem> listDrivesItems = new ArrayList<>();
 
-        for (ClientEntity siteEntity : sites) {
-            listDrivesItems.add(this.objectMapperService.buildManyWhoDriveItemObject(siteEntity, driveId, parentItemId));
+        for (ClientEntity driveItemEntity : driveItemsEntity) {
+            listDrivesItems.add(this.objectMapperService.buildManyWhoDriveItemObject(driveItemEntity, driveId, parentItemId));
         }
 
         return listDrivesItems;

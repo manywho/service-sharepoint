@@ -4,12 +4,17 @@ import com.google.common.base.Strings;
 
 public class FileIdExtractor {
 
+    /**
+     * unique id looks like drives/{drive-id}/items/{item-id}
+     * @param idUnique
+     * @return
+     */
     static public String extractDriveItemIdFromUniqueId(String idUnique) {
         if (Strings.isNullOrEmpty(idUnique)) {
             throw new RuntimeException("the drive item ID Is empty");
         }
 
-        String[] parts = idUnique.split("#");
+        String[] parts = idUnique.split("/items/");
 
         if (parts.length < 2) {
             throw new RuntimeException("Not valid list drive item ID");
@@ -23,7 +28,7 @@ public class FileIdExtractor {
             throw new RuntimeException("The site ID Is empty");
         }
 
-        String[] parts = idUnique.split("#");
-        return parts[0];
+        String[] parts = idUnique.split("/items/");
+        return parts[0].replace("drives/", "");
     }
 }

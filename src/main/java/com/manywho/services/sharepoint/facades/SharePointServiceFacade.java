@@ -36,12 +36,12 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ServiceConfiguration configuration, String token) {
+    public List<Site> fetchSites(ServiceConfiguration configuration, String token, String groupId) {
         throw new RuntimeException("fetch sites is not implemented for apps");
     }
 
     @Override
-    public List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId) {
+    public List<Site> fetchSubsites(ServiceConfiguration configuration, String token, String parentId) {
         throw new RuntimeException("fetch sites is not implemented for apps");
     }
 
@@ -103,19 +103,19 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public Item fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public SharePointListItem fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
         throw new RuntimeException("fetch item is not implemented for apps");
     }
 
     @Override
-    public List<Item> fetchItems(ServiceConfiguration configuration, String token, String listId) {
+    public List<SharePointListItem> fetchItems(ServiceConfiguration configuration, String token, String listId) {
         throw new RuntimeException("fetch items is not implemented for apps");
     }
 
 
     @Override
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
-                                             List<ObjectDataTypeProperty>  properties) {
+                                             List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         ListClient client = new ListClient(configuration.getHost(), "" , credentials);

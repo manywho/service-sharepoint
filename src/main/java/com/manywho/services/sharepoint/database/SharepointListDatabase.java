@@ -41,13 +41,14 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
         String token = tokenCompatibility.getToken(configuration);
 
         if (listFilter != null && listFilter.getWhere() != null) {
-            Optional<ListFilterWhere> siteId  = listFilter.getWhere().stream()
+            Optional<ListFilterWhere> pathSiteId  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Site ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
-            if (siteId.isPresent()) {
+            if (pathSiteId.isPresent()) {
+                String siteId = pathSiteId.get().getContentValue().replace("sites/", "");
                 return  sharePointFacade
-                        .fetchLists(configuration, token, siteId.get().getContentValue(), false);
+                        .fetchLists(configuration, token, siteId, false);
             }
         }
 

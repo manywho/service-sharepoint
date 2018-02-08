@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
-import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.files.facade.DriveFacadeOdata;
@@ -18,14 +17,11 @@ import java.util.Optional;
 
 public class DriveItemDatabase implements Database<ServiceConfiguration, DriveItem> {
 
-    private AuthenticatedWhoProvider authenticatedWhoProvider;
     private DriveFacadeOdata driveFacade;
     private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public DriveItemDatabase(AuthenticatedWhoProvider authenticatedWhoProvider, DriveFacadeOdata driveFacade,
-                             TokenCompatibility tokenCompatibility) {
-        this.authenticatedWhoProvider = authenticatedWhoProvider;
+    public DriveItemDatabase(DriveFacadeOdata driveFacade, TokenCompatibility tokenCompatibility) {
         this.driveFacade = driveFacade;
         this.tokenCompatibility = tokenCompatibility;
     }
@@ -41,7 +37,7 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
         tokenCompatibility.addinTokenNotSupported(configuration, "search drive Item");
 
         if (listFilter != null && listFilter.getWhere() != null) {
-            Optional<ListFilterWhere> driveId  = listFilter.getWhere().stream()
+            Optional<ListFilterWhere> drive  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Drive ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
@@ -49,18 +45,20 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
                     .filter(p -> Objects.equals(p.getColumnName(), "Drive Item Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
-            if (!driveId.isPresent()) {
+            if (!drive.isPresent()) {
                 throw new RuntimeException("Drive ID is mandatory");
             }
 
             String token = tokenCompatibility.getToken(configuration);
+            String driveId = drive.get().getContentValue().replace("drives/", "");
 
             if (!driveItemId.isPresent()) {
-                return driveFacade.fetchDriveItemsRoot(configuration, token, driveId.get().getContentValue());
+
+                return driveFacade.fetchDriveItemsRoot(configuration, token, driveId);
             } else {
                 String parentItemId = FileIdExtractor.extractDriveItemIdFromUniqueId(driveItemId.get().getContentValue());
 
-                return driveFacade.fetchDriveItems(configuration, token, driveId.get().getContentValue(), parentItemId);
+                return driveFacade.fetchDriveItems(configuration, token, driveId, parentItemId);
             }
         }
 

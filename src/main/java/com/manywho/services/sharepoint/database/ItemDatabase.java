@@ -6,14 +6,13 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.types.Item;
+import com.manywho.services.sharepoint.types.SharePointListItem;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ItemDatabase implements Database<ServiceConfiguration, Item> {
+public class ItemDatabase implements Database<ServiceConfiguration, SharePointListItem> {
 
     private TokenCompatibility tokenCompatibility;
 
@@ -23,7 +22,7 @@ public class ItemDatabase implements Database<ServiceConfiguration, Item> {
     }
 
     @Override
-    public Item find(ServiceConfiguration configuration, String id) {
+    public SharePointListItem find(ServiceConfiguration configuration, String id) {
         // get item id
         String itemId = id;
         // get site id
@@ -36,7 +35,7 @@ public class ItemDatabase implements Database<ServiceConfiguration, Item> {
     }
 
     @Override
-    public List<Item> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+    public List<SharePointListItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
 
         Optional<ListFilterWhere> listOptional = Optional.empty();
 
@@ -56,32 +55,32 @@ public class ItemDatabase implements Database<ServiceConfiguration, Item> {
     }
 
     @Override
-    public Item create(ServiceConfiguration configuration, Item item) {
+    public SharePointListItem create(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
         return null;
     }
 
     @Override
-    public List<Item> create(ServiceConfiguration configuration, List<Item> list) {
+    public List<SharePointListItem> create(ServiceConfiguration configuration, List<SharePointListItem> list) {
         return null;
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, Item item) {
+    public void delete(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
 
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<Item> list) {
+    public void delete(ServiceConfiguration configuration, List<SharePointListItem> list) {
 
     }
 
     @Override
-    public Item update(ServiceConfiguration configuration, Item item) {
+    public SharePointListItem update(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
         return null;
     }
 
     @Override
-    public List<Item> update(ServiceConfiguration configuration, List<Item> list) {
+    public List<SharePointListItem> update(ServiceConfiguration configuration, List<SharePointListItem> list) {
         return null;
     }
 }

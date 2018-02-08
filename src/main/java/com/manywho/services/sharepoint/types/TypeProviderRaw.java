@@ -24,7 +24,7 @@ public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
     public boolean doesTypeExist(ServiceConfiguration serviceConfiguration, String type) {
         // return false for static sites
         switch(type) {
-            case Item.NAME:
+            case SharePointListItem.NAME:
             case SharePointList.NAME:
             case Site.NAME:
             case Group.NAME:

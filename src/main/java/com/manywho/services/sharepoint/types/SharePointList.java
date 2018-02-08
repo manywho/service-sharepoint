@@ -3,9 +3,9 @@ package com.manywho.services.sharepoint.types;
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;
 
-@Type.Element(name = "SharePointList", summary = "Details about a SharePointList")
+@Type.Element(name = "SharePoint List", summary = "Details about a SharePoint List")
 public class SharePointList implements Type {
-    public final static String NAME = "SharePointList";
+    public final static String NAME = "SharePoint List";
 
     @Type.Identifier
     @Type.Property(name = "ID", contentType = ContentType.String)

@@ -9,7 +9,6 @@ import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.types.Site;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,19 +32,28 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
         SharePointFacadeInterface sharePointFacade = tokenCompatibility.getSharePointFacade(configuration);
         String token = tokenCompatibility.getToken(configuration);
 
-        Optional<ListFilterWhere> parentId;
-
         if (listFilter != null && listFilter.getWhere() != null) {
-            parentId  = listFilter.getWhere().stream()
+            Optional<ListFilterWhere> parentId  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
+            Optional<ListFilterWhere> group  = listFilter.getWhere().stream()
+                    .filter(p -> Objects.equals(p.getColumnName(), "Group ID") && !StringUtils.isEmpty(p.getContentValue()))
+                    .findFirst();
+
+            if (parentId.isPresent() && group.isPresent()) {
+                throw new RuntimeException("Filter by Parent ID and Group ID is not supported");
+            }
+
             if (parentId.isPresent()) {
-                return sharePointFacade.fetchSites(configuration, token, parentId.get().getContentValue());
+                return sharePointFacade.fetchSubsites(configuration, token, parentId.get().getContentValue());
+            } else if (group.isPresent()) {
+                String groupId = group.get().getContentValue().replace("groups/","");
+                return sharePointFacade.fetchSites(configuration, token, groupId);
             }
         }
 
-        return sharePointFacade.fetchSites(configuration, token);
+        return sharePointFacade.fetchSites(configuration, token, null);
     }
 
     @Override

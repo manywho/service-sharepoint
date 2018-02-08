@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.facades;
 
+import com.google.common.base.Strings;
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -8,22 +9,29 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.database.dynamic.DynamicTypesService;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.types.*;
-import com.manywho.services.sharepoint.utilities.IdExtractor;
+import com.manywho.services.sharepoint.utilities.IdExtractorForLists;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.olingo.client.api.ODataClient;
+import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
+import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
+import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
+import org.apache.olingo.client.api.communication.request.cud.UpdateType;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
+import org.apache.olingo.client.api.communication.response.ODataEntityCreateResponse;
+import org.apache.olingo.client.api.communication.response.ODataEntityUpdateResponse;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
+import org.apache.olingo.client.api.domain.ClientComplexValue;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.core.ODataClientFactory;
+import org.apache.olingo.commons.api.edm.FullQualifiedName;
+
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
@@ -35,11 +43,13 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
+    private final CUDRequestFactory cudRequestFactory;
 
     @Inject
     public SharePointOdataFacade(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
+        cudRequestFactory = client.getCUDRequestFactory();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
@@ -72,7 +82,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ServiceConfiguration configuration, String token) {
+    public List<Site> fetchSites(ServiceConfiguration configuration, String token, String groupId) {
         //this line should work but it doesn't
         //ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(getToken, "sites/root/sites");
         // we fetch groups
@@ -80,9 +90,12 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         List<ClientEntity> listGroups = sitesEntitySetResponse.getBody().getEntities();
         List<ClientEntity> listSitesByGroups = new ArrayList<>();
 
+        // we get the sites for each group
         for (ClientEntity group : listGroups) {
-            List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
-            listSitesByGroups.addAll(sites);
+            if (Strings.isNullOrEmpty(groupId) || groupId.equals(group.getProperty("id").getValue().toString())) {
+                List<ClientEntity> sites = fetchSiteByGroup(configuration, token, group.getProperty("id").getValue().toString());
+                listSitesByGroups.addAll(sites);
+            }
         }
 
         return responseSites(listSitesByGroups, "");
@@ -97,7 +110,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId) {
+    public List<Site> fetchSubsites(ServiceConfiguration configuration, String token, String parentId) {
         String url = String.format("sites/%s/sites", parentId);
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, url);
 
@@ -241,7 +254,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public Item fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
+    public SharePointListItem fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId) {
         String entryPoint = String.format("sites/%s/lists/%s/items/%s", siteId, listId, itemId);
         ODataRetrieveResponse<ClientEntity> entitySetResponse = getEntitySetResponse(token, entryPoint);
 
@@ -252,9 +265,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public List<Item> fetchItems(ServiceConfiguration configuration, String token, String listIdUnique) {
-        String siteId = IdExtractor.extractSiteId(listIdUnique);
-        String listId = IdExtractor.extractListId(listIdUnique);
+    public List<SharePointListItem> fetchItems(ServiceConfiguration configuration, String token, String listIdUnique) {
+        String siteId = IdExtractorForLists.extractSiteId(listIdUnique);
+        String listId = IdExtractorForLists.extractListId(listIdUnique);
         String urlEntity = String.format("sites/%s/lists/%s/items", siteId, listId);
 
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = getEntitiesSetResponse(token, urlEntity);
@@ -264,7 +277,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
     @Override
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName,
-                                             List<ObjectDataTypeProperty> properties) {
+                                             List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
         String entryPoint = String.format("%s/items", developerName);
         URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(entryPoint).expand("fields").build();
@@ -304,45 +317,108 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                 .appendEntitySetSegment("fields")
                 .build();
 
-        DynamicTypesService.patchDynamicType(token, itemUri.toString(), properties);
+        ClientEntity clientEntity = getClientEntityModification(properties);
+        ODataEntityUpdateRequest<ClientEntity> request = cudRequestFactory.getEntityUpdateRequest(itemUri, UpdateType.PATCH, clientEntity);
 
-        List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
-        properties.forEach(p -> {
-            ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
-            prop.setDeveloperName(p.getDeveloperName());
-            propertyCollection.add(prop);
-        });
+        request.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        request.addCustomHeader("Content-Type", "application/json");
 
-        return fetchTypeFromList(configuration, token, developerName, id, propertyCollection);
+        ODataEntityUpdateResponse<ClientEntity> response = request.execute();
+
+        if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+            List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
+            properties.forEach(p -> {
+                ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
+                prop.setDeveloperName(p.getDeveloperName());
+                propertyCollection.add(prop);
+            });
+            return fetchTypeFromList(configuration, token, developerName, id, propertyCollection);
+        } else {
+            throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
+        }
     }
-
 
     @Override
     public MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties) {
-        String itemId = null;
-
         URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(developerName)
                 .appendEntitySetSegment("items")
                 .build();
 
-        itemId = DynamicTypesService.insertDynamicType(token, itemUri.toString());
+        ClientEntity clientEntity = getClientEntityCreation(properties);
 
-        URI itemUriUpdate = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(developerName)
-                .appendEntitySetSegment("items")
-                .appendEntitySetSegment(itemId)
-                .appendEntitySetSegment("fields")
-                .build();
+        ODataEntityCreateRequest<ClientEntity> req = cudRequestFactory.getEntityCreateRequest(itemUri, clientEntity);
 
-        DynamicTypesService.patchDynamicType(token, itemUriUpdate.toString(), properties);
+        req.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        req.addCustomHeader("Content-Type", "application/json");
 
-        List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
-        properties.forEach(p -> {
-            ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
-            prop.setDeveloperName(p.getDeveloperName());
-            propertyCollection.add(prop);
-        });
+        ODataEntityCreateResponse<ClientEntity> response = req.execute();
 
-        return fetchTypeFromList(configuration, token, developerName, itemId, propertyCollection);
+        if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+            List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
+            properties.forEach(p -> {
+                ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
+                prop.setDeveloperName(p.getDeveloperName());
+                propertyCollection.add(prop);
+            });
+
+            return fetchTypeFromList(configuration, token, developerName, response.getBody().getId().toString(), propertyCollection);
+        } else {
+            throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
+        }
+    }
+
+    private ClientEntity getClientEntityCreation(List<Property> properties){
+        ClientEntity clientEntity = client.getObjectFactory().newEntity(null);
+
+        ClientComplexValue complexValue = client.getObjectFactory().newComplexValue(null);
+
+        for (Property property: properties) {
+            if (Objects.equals(property.getDeveloperName(), "ID")) {
+                continue;
+            }
+            switch(property.getContentType()){
+                case Boolean:
+                    boolean propertyValue = !Strings.isNullOrEmpty(property.getContentValue()) && Objects.equals(property.getContentValue().toLowerCase(), "true");
+                    complexValue
+                            .add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
+                                    client.getObjectFactory().newPrimitiveValueBuilder().buildBoolean(propertyValue)));
+                    break;
+                default:
+                    complexValue
+                            .add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
+                                    client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue())));
+                    break;
+            }
+        }
+
+        clientEntity.getProperties().add(client.getObjectFactory().newComplexProperty("fields", complexValue));
+
+        return clientEntity;
+    }
+
+    private ClientEntity getClientEntityModification(List<Property> properties){
+        ClientEntity clientEntity = client.getObjectFactory().newEntity(new FullQualifiedName("microsoft.graph", "fieldValueSet"));
+
+        for (Property property: properties) {
+            if (Objects.equals(property.getDeveloperName(), "ID")) {
+                continue;
+            }
+            switch(property.getContentType()){
+                case Boolean:
+                    boolean propertyValue = !Strings.isNullOrEmpty(property.getContentValue()) && Objects.equals(property.getContentValue().toLowerCase(), "true");
+                    clientEntity.getProperties()
+                            .add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
+                                    client.getObjectFactory().newPrimitiveValueBuilder().buildBoolean(propertyValue)));
+                    break;
+                default:
+                    clientEntity.getProperties()
+                            .add(client.getObjectFactory().newPrimitiveProperty(property.getDeveloperName(),
+                                    client.getObjectFactory().newPrimitiveValueBuilder().buildString(property.getContentValue())));
+                    break;
+            }
+        }
+
+        return clientEntity;
     }
 
     @Override
@@ -356,8 +432,8 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
 
     private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
         URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
-        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
 
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
 
         return entitySetRequest.execute();
@@ -380,8 +456,8 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         return objectCollection;
     }
 
-    private List<Item> responseItems(List<ClientEntity> sites, String siteId, String listId) {
-        List<Item> objectCollection = new ArrayList<>();
+    private List<SharePointListItem> responseItems(List<ClientEntity> sites, String siteId, String listId) {
+        List<SharePointListItem> objectCollection = new ArrayList<>();
 
         for (ClientEntity siteEntity : sites) {
             objectCollection.add(this.objectMapperService.buildManyWhoItemObject(siteEntity, siteId, listId));
@@ -404,7 +480,7 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         List<MObject> objectCollection = new ArrayList<>();
 
         for (ClientEntity itemEntity : items) {
-            objectCollection.add(objectMapperService.buildManyWhoDynamicObject(itemEntity.getNavigationLink("fields")
+            objectCollection.add(objectMapperService.buildManyWhoDynamicObject(itemEntity.getId().toString(), itemEntity.getNavigationLink("fields")
                     .asInlineEntity().getEntity().getProperties(), properties));
         }
 

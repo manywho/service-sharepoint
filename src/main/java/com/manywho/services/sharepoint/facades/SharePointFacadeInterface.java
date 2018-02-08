@@ -15,9 +15,9 @@ public interface SharePointFacadeInterface {
 
     List<User> fetchUsers(ServiceConfiguration configuration, String token, ListFilter listFilter);
 
-    List<Site> fetchSites(ServiceConfiguration configuration, String token);
+    List<Site> fetchSites(ServiceConfiguration configuration, String token, String groupId);
 
-    List<Site> fetchSites(ServiceConfiguration configuration, String token, String parentId);
+    List<Site> fetchSubsites(ServiceConfiguration configuration, String token, String parentId);
 
     Site fetchSite(ServiceConfiguration configuration, String token, String id);
 
@@ -29,11 +29,11 @@ public interface SharePointFacadeInterface {
 
     List<SharePointList> fetchListsRoot(ServiceConfiguration configuration, String token);
 
-    Item fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId);
+    SharePointListItem fetchItem(ServiceConfiguration configuration, String token, String siteId, String listId, String itemId);
 
-    List<Item> fetchItems(ServiceConfiguration configuration, String token, String listUniqueId);
+    List<SharePointListItem> fetchItems(ServiceConfiguration configuration, String token, String listUniqueId);
 
-    List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, List<ObjectDataTypeProperty>  properties);
+    List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, String developerName, List<ObjectDataTypeProperty> properties, ListFilter listFilter);
 
     MObject fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName, String itemId, List<ObjectDataTypeProperty> properties);
 

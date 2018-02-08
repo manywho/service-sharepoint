@@ -59,7 +59,7 @@ public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
     public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, ListFilter filter) {
         return tokenCompatibility.getSharePointFacade(configuration)
                 .fetchTypesFromLists(configuration, tokenCompatibility.getToken(configuration),
-                        objectDataType.getDeveloperName(), objectDataType.getProperties());
+                        objectDataType.getDeveloperName(), objectDataType.getProperties(), filter);
     }
 
     @Override

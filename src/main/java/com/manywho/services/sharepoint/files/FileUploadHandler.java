@@ -36,12 +36,13 @@ public class FileUploadHandler implements FileHandler<ServiceConfiguration> {
     @Override
     public $File upload(ServiceConfiguration configuration, String path, FileUpload upload) {
         String driveId = FileIdExtractor.extractDriveIdFromUniqueId(path);
-        String itemId = FileIdExtractor.extractDriveItemIdFromUniqueId(path);
+        //folder
+        String folderId = FileIdExtractor.extractDriveItemIdFromUniqueId(path);
         tokenCompatibility.addinTokenNotSupported(configuration, "upload file");
         String token = tokenCompatibility.getToken(configuration);
-        SessionCreated fileSessionCreated = fileClient.getSession(token, driveId, itemId, upload.getName());
+        SessionCreated fileSessionCreated = fileClient.getSession(token, driveId, folderId, upload.getName());
         UploadStatus uploadStatus = fileClient.uploadBigFile(fileSessionCreated.getUploadUrl(), upload);
 
-        return fileClient.setFileName(token, driveId, itemId, uploadStatus.getId(), upload.getName());
+        return fileClient.setFileName(token, driveId, folderId, uploadStatus.getId(), upload.getName());
     }
 }

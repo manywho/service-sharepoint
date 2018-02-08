@@ -21,7 +21,6 @@ import org.apache.tika.io.TikaInputStream;
 
 import java.io.IOException;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_BETA;
 import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class FileClient {
@@ -71,16 +70,18 @@ public class FileClient {
         throw new RuntimeException("Problem uploading file");
     }
 
-    public SessionCreated getSession(String token, String driveId, String itemId, String filename) {
+    public SessionCreated getSession(String token, String driveId, String folderId, String filename) {
 
         String fileUrl = String.format("%s/drives/%s/items/%s/createUploadSession",
                 GRAPH_ENDPOINT_V1,
                 driveId,
-                itemId
+                folderId
         );
 
         HttpPost httpPost = new HttpPost(fileUrl);
-        String jsonBody = "{\"item\": {\"@microsoft.graph.conflictBehavior\": \"rename\"}}";
+        //String jsonBody = String.format("{\"item\": {\"@microsoft.graph.conflictBehavior\": \"rename\", \"parentReference\" : {\"id\": \"%s\"}}}", folderId);
+        String jsonBody = String.format("{\"item\": {\"@microsoft.graph.conflictBehavior\": \"rename\"}}");
+
         StringEntity requestEntity = new StringEntity(jsonBody, ContentType.APPLICATION_JSON);
         httpclient.addAuthorizationHeader(httpPost, token);
 
@@ -94,21 +95,23 @@ public class FileClient {
         }
     }
 
-    public $File setFileName(String token, String driveId, String itemId, String fileId, String name) {
-        String fileUrl = String.format("%s/drives/%s/items/%s", GRAPH_ENDPOINT_BETA, driveId, fileId);
+    public $File setFileName(String token, String driveId, String folderId, String fileId, String name) {
+        String fileUrl = String.format("%s/drives/%s/items/%s", GRAPH_ENDPOINT_V1, driveId, fileId);
         HttpPatch httpPatch = new HttpPatch(fileUrl);
-        httpPatch.setEntity(new StringEntity(String.format("{\"name\": \"%s\"}", name), Consts.UTF_8));
+        // we move the temp file to the proper folder and if the file exist then we rename it
+        String jsonBody = String.format("{\"@microsoft.graph.conflictBehavior\": \"rename\" ,\"parentReference\": {\"id\": \"%s\"}, \"name\": \"%s\"}",
+                folderId, name);
+
+        httpPatch.setEntity(new StringEntity(jsonBody, Consts.UTF_8));
         httpclient.addAuthorizationHeader(httpPatch, token);
         httpPatch.addHeader("Content-Type", "application/json");
-        FileMetadata fileMetadata = null;
 
         try {
-            fileMetadata = mapper.readValue(httpclient.executeRequest(httpPatch), FileMetadata.class);
+            FileMetadata fileMetadata = mapper.readValue(httpclient.executeRequest(httpPatch), FileMetadata.class);
+            return new $File(fileMetadata.getId(), fileMetadata.getName(), fileMetadata.getMimeType(), fileMetadata.getDownloadUri());
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Error deserialization file metadata", e);
         }
-
-        return new $File(fileMetadata.getId(), fileMetadata.getName(), fileMetadata.getMimeType(), fileMetadata.getDownloadUri());
     }
 }

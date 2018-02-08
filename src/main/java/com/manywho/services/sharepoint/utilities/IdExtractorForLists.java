@@ -2,14 +2,14 @@ package com.manywho.services.sharepoint.utilities;
 
 import com.google.common.base.Strings;
 
-public class IdExtractor {
+public class IdExtractorForLists {
     static public String extractSiteId(String idUnique) {
         if (Strings.isNullOrEmpty(idUnique)) {
             throw new RuntimeException("The site ID Is empty");
         }
 
-        String[] parts = idUnique.split("#");
-        return parts[0];
+        String[] parts = idUnique.split("/lists/");
+        return parts[0].replace("sites/", "");
     }
 
 
@@ -18,27 +18,12 @@ public class IdExtractor {
             throw new RuntimeException("the list ID Is empty");
         }
 
-        String[] parts = idUnique.split("#");
+        String[] parts = idUnique.split("/lists/");
 
         if (parts.length < 2) {
             throw  new RuntimeException("Not valid list ID");
         }
 
         return parts[1];
-    }
-
-
-    static public String extractItemId(String idUnique) {
-        if (Strings.isNullOrEmpty(idUnique)) {
-            throw new RuntimeException("the item ID Is empty");
-        }
-
-        String[] parts = idUnique.split("#");
-
-        if (parts.length < 3) {
-            throw  new RuntimeException("Not valid item ID");
-        }
-
-        return parts[2];
     }
 }
