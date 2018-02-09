@@ -9,6 +9,7 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;
+import com.manywho.services.sharepoint.facades.odata.OdataPaginator;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.types.*;
 import com.manywho.services.sharepoint.utilities.IdExtractorForDynamicTypes;
