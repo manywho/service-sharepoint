@@ -39,6 +39,8 @@ public interface SharePointFacadeInterface {
 
     MObject updateTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties, String id);
 
+    void deleteTypeList(ServiceConfiguration configuration, String token, String developerName, String id);
+
     MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties);
 
     String getUserId(ServiceConfiguration configuration, String token);

@@ -148,6 +148,11 @@ public class SharePointServiceFacade implements SharePointFacadeInterface {
     }
 
     @Override
+    public void deleteTypeList(ServiceConfiguration configuration, String token, String developerName, String id) {
+        throw new RuntimeException("update a type is not implemented for apps");
+    }
+
+    @Override
     public MObject createTypeList(ServiceConfiguration configuration, String token, String developerName, List<Property> properties) {
         throw new RuntimeException("create a new item for a list is not implemented for apps");
     }

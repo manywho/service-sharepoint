@@ -35,11 +35,10 @@ public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public void delete(ServiceConfiguration configuration, MObject object) {
-        try{
+        String id = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        tokenCompatibility.getSharePointFacade(configuration)
+                .deleteTypeList(configuration, tokenCompatibility.getToken(configuration), object.getDeveloperName(), id);
     }
 
     @Override

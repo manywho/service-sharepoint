@@ -17,10 +17,7 @@ import com.manywho.services.sharepoint.utilities.IdExtractorForLists;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.olingo.client.api.ODataClient;
-import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
-import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
+import org.apache.olingo.client.api.communication.request.cud.*;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
@@ -343,6 +340,20 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
         } else {
             throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
         }
+    }
+
+    @Override
+    public void deleteTypeList(ServiceConfiguration configuration, String token, String developerName, String id) {
+        URI deleteItemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA)
+                .appendEntitySetSegment(developerName)
+                .appendEntitySetSegment("items")
+                .appendEntitySetSegment(id)
+                .build();
+
+        ODataDeleteRequest request = cudRequestFactory.getDeleteRequest(deleteItemUri);
+        request.addCustomHeader("Authorization", String.format("Bearer %s", token));
+
+        request.execute();
     }
 
     @Override
