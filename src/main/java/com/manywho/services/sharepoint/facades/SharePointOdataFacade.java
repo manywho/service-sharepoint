@@ -11,6 +11,7 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.types.*;
+import com.manywho.services.sharepoint.utilities.IdExtractorForDynamicTypes;
 import com.manywho.services.sharepoint.utilities.IdExtractorForLists;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
@@ -29,6 +30,7 @@ import org.apache.olingo.client.api.domain.ClientComplexValue;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.api.domain.ClientValue;
+import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 
@@ -44,13 +46,15 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
     private final CUDRequestFactory cudRequestFactory;
+    private final OdataPaginator odataPaginator;
 
     @Inject
-    public SharePointOdataFacade(ObjectMapperService objectMapperService) {
+    public SharePointOdataFacade(ObjectMapperService objectMapperService, OdataPaginator odataPaginator) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         cudRequestFactory = client.getCUDRequestFactory();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
+        this.odataPaginator = odataPaginator;
     }
 
     @Override
@@ -280,13 +284,15 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
         String entryPoint = String.format("%s/items", developerName);
-        URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA).appendEntitySetSegment(entryPoint).expand("fields").build();
-        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
-        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
-        ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
+        URIBuilder uriBuilder = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA)
+                .appendEntitySetSegment(entryPoint)
+                .expand("fields");
 
-        return responseDynamicTypes(entitySetResponse.getBody().getEntities(), properties);
+        List<ClientEntity> clientEntities = odataPaginator.getEntities(token, uriBuilder, listFilter, retrieveRequestFactory);
+
+        return responseDynamicTypes(clientEntities, properties);
     }
+
 
     @Override
     public MObject fetchTypeFromList(ServiceConfiguration configuration, String token, String developerName,
@@ -360,8 +366,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
                 prop.setDeveloperName(p.getDeveloperName());
                 propertyCollection.add(prop);
             });
+            String itemId = IdExtractorForDynamicTypes.extractItemId(response.getBody().getId().toString());
 
-            return fetchTypeFromList(configuration, token, developerName, response.getBody().getId().toString(), propertyCollection);
+            return fetchTypeFromList(configuration, token, developerName, itemId, propertyCollection);
         } else {
             throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
         }

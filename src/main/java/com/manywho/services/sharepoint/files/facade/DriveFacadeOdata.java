@@ -5,6 +5,8 @@ import com.manywho.services.sharepoint.types.Drive;
 import com.manywho.services.sharepoint.types.DriveItem;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import org.apache.olingo.client.api.ODataClient;
+import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
+import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -24,12 +26,14 @@ public class DriveFacadeOdata {
     private ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
+    private final CUDRequestFactory cudRequestFactory;
 
     @Inject
     public DriveFacadeOdata(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
         client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
+        this.cudRequestFactory = client.getCUDRequestFactory();
     }
 
     public List<Drive> fetchDrives(ServiceConfiguration configuration, String token) {
@@ -58,6 +62,15 @@ public class DriveFacadeOdata {
         String path = String.format("/drives/%s/items/%s/children", driveId, parentDriveItemId);
 
         return fetchDriveItemsInternal(configuration, token, path, driveId, parentDriveItemId);
+    }
+
+    // todo create action delete file
+    public void deleteFile (ServiceConfiguration configuration, String token, String driveId, String fileId) {
+        String urlEntity = String.format("drives/%s/items/%s", driveId, fileId);
+        URI uri = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
+        ODataDeleteRequest deleteRequest = cudRequestFactory.getDeleteRequest(uri);
+        deleteRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        deleteRequest.execute();
     }
 
     private List<DriveItem> fetchDriveItemsInternal(ServiceConfiguration configuration, String token, String path,

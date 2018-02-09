@@ -7,6 +7,7 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.RawDatabase;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.utilities.IdExtractorForDynamicTypes;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
+
         return tokenCompatibility.getSharePointFacade(configuration)
                 .fetchTypeFromList(configuration, tokenCompatibility.getToken(configuration),
                         objectDataType.getDeveloperName(), id,  objectDataType.getProperties());
@@ -64,9 +66,10 @@ public class DatabaseDynamicTypes implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject update(ServiceConfiguration configuration, MObject object) {
+        String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
         return tokenCompatibility.getSharePointFacade(configuration)
                 .updateTypeList(configuration, tokenCompatibility.getToken(configuration), object.getDeveloperName(),
-                        object.getProperties(), object.getExternalId());
+                        object.getProperties(), itemId);
     }
 
     @Override
