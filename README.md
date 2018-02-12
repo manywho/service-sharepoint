@@ -8,7 +8,6 @@ This service allows you to integrate your Flows with [SharePoint](https://produc
 Note:
 
 Known limitations:
-- dynamic types doesn't work with dates
 - the dynamic types are the list created by the users in the groups, only from the first level of each sites. E.g. if you have a site that have a child site with a list, this one it won't be include like type
 - the limit of the files to be uploaded is 60MiB
 - the token from the Add-in works but then the service use a odata calls, Super User approach
