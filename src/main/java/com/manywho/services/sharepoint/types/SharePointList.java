@@ -19,7 +19,7 @@ public class SharePointList implements Type {
     @Type.Property(name = "Created At", contentType = ContentType.DateTime)
     private OffsetDateTime createdDateTime;
 
-    @Type.Property(name = "Modified At", contentType = ContentType.String)
+    @Type.Property(name = "Modified At", contentType = ContentType.DateTime)
     private OffsetDateTime modifiedDateTime;
 
     @Type.Property(name = "Description", contentType = ContentType.String)
