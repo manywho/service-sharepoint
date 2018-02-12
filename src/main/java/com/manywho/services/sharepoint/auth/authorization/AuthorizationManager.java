@@ -19,7 +19,7 @@ import com.manywho.services.sharepoint.auth.oauth.AuthenticationClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
-import com.manywho.services.sharepoint.facades.SharepointFacadeFactory;
+import com.manywho.services.sharepoint.facades.SharePointFacadeFactory;
 import com.manywho.services.sharepoint.types.Group;
 
 import java.util.List;
@@ -29,12 +29,12 @@ public class AuthorizationManager {
     private final ConfigurationParser configurationParser;
     private final AppConfiguration configuration;
     private final TypeBuilder typeBuilder;
-    private SharepointFacadeFactory sharepointFacadeFactory;
+    private SharePointFacadeFactory sharepointFacadeFactory;
     private AuthenticationClient azureHttpClient;
 
     @Inject
     public AuthorizationManager(ConfigurationParser configurationParser, TypeBuilder typeBuilder,
-                                AppConfiguration configuration, SharepointFacadeFactory sharepointFacadeFactory,
+                                AppConfiguration configuration, SharePointFacadeFactory sharepointFacadeFactory,
                                 AuthenticationClient azureHttpClient) {
 
         this.configuration = configuration;

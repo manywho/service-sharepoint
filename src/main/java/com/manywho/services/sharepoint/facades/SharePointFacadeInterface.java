@@ -7,7 +7,6 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.types.*;
-
 import java.util.List;
 
 public interface SharePointFacadeInterface {

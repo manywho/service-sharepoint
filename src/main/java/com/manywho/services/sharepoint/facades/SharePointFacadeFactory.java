@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 
-public class SharepointFacadeFactory {
+public class SharePointFacadeFactory {
     private SharePointOdataFacade sharePointOdataFacade;
     private SharePointServiceFacade sharePointServiceFacade;
 
@@ -14,7 +14,7 @@ public class SharepointFacadeFactory {
     HttpHeaders headers;
 
     @Inject
-    public SharepointFacadeFactory(SharePointOdataFacade sharePointOdataFacade, SharePointServiceFacade sharePointServiceFacade) {
+    public SharePointFacadeFactory(SharePointOdataFacade sharePointOdataFacade, SharePointServiceFacade sharePointServiceFacade) {
         this.sharePointOdataFacade = sharePointOdataFacade;
         this.sharePointServiceFacade = sharePointServiceFacade;
     }

@@ -14,13 +14,13 @@ public class DriveItem implements Type {
     @Type.Property(name = "Name", contentType = ContentType.String)
     private String name;
 
-    @Type.Property(name = "Drive Item Type", contentType = ContentType.String)
+    @Type.Property(name = "Type", contentType = ContentType.String)
     private String type;
 
     @Type.Property(name = "Drive ID", contentType = ContentType.String)
     private String driveId;
 
-    @Type.Property(name = "Drive Item Parent ID", contentType = ContentType.String)
+    @Type.Property(name = "Parent ID", contentType = ContentType.String)
     private String driveItemParent;
 
 

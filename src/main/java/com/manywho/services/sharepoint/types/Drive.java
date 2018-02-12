@@ -12,7 +12,7 @@ public class Drive implements Type {
     @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
 
-    @Type.Property(name = "Drive Type", contentType = ContentType.String)
+    @Type.Property(name = "Type", contentType = ContentType.String)
     private String driveType;
 
     @Type.Property(name = "Name", contentType = ContentType.String)

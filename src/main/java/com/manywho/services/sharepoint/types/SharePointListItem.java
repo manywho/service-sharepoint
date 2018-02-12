@@ -3,6 +3,8 @@ package com.manywho.services.sharepoint.types;
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;
 
+import java.time.OffsetDateTime;
+
 @Type.Element(name = "SharePoint List Item", summary = "Details about an SharePoint List Item")
 public class SharePointListItem implements Type{
     public final static String NAME = "SharePoint List Item";
@@ -11,11 +13,11 @@ public class SharePointListItem implements Type{
     @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
 
-    @Type.Property(name = "Created Date Time", contentType = ContentType.String)
-    private String createdDateTime;
+    @Type.Property(name = "Created At", contentType = ContentType.DateTime)
+    private OffsetDateTime createdDateTime;
 
-    @Type.Property(name = "Last Modified Date Time", contentType = ContentType.String)
-    private String modifiedDateTime;
+    @Type.Property(name = "Modified At", contentType = ContentType.DateTime)
+    private OffsetDateTime modifiedDateTime;
 
     @Type.Property(name = "Web URL", contentType = ContentType.String)
     private String webUrl;
@@ -34,19 +36,19 @@ public class SharePointListItem implements Type{
         this.id = id;
     }
 
-    public String getCreatedDateTime() {
+    public OffsetDateTime getCreatedDateTime() {
         return createdDateTime;
     }
 
-    public void setCreatedDateTime(String createdDateTime) {
+    public void setCreatedDateTime(OffsetDateTime createdDateTime) {
         this.createdDateTime = createdDateTime;
     }
 
-    public String getModifiedDateTime() {
+    public OffsetDateTime getModifiedDateTime() {
         return modifiedDateTime;
     }
 
-    public void setModifiedDateTime(String modifiedDateTime) {
+    public void setModifiedDateTime(OffsetDateTime modifiedDateTime) {
         this.modifiedDateTime = modifiedDateTime;
     }
 

@@ -4,9 +4,6 @@ import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
-import com.manywho.services.sharepoint.types.SharePointList;
-import com.manywho.services.sharepoint.types.Drive;
-import com.manywho.services.sharepoint.types.DriveItem;
 import com.manywho.services.sharepoint.types.*;
 import com.microsoft.services.sharepoint.SPList;
 import com.microsoft.services.sharepoint.SPListItem;
@@ -14,6 +11,7 @@ import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,8 +23,8 @@ public class ObjectMapperService {
         Site site = new Site();
 
         site.setId("sites/" + siteItem.getProperty("id").getValue().toString());
-        site.setCreatedDateTime(siteItem.getProperty("createdDateTime").getValue().toString());
-        site.setModifiedDateTime(siteItem.getProperty("lastModifiedDateTime").getValue().toString());
+        site.setCreatedDateTime(OffsetDateTime.parse(siteItem.getProperty("createdDateTime").getValue().toString()));
+        site.setModifiedDateTime(OffsetDateTime.parse(siteItem.getProperty("lastModifiedDateTime").getValue().toString()));
         site.setDescription(siteItem.getProperty("description").getValue().toString());
         site.setName(siteItem.getProperty("name").getValue().toString());
         site.setParentId(parentId);
@@ -42,8 +40,8 @@ public class ObjectMapperService {
 
     public SharePointList buildManyWhoSharePointListObject(ClientEntity sharepointListEntity, String siteId) {
         SharePointList sharePointList = new SharePointList();
-        sharePointList.setCreatedDateTime(sharepointListEntity.getProperty("createdDateTime").getValue().toString());
-        sharePointList.setModifiedDateTime(sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString());
+        sharePointList.setCreatedDateTime(OffsetDateTime.parse(sharepointListEntity.getProperty("createdDateTime").getValue().toString()));
+        sharePointList.setModifiedDateTime(OffsetDateTime.parse(sharepointListEntity.getProperty("lastModifiedDateTime").getValue().toString()));
         sharePointList.setDescription(sharepointListEntity.getProperty("description").getValue().toString());
         sharePointList.setName(sharepointListEntity.getProperty("name").getValue().toString());
         sharePointList.setWebUrl(sharepointListEntity.getProperty("webUrl").getValue().toString());
@@ -61,8 +59,8 @@ public class ObjectMapperService {
 
     public SharePointList buildManyWhoSharePointListObject(SPList listEntity, String siteId) {
         SharePointList list = new SharePointList();
-        list.setCreatedDateTime(listEntity.getData("Created").toString());
-        list.setModifiedDateTime(listEntity.getData("LastItemUserModifiedDate").toString());
+        list.setCreatedDateTime(OffsetDateTime.parse(listEntity.getData("Created").toString()));
+        list.setModifiedDateTime(OffsetDateTime.parse(listEntity.getData("LastItemUserModifiedDate").toString()));
         list.setDescription(listEntity.getData("Description").toString());
         list.setName(listEntity.getData("Title").toString());
 
@@ -83,8 +81,8 @@ public class ObjectMapperService {
 
         SharePointListItem sharePointListItem = new SharePointListItem();
 
-        sharePointListItem.setCreatedDateTime(itemEntity.getProperty("createdDateTime").getValue().toString());
-        sharePointListItem.setModifiedDateTime(itemEntity.getProperty("lastModifiedDateTime").getValue().toString());
+        sharePointListItem.setCreatedDateTime(OffsetDateTime.parse(itemEntity.getProperty("createdDateTime").getValue().toString()));
+        sharePointListItem.setModifiedDateTime(OffsetDateTime.parse(itemEntity.getProperty("lastModifiedDateTime").getValue().toString()));
         sharePointListItem.setWebUrl(itemEntity.getProperty("webUrl").getValue().toString());
         sharePointListItem.setSiteId(siteId);
         sharePointListItem.setListId(listId);
