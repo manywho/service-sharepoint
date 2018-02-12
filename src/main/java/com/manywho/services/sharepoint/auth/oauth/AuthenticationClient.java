@@ -106,7 +106,7 @@ public class AuthenticationClient {
     }
 
     public UserResponse getCurrentUser(String token) {
-        HttpGet httpGet = new HttpGet(GRAPH_ENDPOINT_BETA + "/me");
+        HttpGet httpGet = new HttpGet(GRAPH_ENDPOINT_V1 + "/me");
         httpclient.addAuthorizationHeader(httpGet, token);
 
         try {

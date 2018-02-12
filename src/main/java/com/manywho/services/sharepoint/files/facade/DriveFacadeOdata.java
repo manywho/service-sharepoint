@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_BETA;
+import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class DriveFacadeOdata {
 
@@ -38,7 +38,7 @@ public class DriveFacadeOdata {
 
     public List<Drive> fetchDrives(ServiceConfiguration configuration, String token) {
         String urlEntity = String.format("/me/drives");
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(urlEntity).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
@@ -67,7 +67,7 @@ public class DriveFacadeOdata {
     // todo create action delete file
     public void deleteFile (ServiceConfiguration configuration, String token, String driveId, String fileId) {
         String urlEntity = String.format("drives/%s/items/%s", driveId, fileId);
-        URI uri = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(urlEntity).build();
+        URI uri = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(urlEntity).build();
         ODataDeleteRequest deleteRequest = cudRequestFactory.getDeleteRequest(uri);
         deleteRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         deleteRequest.execute();
@@ -76,7 +76,7 @@ public class DriveFacadeOdata {
     private List<DriveItem> fetchDriveItemsInternal(ServiceConfiguration configuration, String token, String path,
                                                     String driveId, String parentItemId) {
 
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_BETA).appendEntitySetSegment(path).build();
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(path).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();
