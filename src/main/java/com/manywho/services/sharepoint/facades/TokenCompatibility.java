@@ -18,6 +18,7 @@ public class TokenCompatibility {
     private AuthenticatedWhoProvider authenticatedWhoProvider;
     private SharePointOdataFacade sharePointOdataFacade;
     private SharePointServiceFacade sharePointServiceFacade;
+    private final static String AUTH_STRATEGY_SUPER_USER = "SuperUser";
 
     @Inject
     public TokenCompatibility(AuthenticationClient authenticationClient, AuthenticatedWhoProvider authenticatedWhoProvider,
@@ -35,7 +36,7 @@ public class TokenCompatibility {
      * @return
      */
     public String getToken(ServiceConfiguration configuration) {
-        if (ApiConstants.AUTH_STRATEGY_SUPER_USER.equals(configuration.getStrategy())) {
+        if (AUTH_STRATEGY_SUPER_USER.equals(configuration.getStrategy())) {
 
             return authenticationClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword())
                     .getAccessToken();
@@ -57,7 +58,7 @@ public class TokenCompatibility {
 
             return sharePointOdataFacade;
         } else {
-            if (serviceConfiguration.getStrategy().equals(ApiConstants.AUTH_STRATEGY_SUPER_USER)) {
+            if (serviceConfiguration.getStrategy().equals(AUTH_STRATEGY_SUPER_USER)) {
                 return sharePointOdataFacade;
             }
 
@@ -67,7 +68,7 @@ public class TokenCompatibility {
 
     public void addinTokenNotSupported(ServiceConfiguration configuration, String functionality) {
 
-        if (ApiConstants.AUTH_STRATEGY_SUPER_USER.equals(configuration.getStrategy()) == false &&
+        if (AUTH_STRATEGY_SUPER_USER.equals(configuration.getStrategy()) == false &&
                 authenticatedWhoProvider.get().getIdentityProvider().equals(ApiConstants.AUTHENTICATION_TYPE_ADD_IN) == false) {
 
             String message = String.format("The %s functionality is only available for add-in with authentication strategy SuperUser",

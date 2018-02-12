@@ -24,6 +24,8 @@ public class AuthenticationClient {
     private AppConfiguration configuration;
     private ObjectMapper mapper;
 
+    private static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
+
     @Inject
     public AuthenticationClient(AppConfiguration configuration, HttpClient httpClient, ObjectMapper mapper) {
         this.httpclient = httpClient;
@@ -31,8 +33,7 @@ public class AuthenticationClient {
         this.mapper = mapper;
     }
 
-    public AuthResponse getAccessTokenByAuthCode(String authCode, String redirectUri, String clientId,
-                                                 String clientSecret, String resource) {
+    public AuthResponse getAccessTokenByAuthCode(String authCode, String clientId, String clientSecret, String resource) {
         try {
             HttpPost httpPost = new HttpPost(String.format("%s/%s", AUTHORITY_URI, "oauth2/token"));
 
@@ -42,7 +43,7 @@ public class AuthenticationClient {
             formParams.add(new BasicNameValuePair("code", authCode));
             formParams.add(new BasicNameValuePair("resource", resource));
             formParams.add(new BasicNameValuePair("client_id", clientId));
-            formParams.add(new BasicNameValuePair("redirect_uri", redirectUri));
+            formParams.add(new BasicNameValuePair("redirect_uri", REDIRECT_URI));
             formParams.add(new BasicNameValuePair("client_secret", clientSecret));
 
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams);

@@ -343,9 +343,9 @@ public class SharePointOdataFacade implements SharePointFacadeInterface {
     }
 
     @Override
-    public void deleteTypeList(ServiceConfiguration configuration, String token, String developerName, String id) {
+    public void deleteTypeList(ServiceConfiguration configuration, String token, String path, String id) {
         URI deleteItemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_BETA)
-                .appendEntitySetSegment(developerName)
+                .appendEntitySetSegment(path)
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(id)
                 .build();

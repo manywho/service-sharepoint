@@ -21,6 +21,7 @@ import java.util.UUID;
 import static com.manywho.services.sharepoint.constants.ApiConstants.*;
 
 public class UserFetcher {
+
     private AppConfiguration serviceConfiguration;
     private AuthenticationClient azureHttpClient;
 
@@ -33,7 +34,6 @@ public class UserFetcher {
     public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) {
         AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
-                REDIRECT_URI,
                 serviceConfiguration.getOauth2ClientId(),
                 serviceConfiguration.getOauth2ClientSecret(),
                 RESOURCE_GRAPH);
