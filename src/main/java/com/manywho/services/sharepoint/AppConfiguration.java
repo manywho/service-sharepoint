@@ -43,8 +43,4 @@ public class AppConfiguration {
     public String getRedisUrl() {
         return this.serviceConfigurationDefault.get("redis.url");
     }
-
-    public String getRedisPort() {
-        return this.serviceConfigurationDefault.get("redis.port");
-    }
 }

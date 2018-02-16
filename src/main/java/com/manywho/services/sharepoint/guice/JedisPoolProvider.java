@@ -1,6 +1,5 @@
 package com.manywho.services.sharepoint.guice;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.manywho.services.sharepoint.AppConfiguration;
@@ -18,13 +17,8 @@ public class JedisPoolProvider implements Provider<JedisPool> {
 
     @Override
     public JedisPool get() {
-        int port = 6379;
 
-        if (Strings.isNullOrEmpty(serviceConfigurationDefault.getRedisPort()) == false) {
-            port = Integer.parseInt(serviceConfigurationDefault.getRedisPort());
-        }
-
-        JedisPool pool = new JedisPool(new JedisPoolConfig(), serviceConfigurationDefault.getRedisUrl(), port, 2000);
+        JedisPool pool = new JedisPool(new JedisPoolConfig(), serviceConfigurationDefault.getRedisUrl());
 
         pool.addObjects(JedisPoolConfig.DEFAULT_MAX_IDLE);
 
