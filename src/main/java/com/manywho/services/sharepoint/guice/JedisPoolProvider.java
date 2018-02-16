@@ -18,7 +18,7 @@ public class JedisPoolProvider implements Provider<JedisPool> {
     @Override
     public JedisPool get() {
 
-        JedisPool pool = new JedisPool(new JedisPoolConfig(), serviceConfigurationDefault.getRedisUrl());
+        JedisPool pool = new JedisPool(serviceConfigurationDefault.getRedisUrl());
 
         pool.addObjects(JedisPoolConfig.DEFAULT_MAX_IDLE);
 
