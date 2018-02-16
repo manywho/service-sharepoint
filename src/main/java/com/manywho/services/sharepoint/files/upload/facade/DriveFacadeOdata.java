@@ -67,13 +67,13 @@ public class DriveFacadeOdata {
     }
 
     public List<DriveItem> fetchDriveItemsRoot(ServiceConfiguration configuration, String token, String driveId) {
-        String path = String.format("/drives/%s/root/children", driveId);
+        String path = String.format("drives/%s/root/children", driveId);
 
         return fetchDriveItemsInternal(configuration, token, path, driveId, "root");
     }
 
     public List<DriveItem> fetchDriveItems(ServiceConfiguration configuration, String token, String driveId, String parentDriveItemId) {
-        String path = String.format("/drives/%s/items/%s/children", driveId, parentDriveItemId);
+        String path = String.format("drives/%s/items/%s/children", driveId, parentDriveItemId);
 
         return fetchDriveItemsInternal(configuration, token, path, driveId, parentDriveItemId);
     }
