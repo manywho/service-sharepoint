@@ -1,12 +1,14 @@
-package com.manywho.services.sharepoint.files.facade;
+package com.manywho.services.sharepoint.files.upload.facade;
 
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.services.sharepoint.constants.ApiConstants;
+import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.types.Drive;
 import com.manywho.services.sharepoint.types.DriveItem;
-import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.cud.CUDRequestFactory;
 import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
+import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -36,9 +38,21 @@ public class DriveFacadeOdata {
         this.cudRequestFactory = client.getCUDRequestFactory();
     }
 
-    public List<Drive> fetchDrives(ServiceConfiguration configuration, String token) {
-        String urlEntity = String.format("/me/drives");
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(urlEntity).build();
+    public Drive fetchDrive(String token, String path) {
+        URI entityUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment(path).build();
+        ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(entityUri);
+        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        ODataRetrieveResponse<ClientEntity> drive = entitySetRequest.execute();
+
+        if (drive.getBody() == null) {
+            return null;
+        }
+
+        return this.objectMapperService.buildManyWhoDriveObject(drive.getBody());
+    }
+
+    public List<Drive> fetchDrives(ServiceConfiguration configuration, String token, String path) {
+        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(path).build();
         ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         ODataRetrieveResponse<ClientEntitySet> entitySetResponse = entitySetRequest.execute();

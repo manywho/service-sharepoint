@@ -3,3 +3,4 @@ oauth2.clientId=
 oauth2.clientSecret=
 app.clientSecret=
 app.clientId=
+redis.url=

@@ -6,8 +6,8 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.files.facade.DriveFacadeOdata;
-import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
+import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
+import com.manywho.services.sharepoint.files.upload.utilities.FileIdExtractor;
 import com.manywho.services.sharepoint.types.DriveItem;
 import org.apache.commons.lang3.StringUtils;
 

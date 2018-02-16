@@ -6,6 +6,8 @@
             <entry key="app.clientId" value="${app.clientId}"/>
             <entry key="oauth2.clientId" value="${oauth2.clientId}"/>
             <entry key="oauth2.clientSecret" value="${oauth2.clientSecret}"/>
+            <entry key="redis.url" value="${redis.url}"/>
+            <entry key="redis.port" value="${redis.port}"/>
         </propertyfile>
     </target>
 </project>

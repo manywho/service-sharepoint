@@ -39,4 +39,12 @@ public class AppConfiguration {
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
                 AUTHORITY_URI, this.getOauth2ClientId(), "User.Read" , "code");
     }
+
+    public String getRedisUrl() {
+        return this.serviceConfigurationDefault.get("redis.url");
+    }
+
+    public String getRedisPort() {
+        return this.serviceConfigurationDefault.get("redis.port");
+    }
 }

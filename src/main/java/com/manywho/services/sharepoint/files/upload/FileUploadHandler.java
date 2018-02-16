@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files;
+package com.manywho.services.sharepoint.files.upload;
 
 import  com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -8,10 +8,10 @@ import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.files.client.FileClient;
-import com.manywho.services.sharepoint.files.client.responses.SessionCreated;
-import com.manywho.services.sharepoint.files.client.responses.UploadStatus;
-import com.manywho.services.sharepoint.files.utilities.FileIdExtractor;
+import com.manywho.services.sharepoint.files.upload.client.responses.SessionCreated;
+import com.manywho.services.sharepoint.files.upload.client.responses.UploadStatus;
+import com.manywho.services.sharepoint.files.upload.utilities.FileIdExtractor;
+import com.manywho.services.sharepoint.files.upload.client.FileClient;
 
 import java.util.List;
 
