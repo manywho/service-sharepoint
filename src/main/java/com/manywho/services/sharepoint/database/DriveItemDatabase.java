@@ -42,7 +42,7 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
                     .findFirst();
 
             Optional<ListFilterWhere> driveItemId  = listFilter.getWhere().stream()
-                    .filter(p -> Objects.equals(p.getColumnName(), "Drive Item Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
+                    .filter(p -> Objects.equals(p.getColumnName(), "Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
             if (!drive.isPresent()) {
