@@ -9,6 +9,19 @@ public class IdExtractorForDriveItems {
             throw new RuntimeException("The Drive ID Is empty");
         }
 
-        return idUnique.replace("drives/", "");
+        String[] parts = idUnique.split("/items/");
+
+        return parts[0].replace("drives/", "");
+    }
+
+    static public String extractDriveItemId(String idUnique) {
+
+        if (Strings.isNullOrEmpty(idUnique)) {
+            throw new RuntimeException("The Drive Item ID Is empty");
+        }
+
+        String[] parts = idUnique.split("/items/");
+
+        return parts[1];
     }
 }

@@ -12,7 +12,7 @@ import com.manywho.services.sharepoint.lists.items.SharePointListItem;
 import com.manywho.services.sharepoint.lists.SharePointList;
 import com.manywho.services.sharepoint.mapper.ObjectMapperService;
 import com.manywho.services.sharepoint.sites.Site;
-import com.manywho.services.sharepoint.users.types.User;
+import com.manywho.services.sharepoint.users.User;
 import com.microsoft.services.sharepoint.*;
 import javax.inject.Inject;
 import java.util.ArrayList;

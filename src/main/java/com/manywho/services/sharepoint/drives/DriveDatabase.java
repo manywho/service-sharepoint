@@ -5,17 +5,16 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
 
 import java.util.List;
 
 public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
 
-    private DriveFacadeOdata driveFacade;
+    private DriveFacade driveFacade;
     private TokenCompatibility tokenCompatibility;
 
     @Inject
-    public DriveDatabase(DriveFacadeOdata driveFacade, TokenCompatibility tokenCompatibility) {
+    public DriveDatabase(DriveFacade driveFacade, TokenCompatibility tokenCompatibility) {
 
         this.driveFacade = driveFacade;
         this.tokenCompatibility = tokenCompatibility;
@@ -37,36 +36,36 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
     public List<Drive> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
 
-        return driveFacade.fetchDrives(configuration, tokenCompatibility.getToken(configuration), "me/drives");
+        return driveFacade.fetchDrives(tokenCompatibility.getToken(configuration), "me/drives");
     }
 
     @Override
     public Drive create(ServiceConfiguration configuration, Drive drive) {
-        return null;
+        throw new RuntimeException("Create a drive is not currently supported");
     }
 
     @Override
     public List<Drive> create(ServiceConfiguration configuration, List<Drive> list) {
-        return null;
+        throw new RuntimeException("Create a list of drives is not currently supported");
     }
 
     @Override
     public void delete(ServiceConfiguration configuration, Drive drive) {
-
+        throw new RuntimeException("Delete a drive is not currently supported");
     }
 
     @Override
     public void delete(ServiceConfiguration configuration, List<Drive> list) {
-
+        throw new RuntimeException("Delete a list of drives is not currently supported");
     }
 
     @Override
     public Drive update(ServiceConfiguration configuration, Drive drive) {
-        return null;
+        throw new RuntimeException("Update a list of drives is not currently supported");
     }
 
     @Override
     public List<Drive> update(ServiceConfiguration configuration, List<Drive> list) {
-        return null;
+        throw new RuntimeException("Update a drive is not currently supported");
     }
 }

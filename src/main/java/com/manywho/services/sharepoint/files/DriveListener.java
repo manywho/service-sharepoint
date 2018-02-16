@@ -6,8 +6,8 @@ import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.client.HttpClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.files.listeners.persistence.ListenerRequestRepository;
-import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
+import com.manywho.services.sharepoint.files.listeners.ListenerRequestRepository;
+import com.manywho.services.sharepoint.drives.DriveFacade;
 import com.manywho.services.sharepoint.drives.Drive;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -28,13 +28,13 @@ public class DriveListener implements Listener<ServiceConfiguration, Drive> {
     private HttpClient httpClient;
     private UriInfo uriInfo;
     private ListenerRequestRepository listenerRequestRepository;
-    private DriveFacadeOdata driveFacade;
+    private DriveFacade driveFacade;
     private TokenCompatibility tokenCompatibility;
 
     @Inject
     public DriveListener(AuthenticatedWhoProvider authenticatedWhoProvider, HttpClient httpClient,
                          @Context UriInfo uriInfo, ListenerRequestRepository listenerRequestRepository,
-                         TokenCompatibility tokenCompatibility, DriveFacadeOdata driveFacade) {
+                         TokenCompatibility tokenCompatibility, DriveFacade driveFacade) {
 
         this.authenticatedWhoProvider = authenticatedWhoProvider;
         this.httpClient = httpClient;

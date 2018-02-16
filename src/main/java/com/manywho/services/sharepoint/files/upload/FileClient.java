@@ -1,13 +1,13 @@
-package com.manywho.services.sharepoint.files.upload.client;
+package com.manywho.services.sharepoint.files.upload;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.client.HttpClient;
-import com.manywho.services.sharepoint.files.upload.client.responses.FileMetadata;
-import com.manywho.services.sharepoint.files.upload.client.responses.SessionCreated;
-import com.manywho.services.sharepoint.files.upload.client.responses.UploadStatus;
+import com.manywho.services.sharepoint.files.upload.responses.FileMetadata;
+import com.manywho.services.sharepoint.files.upload.responses.SessionCreated;
+import com.manywho.services.sharepoint.files.upload.responses.UploadStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.client.methods.HttpPatch;

@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.users.types;
+package com.manywho.services.sharepoint.users;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;

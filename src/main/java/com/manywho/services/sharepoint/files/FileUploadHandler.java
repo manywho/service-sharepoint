@@ -8,9 +8,9 @@ import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.files.upload.client.responses.SessionCreated;
-import com.manywho.services.sharepoint.files.upload.client.responses.UploadStatus;
-import com.manywho.services.sharepoint.files.upload.client.FileClient;
+import com.manywho.services.sharepoint.files.upload.responses.SessionCreated;
+import com.manywho.services.sharepoint.files.upload.responses.UploadStatus;
+import com.manywho.services.sharepoint.files.upload.FileClient;
 
 import java.util.List;
 

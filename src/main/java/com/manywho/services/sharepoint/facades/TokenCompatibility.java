@@ -69,7 +69,7 @@ public class TokenCompatibility {
     public void addinTokenNotSupported(ServiceConfiguration configuration, String functionality) {
 
         if (AUTH_STRATEGY_SUPER_USER.equals(configuration.getStrategy()) == false &&
-                authenticatedWhoProvider.get().getIdentityProvider().equals(ApiConstants.AUTHENTICATION_TYPE_ADD_IN) == false) {
+                authenticatedWhoProvider.get().getIdentityProvider().equals(ApiConstants.AUTHENTICATION_TYPE_ADD_IN) == true) {
 
             String message = String.format("The %s functionality is only available for add-in with authentication strategy SuperUser",
                     functionality);

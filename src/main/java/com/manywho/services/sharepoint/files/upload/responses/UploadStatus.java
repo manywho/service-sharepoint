@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.upload.client.responses;
+package com.manywho.services.sharepoint.files.upload.responses;
 
 public class UploadStatus {
     private String id;

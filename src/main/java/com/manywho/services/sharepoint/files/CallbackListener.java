@@ -1,11 +1,11 @@
 package com.manywho.services.sharepoint.files;
 
 import com.manywho.sdk.api.security.AuthenticatedWho;
-import com.manywho.services.sharepoint.files.listeners.client.EngineClient;
-import com.manywho.services.sharepoint.files.listeners.client.NotificationsClient;
+import com.manywho.services.sharepoint.files.listeners.EngineClient;
+import com.manywho.services.sharepoint.files.listeners.NotificationsClient;
 import com.manywho.services.sharepoint.files.listeners.entities.Notification;
 import com.manywho.services.sharepoint.files.listeners.entities.NotificationsPayload;
-import com.manywho.services.sharepoint.files.listeners.persistence.ListenerRequestRepository;
+import com.manywho.services.sharepoint.files.listeners.ListenerRequestRepository;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;

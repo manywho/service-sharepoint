@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.listeners.client;
+package com.manywho.services.sharepoint.files.listeners;
 
 import com.manywho.sdk.api.InvokeType;
 import com.manywho.sdk.api.run.EngineValue;

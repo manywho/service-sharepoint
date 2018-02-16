@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.listeners.persistence;
+package com.manywho.services.sharepoint.files.listeners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

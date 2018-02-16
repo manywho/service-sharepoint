@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.listeners.client;
+package com.manywho.services.sharepoint.files.listeners;
 
 import com.google.inject.Inject;
 import com.manywho.services.sharepoint.client.HttpClient;

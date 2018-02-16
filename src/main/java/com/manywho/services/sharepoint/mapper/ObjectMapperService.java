@@ -4,13 +4,11 @@ import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
-import com.manywho.services.sharepoint.drives.items.DriveItem;
-import com.manywho.services.sharepoint.drives.Drive;
 import com.manywho.services.sharepoint.groups.Group;
 import com.manywho.services.sharepoint.lists.items.SharePointListItem;
 import com.manywho.services.sharepoint.lists.SharePointList;
 import com.manywho.services.sharepoint.sites.Site;
-import com.manywho.services.sharepoint.users.types.User;
+import com.manywho.services.sharepoint.users.User;
 import com.microsoft.services.sharepoint.SPList;
 import com.microsoft.services.sharepoint.SPListItem;
 import org.apache.olingo.client.api.domain.ClientEntity;
@@ -145,41 +143,7 @@ public class ObjectMapperService {
         return object;
     }
 
-    public Drive buildManyWhoDriveObject(ClientEntity itemEntity) {
 
-        Drive item = new Drive();
-
-        item.setId("drives/" + itemEntity.getProperty("id").getValue().toString());
-        item.setDriveType(itemEntity.getProperty("driveType").getValue().toString());
-        item.setName(itemEntity.getProperty("name").getValue().toString());
-
-        return item;
-    }
-
-    public DriveItem buildManyWhoDriveItemObject(ClientEntity driveItemEntity, String driveId, String parentDriveItemId) {
-
-        DriveItem item = new DriveItem();
-        item.setId(String.format("drives/%s/items/%s", driveId, driveItemEntity.getProperty("id").getValue()));
-
-        item.setDriveId(driveId);
-        if (driveItemEntity.getProperty("folder") != null) {
-            item.setType("folder");
-        } else if (driveItemEntity.getProperty("file") != null) {
-            item.setType("file");
-        } else if (driveItemEntity.getProperty("image") != null) {
-            item.setType("image");
-        } else if (driveItemEntity.getProperty("photo") != null) {
-            item.setType("photo");
-        } else {
-            item.setType("unknown");
-        }
-
-        item.setDriveItemParent(parentDriveItemId);
-
-        item.setName(driveItemEntity.getProperty("name").getValue().toString());
-
-        return item;
-    }
 
     public Group buildManyWhoGroupObject(ClientEntity groupEntity) {
         Group group = new Group();
