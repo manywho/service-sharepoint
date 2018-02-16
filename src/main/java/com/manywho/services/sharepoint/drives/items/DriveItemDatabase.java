@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.database;
+package com.manywho.services.sharepoint.drives.items;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -7,8 +7,7 @@ import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
-import com.manywho.services.sharepoint.files.upload.utilities.FileIdExtractor;
-import com.manywho.services.sharepoint.types.DriveItem;
+import com.manywho.services.sharepoint.files.FileIdExtractor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -27,7 +26,8 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
     }
 
     @Override
-    public DriveItem find(ServiceConfiguration configuration, String s) {
+    public DriveItem find(ServiceConfiguration configuration, String driveItemId)
+    {
         return null;
     }
 
@@ -50,7 +50,9 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
             }
 
             String token = tokenCompatibility.getToken(configuration);
-            String driveId = drive.get().getContentValue().replace("drives/", "");
+            String driveId = IdExtractorForDriveItems.extractDriveId(drive.get().getContentValue());
+
+            //drive.get().getContentValue().replace("drives/", "");
 
             if (!driveItemId.isPresent()) {
 

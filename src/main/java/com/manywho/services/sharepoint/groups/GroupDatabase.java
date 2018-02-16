@@ -1,11 +1,10 @@
-package com.manywho.services.sharepoint.database;
+package com.manywho.services.sharepoint.groups;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.types.Group;
 
 import java.util.List;
 

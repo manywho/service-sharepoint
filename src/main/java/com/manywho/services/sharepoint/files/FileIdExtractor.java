@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.upload.utilities;
+package com.manywho.services.sharepoint.files;
 
 import com.google.common.base.Strings;
 

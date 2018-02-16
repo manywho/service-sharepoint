@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.listeners;
+package com.manywho.services.sharepoint.files;
 
 import com.manywho.sdk.services.listeners.Listener;
 import com.manywho.sdk.services.listeners.ListenerData;
@@ -8,7 +8,7 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.files.listeners.persistence.ListenerRequestRepository;
 import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
-import com.manywho.services.sharepoint.types.Drive;
+import com.manywho.services.sharepoint.drives.Drive;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 

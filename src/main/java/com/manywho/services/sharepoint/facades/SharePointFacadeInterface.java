@@ -6,7 +6,12 @@ import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.types.*;
+import com.manywho.services.sharepoint.groups.Group;
+import com.manywho.services.sharepoint.lists.items.SharePointListItem;
+import com.manywho.services.sharepoint.lists.SharePointList;
+import com.manywho.services.sharepoint.sites.Site;
+import com.manywho.services.sharepoint.users.types.User;
+
 import java.util.List;
 
 public interface SharePointFacadeInterface {

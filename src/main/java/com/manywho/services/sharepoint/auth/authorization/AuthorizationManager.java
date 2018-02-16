@@ -20,7 +20,7 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.constants.ApiConstants;
 import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
 import com.manywho.services.sharepoint.facades.SharePointFacadeFactory;
-import com.manywho.services.sharepoint.types.Group;
+import com.manywho.services.sharepoint.groups.Group;
 
 import java.util.List;
 import java.util.stream.Collectors;

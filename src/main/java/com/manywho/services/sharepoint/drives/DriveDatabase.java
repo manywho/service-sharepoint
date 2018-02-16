@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.database;
+package com.manywho.services.sharepoint.drives;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -6,7 +6,6 @@ import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
 import com.manywho.services.sharepoint.files.upload.facade.DriveFacadeOdata;
-import com.manywho.services.sharepoint.types.Drive;
 
 import java.util.List;
 
@@ -23,12 +22,12 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
     }
 
     @Override
-    public Drive find(ServiceConfiguration configuration, String s) {
+    public Drive find(ServiceConfiguration configuration, String driveId) {
         tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
         Drive drive = driveFacade.fetchDrive(tokenCompatibility.getToken(configuration), "me/drive");
 
         if (drive == null) {
-            throw new RuntimeException(String.format("Drive with id: \"%s\" not foud", s));
+            throw new RuntimeException(String.format("Drive with id: \"%s\" not foud", driveId));
         }
 
         return drive;

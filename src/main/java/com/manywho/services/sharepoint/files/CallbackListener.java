@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.files.listeners;
+package com.manywho.services.sharepoint.files;
 
 import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.services.sharepoint.files.listeners.client.EngineClient;

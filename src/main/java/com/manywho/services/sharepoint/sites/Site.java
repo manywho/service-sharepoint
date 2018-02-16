@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.types;
+package com.manywho.services.sharepoint.sites;
 
 import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.types.Type;

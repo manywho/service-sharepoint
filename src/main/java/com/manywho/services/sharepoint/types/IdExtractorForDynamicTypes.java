@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.utilities;
+package com.manywho.services.sharepoint.types;
 
 import com.google.common.base.Strings;
 

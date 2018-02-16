@@ -4,8 +4,17 @@ import com.google.common.base.Strings;
 import com.manywho.sdk.api.describe.DescribeServiceRequest;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.sdk.services.types.TypeProvider;
+import com.manywho.services.sharepoint.auth.oauth.AuthenticationClient;
+import com.manywho.services.sharepoint.auth.oauth.entities.AuthResponse;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.database.dynamic.DescribeDynamicTypesManager;
+import com.manywho.services.sharepoint.drives.items.DriveItem;
+import com.manywho.services.sharepoint.drives.Drive;
+import com.manywho.services.sharepoint.facades.SharePointOdataFacade;
+import com.manywho.services.sharepoint.groups.Group;
+import com.manywho.services.sharepoint.lists.items.SharePointListItem;
+import com.manywho.services.sharepoint.lists.SharePointList;
+import com.manywho.services.sharepoint.sites.Site;
+import com.manywho.services.sharepoint.users.types.User;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -13,11 +22,13 @@ import java.util.List;
 
 public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
 
-    private DescribeDynamicTypesManager describeTypesManager;
+    private SharePointOdataFacade sharePointOdataFacade;
+    private AuthenticationClient authenticationClient;
 
     @Inject
-    public TypeProviderRaw(DescribeDynamicTypesManager describeTypesManager) {
-        this.describeTypesManager = describeTypesManager;
+    public TypeProviderRaw(SharePointOdataFacade sharePointOdataFacade, AuthenticationClient authenticationClient) {
+        this.sharePointOdataFacade = sharePointOdataFacade;
+        this.authenticationClient = authenticationClient;
     }
 
     @Override
@@ -38,11 +49,15 @@ public class TypeProviderRaw implements TypeProvider<ServiceConfiguration> {
     }
 
     @Override
-    public List<TypeElement> describeTypes(ServiceConfiguration serviceConfiguration, DescribeServiceRequest describeServiceRequest) {
-        if (Strings.isNullOrEmpty(serviceConfiguration.getUsername())) {
+    public List<TypeElement> describeTypes(ServiceConfiguration configuration, DescribeServiceRequest describeServiceRequest) {
+        if (Strings.isNullOrEmpty(configuration.getUsername())) {
             return new ArrayList<>();
         }
 
-        return describeTypesManager.getTypeElements(serviceConfiguration);
+        AuthResponse authenticationResult  = authenticationClient.getAccessTokenFromUserCredentials(
+                configuration.getUsername(),
+                configuration.getPassword());
+
+        return this.sharePointOdataFacade.fetchAllListTypes(configuration, authenticationResult.getAccessToken());
     }
 }

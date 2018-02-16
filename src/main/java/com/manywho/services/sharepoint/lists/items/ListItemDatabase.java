@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.database;
+package com.manywho.services.sharepoint.lists.items;
 
 import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
@@ -6,8 +6,8 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.types.SharePointListItem;
-import com.manywho.services.sharepoint.utilities.IdExtractorForDynamicTypes;
+import com.manywho.services.sharepoint.lists.items.SharePointListItem;
+import com.manywho.services.sharepoint.types.IdExtractorForDynamicTypes;
 import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Objects;
