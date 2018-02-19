@@ -23,7 +23,7 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
     @Override
     public Drive find(ServiceConfiguration configuration, String driveId) {
         tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
-        Drive drive = driveFacade.fetchDrive(tokenCompatibility.getToken(configuration), "me/drive");
+        Drive drive = driveFacade.fetchDrive(tokenCompatibility.getToken(configuration), driveId);
 
         if (drive == null) {
             throw new RuntimeException(String.format("Drive with id: \"%s\" not foud", driveId));
