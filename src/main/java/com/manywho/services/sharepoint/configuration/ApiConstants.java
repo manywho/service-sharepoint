@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.constants;
+package com.manywho.services.sharepoint.configuration;
 
 public class ApiConstants {
     public final static String AUTHORITY = "https://login.windows.net/common";

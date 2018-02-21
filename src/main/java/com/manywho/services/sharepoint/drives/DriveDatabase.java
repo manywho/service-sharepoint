@@ -4,26 +4,26 @@ import com.google.inject.Inject;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.auth.TokenManager;
 
 import java.util.List;
 
 public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
 
-    private DriveFacade driveFacade;
-    private TokenCompatibility tokenCompatibility;
+    private DriveClient driveClient;
+    private TokenManager tokenManager;
 
     @Inject
-    public DriveDatabase(DriveFacade driveFacade, TokenCompatibility tokenCompatibility) {
+    public DriveDatabase(DriveClient driveClient, TokenManager tokenManager) {
 
-        this.driveFacade = driveFacade;
-        this.tokenCompatibility = tokenCompatibility;
+        this.driveClient = driveClient;
+        this.tokenManager = tokenManager;
     }
 
     @Override
     public Drive find(ServiceConfiguration configuration, String driveId) {
-        tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
-        Drive drive = driveFacade.fetchDrive(tokenCompatibility.getToken(configuration), driveId);
+        tokenManager.addinTokenNotSupported(configuration, "search drive");
+        Drive drive = driveClient.fetchDrive(tokenManager.getToken(configuration), driveId);
 
         if (drive == null) {
             throw new RuntimeException(String.format("Drive with id: \"%s\" not foud", driveId));
@@ -34,9 +34,9 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
 
     @Override
     public List<Drive> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
-        tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
+        tokenManager.addinTokenNotSupported(configuration, "search drive");
 
-        return driveFacade.fetchDrives(tokenCompatibility.getToken(configuration), "me/drives");
+        return driveClient.fetchDrives(tokenManager.getToken(configuration), "me/drives");
     }
 
     @Override

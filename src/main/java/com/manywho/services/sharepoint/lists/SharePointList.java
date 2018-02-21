@@ -9,6 +9,10 @@ import java.time.OffsetDateTime;
 public class SharePointList implements Type {
     public final static String NAME = "SharePoint List";
 
+    /**
+     * There isn't a unique way to get a list, so I have unify the ID in this expected format:
+     * sites/{siteId}/lists/{listId}
+     */
     @Type.Identifier
     @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;

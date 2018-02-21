@@ -7,7 +7,7 @@ import com.manywho.sdk.services.files.FileHandler;
 import com.manywho.sdk.services.files.FileUpload;
 import com.manywho.sdk.services.types.system.$File;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.auth.TokenManager;
 import com.manywho.services.sharepoint.files.upload.responses.SessionCreated;
 import com.manywho.services.sharepoint.files.upload.responses.UploadStatus;
 import com.manywho.services.sharepoint.files.upload.FileClient;
@@ -17,14 +17,14 @@ import java.util.List;
 public class FileUploadHandler implements FileHandler<ServiceConfiguration> {
 
     private FileClient fileClient;
-    private TokenCompatibility tokenCompatibility;
+    private TokenManager tokenManager;
 
     @Inject
     public FileUploadHandler(FileClient fileClient,
-                             TokenCompatibility tokenCompatibility) {
+                             TokenManager tokenManager) {
 
         this.fileClient = fileClient;
-        this.tokenCompatibility = tokenCompatibility;
+        this.tokenManager = tokenManager;
     }
 
     @Override
@@ -37,8 +37,8 @@ public class FileUploadHandler implements FileHandler<ServiceConfiguration> {
         String driveId = FileIdExtractor.extractDriveIdFromUniqueId(path);
         //folder
         String folderId = FileIdExtractor.extractDriveItemIdFromUniqueId(path);
-        tokenCompatibility.addinTokenNotSupported(configuration, "upload file");
-        String token = tokenCompatibility.getToken(configuration);
+        tokenManager.addinTokenNotSupported(configuration, "upload file");
+        String token = tokenManager.getToken(configuration);
         SessionCreated fileSessionCreated = fileClient.getSession(token, driveId, folderId, upload.getName());
         UploadStatus uploadStatus = fileClient.uploadBigFile(fileSessionCreated.getUploadUrl(), upload);
 

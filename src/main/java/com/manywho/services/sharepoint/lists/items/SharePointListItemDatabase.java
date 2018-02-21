@@ -5,35 +5,33 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.lists.items.SharePointListItem;
-import com.manywho.services.sharepoint.types.IdExtractorForDynamicTypes;
+import com.manywho.services.sharepoint.auth.TokenManager;
+import com.manywho.services.sharepoint.lists.SharePointListClient;
 import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ListItemDatabase implements Database<ServiceConfiguration, SharePointListItem> {
+public class SharePointListItemDatabase implements Database<ServiceConfiguration, SharePointListItem> {
 
-    private TokenCompatibility tokenCompatibility;
+    private TokenManager tokenManager;
+    private SharePointListClient sharePointListClient;
 
     @Inject
-    public ListItemDatabase(TokenCompatibility tokenCompatibility) {
-        this.tokenCompatibility = tokenCompatibility;
+    public SharePointListItemDatabase(TokenManager tokenManager, SharePointListClient client) {
+        this.tokenManager = tokenManager;
+        this.sharePointListClient = client;
     }
 
     @Override
     public SharePointListItem find(ServiceConfiguration configuration, String id) {
-        // todo those id doesn't look right
-        // get item id
-        String itemId = id;
-        // get site id
-        String siteId = id;
-        // get list id
-        String listId = id;
 
-        return tokenCompatibility.getSharePointFacade(configuration)
-                .fetchItem(configuration, tokenCompatibility.getToken(configuration), siteId, listId, itemId);
+        return sharePointListClient
+                .fetchItem(tokenManager.getToken(configuration),
+                        IdExtractorForListItem.extractSiteId(id),
+                        IdExtractorForListItem.extractListId(id),
+                        IdExtractorForListItem.extractListItemId(id));
     }
 
     @Override
@@ -52,8 +50,8 @@ public class ListItemDatabase implements Database<ServiceConfiguration, SharePoi
             throw new RuntimeException("List ID is mandatory");
         }
 
-        return tokenCompatibility.getSharePointFacade(configuration)
-                .fetchItems(configuration, tokenCompatibility.getToken(configuration), listOptional.get().getContentValue());
+        return sharePointListClient
+                .fetchItems(tokenManager.getToken(configuration), listOptional.get().getContentValue());
     }
 
     @Override
@@ -68,10 +66,11 @@ public class ListItemDatabase implements Database<ServiceConfiguration, SharePoi
 
     @Override
     public void delete(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
-        String id = IdExtractorForDynamicTypes.extractItemId(sharePointListItem.getId());
-
-        tokenCompatibility.getSharePointFacade(configuration)
-                .deleteTypeList(configuration, tokenCompatibility.getToken(configuration), sharePointListItem.getId(), id);
+        sharePointListClient.deleteTypeList(tokenManager.getToken(configuration),
+                        IdExtractorForListItem.extractSiteId(sharePointListItem.getId()),
+                        IdExtractorForListItem.extractListId(sharePointListItem.getId()),
+                        IdExtractorForListItem.extractListItemId(sharePointListItem.getId())
+        );
     }
 
     @Override

@@ -1,14 +1,14 @@
 package com.manywho.services.sharepoint.drives.items;
 
-import com.manywho.services.sharepoint.graph.ObjectMapperBase;
+import com.manywho.services.sharepoint.mappers.ObjectMapperBase;
 import org.apache.olingo.client.api.domain.ClientEntity;
 
-public class MapperDriveItem extends ObjectMapperBase<DriveItem> {
+public class DriveItemMapper extends ObjectMapperBase<DriveItem> {
 
     private String driveId;
     private String parentDriveItemId;
 
-    public MapperDriveItem(String driveId, String parentDriveItemId) {
+    public DriveItemMapper(String driveId, String parentDriveItemId) {
         this.driveId = driveId;
         this.parentDriveItemId = parentDriveItemId;
     }

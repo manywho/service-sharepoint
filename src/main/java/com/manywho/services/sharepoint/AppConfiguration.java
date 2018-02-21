@@ -2,11 +2,11 @@ package com.manywho.services.sharepoint;
 
 
 import com.manywho.services.sharepoint.configuration.reader.ServiceConfigurationDefault;
-import com.manywho.services.sharepoint.constants.ApiConstants;
+import com.manywho.services.sharepoint.configuration.ApiConstants;
 
 import javax.inject.Inject;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.AUTHORITY_URI;
+import static com.manywho.services.sharepoint.configuration.ApiConstants.AUTHORITY_URI;
 
 public class AppConfiguration {
     private ServiceConfigurationDefault serviceConfigurationDefault;

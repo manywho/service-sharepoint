@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.graph;
+package com.manywho.services.sharepoint.mappers;
 
 import com.manywho.sdk.services.types.Type;
 import org.apache.olingo.client.api.domain.ClientEntity;

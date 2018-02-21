@@ -21,7 +21,7 @@ import org.apache.tika.io.TikaInputStream;
 
 import java.io.IOException;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
+import static com.manywho.services.sharepoint.configuration.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class FileClient {
     private HttpClient httpclient;

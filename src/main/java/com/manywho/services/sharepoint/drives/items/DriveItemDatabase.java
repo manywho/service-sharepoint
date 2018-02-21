@@ -5,8 +5,8 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.drives.DriveFacade;
+import com.manywho.services.sharepoint.auth.TokenManager;
+import com.manywho.services.sharepoint.drives.DriveClient;
 import com.manywho.services.sharepoint.files.FileIdExtractor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,28 +16,28 @@ import java.util.Optional;
 
 public class DriveItemDatabase implements Database<ServiceConfiguration, DriveItem> {
 
-    private DriveFacade driveFacade;
-    private TokenCompatibility tokenCompatibility;
+    private DriveClient driveClient;
+    private TokenManager tokenManager;
 
     @Inject
-    public DriveItemDatabase(DriveFacade driveFacade, TokenCompatibility tokenCompatibility) {
-        this.driveFacade = driveFacade;
-        this.tokenCompatibility = tokenCompatibility;
+    public DriveItemDatabase(DriveClient driveClient, TokenManager tokenManager) {
+        this.driveClient = driveClient;
+        this.tokenManager = tokenManager;
     }
 
     @Override
     public DriveItem find(ServiceConfiguration configuration, String driveItemId)
     {
-        String token = tokenCompatibility.getToken(configuration);
+        String token = tokenManager.getToken(configuration);
 
-        return driveFacade.fetchDriveItem(token, IdExtractorForDriveItems.extractDriveId(driveItemId),
+        return driveClient.fetchDriveItem(token, IdExtractorForDriveItems.extractDriveId(driveItemId),
                 IdExtractorForDriveItems.extractDriveItemId(driveItemId));
     }
 
     @Override
     public List<DriveItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
 
-        tokenCompatibility.addinTokenNotSupported(configuration, "search drive Item");
+        tokenManager.addinTokenNotSupported(configuration, "search drive Item");
 
         if (listFilter != null && listFilter.getWhere() != null) {
             Optional<ListFilterWhere> drive  = listFilter.getWhere().stream()
@@ -52,16 +52,16 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
                 throw new RuntimeException("Drive ID is mandatory");
             }
 
-            String token = tokenCompatibility.getToken(configuration);
+            String token = tokenManager.getToken(configuration);
             String driveId = IdExtractorForDriveItems.extractDriveId(drive.get().getContentValue());
 
             if (!driveItemId.isPresent()) {
 
-                return driveFacade.fetchDriveItemsRoot(token, driveId);
+                return driveClient.fetchDriveItemsRoot(token, driveId);
             } else {
                 String parentItemId = FileIdExtractor.extractDriveItemIdFromUniqueId(driveItemId.get().getContentValue());
 
-                return driveFacade.fetchDriveItems(token, driveId, parentItemId);
+                return driveClient.fetchDriveItems(token, driveId, parentItemId);
             }
         }
 

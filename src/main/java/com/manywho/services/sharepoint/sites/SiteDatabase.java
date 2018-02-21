@@ -5,31 +5,34 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
-import com.manywho.services.sharepoint.facades.SharePointFacadeInterface;
+import com.manywho.services.sharepoint.auth.TokenManager;
 import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public class SiteDatabase implements Database<ServiceConfiguration, Site> {
-    private TokenCompatibility tokenCompatibility;
+    private TokenManager tokenManager;
+    private SiteClient siteClient;
 
     @Inject
-    public SiteDatabase(TokenCompatibility tokenCompatibility) {
-        this.tokenCompatibility = tokenCompatibility;
+    public SiteDatabase(TokenManager tokenManager, SiteClient siteClient) {
+        this.tokenManager = tokenManager;
+        this.siteClient = siteClient;
     }
 
     @Override
     public Site find(ServiceConfiguration configuration, String id) {
-        return tokenCompatibility.getSharePointFacade(configuration)
-                .fetchSite(configuration, tokenCompatibility.getToken(configuration), id);
+        SiteMapper siteMapper = new SiteMapper(null, null);
+        tokenManager.addinTokenNotSupported(configuration, "search drive");
+
+        return siteClient.fetchSite(tokenManager.getToken(configuration), id);
     }
 
     @Override
     public List<Site> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
-        SharePointFacadeInterface sharePointFacade = tokenCompatibility.getSharePointFacade(configuration);
-        String token = tokenCompatibility.getToken(configuration);
+        String token = tokenManager.getToken(configuration);
 
         if (listFilter != null && listFilter.getWhere() != null) {
             Optional<ListFilterWhere> parentId  = listFilter.getWhere().stream()
@@ -40,19 +43,19 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
                     .filter(p -> Objects.equals(p.getColumnName(), "Group ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
 
-            if (parentId.isPresent() && group.isPresent()) {
+                if (parentId.isPresent() && group.isPresent()) {
                 throw new RuntimeException("Filter by Parent ID and Group ID is not supported");
             }
 
             if (parentId.isPresent()) {
-                return sharePointFacade.fetchSubsites(configuration, token, parentId.get().getContentValue());
+                return siteClient.fetchSubsites(token, String.format("sites/%s", parentId.get().getContentValue()));
             } else if (group.isPresent()) {
                 String groupId = group.get().getContentValue().replace("groups/","");
-                return sharePointFacade.fetchSites(configuration, token, groupId);
+                return siteClient.fetchSites(token, groupId);
             }
         }
 
-        return sharePointFacade.fetchSites(configuration, token, null);
+        return siteClient.fetchSites(token, null);
     }
 
     @Override

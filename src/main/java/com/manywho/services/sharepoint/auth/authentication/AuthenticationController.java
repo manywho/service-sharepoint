@@ -10,11 +10,11 @@ import javax.ws.rs.Path;
 
 @Path("/authentication")
 public class AuthenticationController extends AbstractAuthenticationController {
-    private final UserFetcher authenticationService;
+    private final UserFetcher userFetcher;
 
     @Inject
-    public AuthenticationController(UserFetcher authenticationService) {
-        this.authenticationService = authenticationService;
+    public AuthenticationController(UserFetcher userFetcher) {
+        this.userFetcher = userFetcher;
     }
 
     @POST
@@ -22,9 +22,9 @@ public class AuthenticationController extends AbstractAuthenticationController {
     public AuthenticatedWhoResult authentication(AuthenticationCredentials credentials) throws Exception {
 
         if (credentials.getSessionToken()!= null) {
-            return authenticationService.getAuthenticatedWhoResultByContextToken(credentials);
+            return userFetcher.getAuthenticatedWhoResultByContextToken(credentials);
         }
 
-        return authenticationService.getAuthenticatedWhoResultByAuthCode(credentials);
+        return userFetcher.getAuthenticatedWhoResultByAuthCode(credentials);
     }
 }

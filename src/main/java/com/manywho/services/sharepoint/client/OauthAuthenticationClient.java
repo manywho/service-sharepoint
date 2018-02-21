@@ -1,11 +1,10 @@
-package com.manywho.services.sharepoint.auth.oauth;
+package com.manywho.services.sharepoint.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.manywho.services.sharepoint.AppConfiguration;
-import com.manywho.services.sharepoint.auth.oauth.entities.AuthResponse;
-import com.manywho.services.sharepoint.auth.oauth.entities.UserResponse;
-import com.manywho.services.sharepoint.client.HttpClient;
+import com.manywho.services.sharepoint.client.entities.AuthResponse;
+import com.manywho.services.sharepoint.client.entities.UserResponse;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -17,9 +16,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.*;
+import static com.manywho.services.sharepoint.configuration.ApiConstants.*;
 
-public class AuthenticationClient {
+public class OauthAuthenticationClient {
     private HttpClient httpclient;
     private AppConfiguration configuration;
     private ObjectMapper mapper;
@@ -27,13 +26,13 @@ public class AuthenticationClient {
     private static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
 
     @Inject
-    public AuthenticationClient(AppConfiguration configuration, HttpClient httpClient, ObjectMapper mapper) {
+    public OauthAuthenticationClient(AppConfiguration configuration, HttpClient httpClient, ObjectMapper mapper) {
         this.httpclient = httpClient;
         this.configuration = configuration;
         this.mapper = mapper;
     }
 
-    public AuthResponse getAccessTokenByAuthCode(String authCode, String clientId, String clientSecret, String resource) {
+    public AuthResponse getAccessTokenByAuthCode(String authCode, String resource) {
         try {
             HttpPost httpPost = new HttpPost(String.format("%s/%s", AUTHORITY_URI, "oauth2/token"));
 
@@ -42,9 +41,9 @@ public class AuthenticationClient {
             formParams.add(new BasicNameValuePair("grant_type", "authorization_code"));
             formParams.add(new BasicNameValuePair("code", authCode));
             formParams.add(new BasicNameValuePair("resource", resource));
-            formParams.add(new BasicNameValuePair("client_id", clientId));
+            formParams.add(new BasicNameValuePair("client_id", configuration.getOauth2ClientId()));
             formParams.add(new BasicNameValuePair("redirect_uri", REDIRECT_URI));
-            formParams.add(new BasicNameValuePair("client_secret", clientSecret));
+            formParams.add(new BasicNameValuePair("client_secret", configuration.getOauth2ClientSecret()));
 
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams);
             entity.setChunked(false);

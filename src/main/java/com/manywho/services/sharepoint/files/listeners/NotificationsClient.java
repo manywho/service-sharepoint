@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.manywho.services.sharepoint.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
+import static com.manywho.services.sharepoint.configuration.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class NotificationsClient {
     private HttpClient httpClient;

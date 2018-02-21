@@ -16,8 +16,8 @@ public class ListenerRequestRepository {
 
     private JedisPool jedisPool;
     private ObjectMapper objectMapper;
-    public final static String REDIS_KEY_SERVICE_REQUEST             = "service:sharepoint:listener:state:%s:request";
-    public final static String REDIS_KEY_SERVICE_REQUEST_CREDENTIALS = "service:sharepoint:listener:state:%s:credentials";
+    private final static String REDIS_KEY_SERVICE_REQUEST             = "service:sharepoint:listener:state:%s:request";
+    private final static String REDIS_KEY_SERVICE_REQUEST_CREDENTIALS = "service:sharepoint:listener:state:%s:credentials";
 
 
     @Inject

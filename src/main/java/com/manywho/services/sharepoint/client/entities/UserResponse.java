@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.auth.oauth.entities;
+package com.manywho.services.sharepoint.client.entities;
 
 public class UserResponse {
 

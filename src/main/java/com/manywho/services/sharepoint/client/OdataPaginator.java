@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.graph;
+package com.manywho.services.sharepoint.client;
 
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;

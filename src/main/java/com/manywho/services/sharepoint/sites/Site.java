@@ -9,6 +9,10 @@ import java.time.OffsetDateTime;
 public class Site implements Type{
     public final static String NAME = "Site";
 
+    /**
+     * There isn't a unique way to get a site, so I have unify the ID in this expected format:
+     * sites/{siteId}
+     */
     @Identifier
     @Type.Property(name = "ID", contentType = ContentType.String)
     private String id;
@@ -92,5 +96,9 @@ public class Site implements Type{
 
     public String getGroupId() {
         return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 }

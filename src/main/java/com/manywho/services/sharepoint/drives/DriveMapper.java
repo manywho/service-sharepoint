@@ -1,8 +1,8 @@
 package com.manywho.services.sharepoint.drives;
 
-import com.manywho.services.sharepoint.graph.ObjectMapperBase;
+import com.manywho.services.sharepoint.mappers.ObjectMapperBase;
 import org.apache.olingo.client.api.domain.ClientEntity;
-public class MapperDrive extends ObjectMapperBase<Drive> {
+public class DriveMapper extends ObjectMapperBase<Drive> {
 
     public Drive getObject(ClientEntity itemEntity) {
 

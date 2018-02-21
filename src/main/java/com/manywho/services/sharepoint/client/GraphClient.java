@@ -1,4 +1,4 @@
-package com.manywho.services.sharepoint.graph;
+package com.manywho.services.sharepoint.client;
 
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;

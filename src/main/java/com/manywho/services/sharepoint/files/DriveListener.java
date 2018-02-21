@@ -5,9 +5,9 @@ import com.manywho.sdk.services.listeners.ListenerData;
 import com.manywho.sdk.services.providers.AuthenticatedWhoProvider;
 import com.manywho.services.sharepoint.client.HttpClient;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.facades.TokenCompatibility;
+import com.manywho.services.sharepoint.auth.TokenManager;
 import com.manywho.services.sharepoint.files.listeners.ListenerRequestRepository;
-import com.manywho.services.sharepoint.drives.DriveFacade;
+import com.manywho.services.sharepoint.drives.DriveClient;
 import com.manywho.services.sharepoint.drives.Drive;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import static com.manywho.services.sharepoint.constants.ApiConstants.GRAPH_ENDPOINT_V1;
+import static com.manywho.services.sharepoint.configuration.ApiConstants.GRAPH_ENDPOINT_V1;
 
 @Listener.Metadata(event = "DRIVE_ROOT_UPDATED")
 public class DriveListener implements Listener<ServiceConfiguration, Drive> {
@@ -28,20 +28,20 @@ public class DriveListener implements Listener<ServiceConfiguration, Drive> {
     private HttpClient httpClient;
     private UriInfo uriInfo;
     private ListenerRequestRepository listenerRequestRepository;
-    private DriveFacade driveFacade;
-    private TokenCompatibility tokenCompatibility;
+    private DriveClient driveClient;
+    private TokenManager tokenManager;
 
     @Inject
     public DriveListener(AuthenticatedWhoProvider authenticatedWhoProvider, HttpClient httpClient,
                          @Context UriInfo uriInfo, ListenerRequestRepository listenerRequestRepository,
-                         TokenCompatibility tokenCompatibility, DriveFacade driveFacade) {
+                         TokenManager tokenManager, DriveClient driveClient) {
 
         this.authenticatedWhoProvider = authenticatedWhoProvider;
         this.httpClient = httpClient;
         this.uriInfo = uriInfo;
         this.listenerRequestRepository = listenerRequestRepository;
-        this.tokenCompatibility = tokenCompatibility;
-        this.driveFacade = driveFacade;
+        this.tokenManager = tokenManager;
+        this.driveClient = driveClient;
     }
 
     @Override
@@ -49,8 +49,8 @@ public class DriveListener implements Listener<ServiceConfiguration, Drive> {
         HttpPost httpPost = new HttpPost(GRAPH_ENDPOINT_V1 + "/subscriptions");
 
         try {
-            tokenCompatibility.addinTokenNotSupported(configuration, "search drive");
-            Drive rootDrive = driveFacade.fetchDrive(tokenCompatibility.getToken(configuration), "me/drive");
+            tokenManager.addinTokenNotSupported(configuration, "search drive");
+            Drive rootDrive = driveClient.fetchDrive(tokenManager.getToken(configuration), "me/drive");
 
             if (drive != null && rootDrive.getId().equals(drive.getId()) == false) {
                 throw new RuntimeException("This listener only support changes to items in \"me/drive\"");
