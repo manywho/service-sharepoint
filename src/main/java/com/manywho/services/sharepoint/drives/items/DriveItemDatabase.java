@@ -57,11 +57,11 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
 
             if (!driveItemId.isPresent()) {
 
-                return driveClient.fetchDriveItemsRoot(token, driveId);
+                return driveClient.fetchDriveItemsRoot(token, driveId, listFilter);
             } else {
                 String parentItemId = FileIdExtractor.extractDriveItemIdFromUniqueId(driveItemId.get().getContentValue());
 
-                return driveClient.fetchDriveItems(token, driveId, parentItemId);
+                return driveClient.fetchDriveItems(token, driveId, parentItemId, listFilter);
             }
         }
 

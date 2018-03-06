@@ -27,7 +27,7 @@ public class SharePointListMapper extends ObjectMapperBase<SharePointList> {
             sharePointList.setSiteId(String.format("sites/%s", siteId));
         }
 
-        sharePointList.setId(String.format("sites/%s/lists/%s", sharePointList.getSiteId(), sharepointListEntity.getProperty("id").getValue().toString()));
+        sharePointList.setId(String.format("sites/%s/lists/%s", siteId, sharepointListEntity.getProperty("id").getValue().toString()));
 
         return sharePointList;
     }

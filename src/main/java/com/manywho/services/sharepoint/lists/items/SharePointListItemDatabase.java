@@ -51,7 +51,7 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
         }
 
         return sharePointListClient
-                .fetchItems(tokenManager.getToken(configuration), listOptional.get().getContentValue());
+                .fetchItems(tokenManager.getToken(configuration), listOptional.get().getContentValue(), listFilter);
     }
 
     @Override

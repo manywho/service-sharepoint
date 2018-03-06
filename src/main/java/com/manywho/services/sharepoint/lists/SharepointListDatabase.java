@@ -44,11 +44,11 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
             if (pathSiteId.isPresent()) {
                 String siteId = pathSiteId.get().getContentValue().replace("sites/", "");
 
-                return  sharePointListClient.fetchLists(token, siteId, false);
+                return  sharePointListClient.fetchLists(token, siteId, false, listFilter);
             }
         }
 
-        return  sharePointListClient.fetchListsRoot(token);
+        return  sharePointListClient.fetchListsRoot(token, listFilter);
     }
 
     @Override
