@@ -12,6 +12,7 @@ import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.lists.SharePointList;
 import com.microsoft.services.sharepoint.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -178,5 +179,22 @@ public class DynamicTypesServiceClient {
         });
 
         return properties1;
+    }
+
+    public void deleteTypeList(ServiceConfiguration configuration, String token, ResourceMetadata resourceMetadata, String id) {
+        String uri = String.format("%s/sites/%s/_api/web/lists/GetByTitle('%s')/items(%s)",
+                configuration.getHost(), resourceMetadata.getSiteName(), resourceMetadata.getListName(), id);
+
+        HttpDelete httpPost = new HttpDelete(uri);
+        httpPost.addHeader("If-Match", "*");
+        httpPost.addHeader("X-HTTP-Method", "DELETE");
+        httpPost.setHeader("Authorization", String.format("Bearer %s", token));
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        try {
+            httpclient.execute(httpPost);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

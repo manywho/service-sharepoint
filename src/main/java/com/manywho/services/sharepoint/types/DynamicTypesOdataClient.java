@@ -208,9 +208,9 @@ public class DynamicTypesOdataClient {
         }
     }
 
-    public void deleteTypeList(String token, String path, String id) {
+    public void deleteTypeList(String token, ResourceMetadata resourceMetadata, String id) {
         URI deleteItemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
-                .appendEntitySetSegment(path)
+                .appendEntitySetSegment(resourceMetadata.getResource())
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(id)
                 .build();

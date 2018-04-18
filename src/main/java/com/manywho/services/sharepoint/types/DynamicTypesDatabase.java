@@ -42,13 +42,14 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public void delete(ServiceConfiguration configuration, MObject object) {
-        if (tokenManager.shouldUseServices(configuration)) {
-            throw new RuntimeException("Delete Types is not currently supported for add-in tokens");
-        }
-
         String id = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
+        ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
 
-        dynamicTypesClient.deleteTypeList(tokenManager.getToken(configuration), object.getDeveloperName(), id);
+        if (tokenManager.shouldUseServices(configuration)) {
+            dynamicTypesServiceClient.deleteTypeList(configuration, tokenManager.getToken(configuration), resourceMetadata, id);
+        } else {
+            dynamicTypesClient.deleteTypeList(tokenManager.getToken(configuration), resourceMetadata, id);
+        }
     }
 
     @Override
