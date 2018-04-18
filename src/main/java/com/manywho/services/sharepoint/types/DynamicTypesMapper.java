@@ -44,23 +44,21 @@ public class DynamicTypesMapper {
         return object;
     }
 
-    public MObject buildManyWhoDynamicObject(String developerName, SPListItem spListItem, List<ObjectDataTypeProperty> properties) {
+    public MObject buildManyWhoDynamicObject(ResourceMetadata resourceMetadata, SPListItem spListItem, List<ObjectDataTypeProperty> properties) {
         MObject object = new MObject();
         List<Property> mobjectProperties = new ArrayList<>();
-        String externalId = "";
+        object.setExternalId(IdExtractorForDynamicTypes.extractExternalItemId(resourceMetadata, String.valueOf(spListItem.getId())));
 
         for (ObjectDataTypeProperty property: properties) {
-            externalId = spListItem.getGUID();
 
             if (Objects.equals(property.getDeveloperName(), "ID")) {
-                mobjectProperties.add(new Property("ID", externalId));
+                mobjectProperties.add(new Property("ID", object.getExternalId()));
             } else {
                 mobjectProperties.add(new Property(property.getDeveloperName(), spListItem.getData(property.getDeveloperName())));
             }
         }
 
-        object.setDeveloperName(developerName);
-        object.setExternalId(externalId);
+        object.setDeveloperName(resourceMetadata.getListName());
         object.setProperties(mobjectProperties);
 
         return object;

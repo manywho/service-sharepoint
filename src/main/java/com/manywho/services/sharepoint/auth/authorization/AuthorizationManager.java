@@ -50,7 +50,6 @@ public class AuthorizationManager {
     public ObjectDataResponse authorization(AuthenticatedWho authenticatedWho, ObjectDataRequest request) {
         ServiceConfiguration serviceConfiguration = configurationParser.from(request);
 
-
         String status;
         $User user = new $User();
         user.setUserId("PUBLIC_USER");

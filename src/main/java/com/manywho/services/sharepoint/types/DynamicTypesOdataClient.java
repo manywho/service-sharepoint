@@ -27,7 +27,6 @@ import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +48,6 @@ public class DynamicTypesOdataClient {
     }
 
     public List<TypeElement> fetchAllListTypes(String token) {
-        List<TypeElement>  typeElements = new ArrayList<>();
         URI uri = client.newURIBuilder(GRAPH_ENDPOINT_V1)
                 .appendEntitySetSegment("groups?$filter=groupTypes/any(c:c+eq+'Unified')")
                 .build();
@@ -65,9 +63,7 @@ public class DynamicTypesOdataClient {
                 .toList()
                 .blockingGet();
 
-        typeElements.addAll(elementsByGroup);
-
-        return typeElements;
+        return new ArrayList<>(elementsByGroup);
     }
 
     private List<TypeElement> fetchTypeElementsByGroup(String token, ClientEntity group){
@@ -83,7 +79,6 @@ public class DynamicTypesOdataClient {
             String urlEntity = String.format("sites/%s/lists", siteId);
             URI uri = client.newURIBuilder(GRAPH_ENDPOINT_V1).appendEntitySetSegment(urlEntity).build();
             List<ClientEntity> lists = graphClient.queryList(token, uri);
-
 
             for (ClientEntity list : lists) {
                 ClientValue infoList = list.getProperty("list").getValue();
@@ -105,9 +100,11 @@ public class DynamicTypesOdataClient {
         String listName = list.getProperty("name").getValue().toString();
         String typeDeveloperName = String.format("%s Type", listName);
         String typeDeveloperSummary = String.format("Type for list \"%s\" in site \"%s\"", listName, siteName);
+        ResourceMetadata resourceMetadata = new ResourceMetadata(list, siteId, listName, siteName);
+
         TypeElement.SimpleTypeBuilder typeBuilder = new TypeElement.SimpleTypeBuilder()
                 .setDeveloperName(typeDeveloperName)
-                .setTableName(String.format("sites/%s/lists/%s", siteId, list.getProperty("id").getValue().asPrimitive().toString()));
+                .setTableName(resourceMetadata.getMetadata());
 
         URI uri = client.newURIBuilder(list.getNavigationLink("columns").getLink().toString()).build();
         List<ClientEntity> properties = graphClient.queryList(token, uri);
@@ -146,26 +143,26 @@ public class DynamicTypesOdataClient {
         return typeElement;
     }
 
-    public List<MObject> fetchTypesFromLists(String token, String developerName,
+    public List<MObject> fetchTypesFromLists(String token, ResourceMetadata resourceMetadata,
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
         OdataPaginator odataPaginator = new OdataPaginator();
 
-        String entryPoint = String.format("%s/items", developerName);
+        String entryPoint = String.format("%s/items", resourceMetadata.getResource());
         URIBuilder uriBuilder = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
                 .appendEntitySetSegment(entryPoint)
                 .expand("fields");
 
         List<ClientEntity> clientEntities = odataPaginator.getEntities(token, uriBuilder, listFilter, client.getRetrieveRequestFactory());
 
-        return responseDynamicTypes(clientEntities, properties);
+        return responseDynamicTypes(clientEntities, properties, resourceMetadata);
     }
 
-    public MObject fetchTypeFromList(String token, String developerName,
+    public MObject fetchTypeFromList(String token, ResourceMetadata resourceMetadata,
                                      String itemId, List<ObjectDataTypeProperty> properties) {
 
         URI entitySetURI = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
-                .appendEntitySetSegment(developerName)
+                .appendEntitySetSegment(resourceMetadata.getResource())
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(itemId)
                 .expand("fields").build();
@@ -177,12 +174,12 @@ public class DynamicTypesOdataClient {
         List<ClientEntity> items = new ArrayList<>();
         items.add(0, entityResponse.getBody());
 
-        return responseDynamicTypes(items, properties).get(0);
+        return responseDynamicTypes(items, properties, resourceMetadata).get(0);
     }
 
-    public MObject updateTypeList(String token, String developerName, List<Property> properties, String id) {
+    public MObject updateTypeList(String token, ResourceMetadata resourceMetadata, List<Property> properties, String id) {
 
-        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment(developerName)
+        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment(resourceMetadata.getResource())
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(id)
                 .appendEntitySetSegment("fields")
@@ -205,7 +202,7 @@ public class DynamicTypesOdataClient {
                 prop.setDeveloperName(p.getDeveloperName());
                 propertyCollection.add(prop);
             });
-            return fetchTypeFromList(token, developerName, id, propertyCollection);
+            return fetchTypeFromList(token, resourceMetadata, id, propertyCollection);
         } else {
             throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
         }
@@ -221,12 +218,13 @@ public class DynamicTypesOdataClient {
         graphClient.executeDelete(token, deleteItemUri);
     }
 
-    public MObject createTypeList(String token, String developerName, List<Property> properties) {
-        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment(developerName)
+    public MObject createTypeList(String token, MObject object) {
+        ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
+        URI itemUri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment(resourceMetadata.getResource())
                 .appendEntitySetSegment("items")
                 .build();
 
-        ClientEntity clientEntity = getClientEntityCreation(properties);
+        ClientEntity clientEntity = getClientEntityCreation(object.getProperties());
 
         ODataEntityCreateRequest<ClientEntity> req = client.getCUDRequestFactory().getEntityCreateRequest(itemUri, clientEntity);
 
@@ -237,14 +235,15 @@ public class DynamicTypesOdataClient {
 
         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
             List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
-            properties.forEach(p -> {
+            object.getProperties().forEach(p -> {
                 ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
                 prop.setDeveloperName(p.getDeveloperName());
                 propertyCollection.add(prop);
             });
-            String itemId = IdExtractorForDynamicTypes.extractItemId(response.getBody().getId().toString());
 
-            return fetchTypeFromList(token, developerName, itemId, propertyCollection);
+            String itemId = response.getBody().getProperty("id").getValue().toString();
+
+            return fetchTypeFromList(token, resourceMetadata, itemId, propertyCollection);
         } else {
             throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
         }
@@ -304,19 +303,20 @@ public class DynamicTypesOdataClient {
         return clientEntity;
     }
 
-    private List<MObject> responseDynamicTypes(List<ClientEntity> items, List<ObjectDataTypeProperty> properties) {
+    private List<MObject> responseDynamicTypes(List<ClientEntity> items, List<ObjectDataTypeProperty> properties, ResourceMetadata resourceMetadata) {
         List<MObject> objectCollection = new ArrayList<>();
 
         DynamicTypesMapper dynamicTypesMapper = new DynamicTypesMapper();
 
         for (ClientEntity itemEntity : items) {
+            String uniqueItemId = String.format("%s/items/%s", resourceMetadata.getResource(),
+                    itemEntity.getProperty("id").getValue().toString());
+
             objectCollection.add(
-                    dynamicTypesMapper.buildManyWhoDynamicObject(itemEntity.getId().toString(), itemEntity.getNavigationLink("fields")
+                    dynamicTypesMapper.buildManyWhoDynamicObject(uniqueItemId, itemEntity.getNavigationLink("fields")
                     .asInlineEntity().getEntity().getProperties(), properties));
         }
 
         return objectCollection;
     }
-
-
 }

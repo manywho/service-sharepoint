@@ -10,7 +10,6 @@ import com.manywho.services.sharepoint.client.entities.UserResponse;
 import com.manywho.services.sharepoint.configuration.ApiConstants;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.users.UserServiceClient;
-
 import javax.inject.Inject;
 
 import static com.manywho.services.sharepoint.configuration.ApiConstants.AUTHENTICATION_TYPE_ADD_IN;
@@ -59,7 +58,6 @@ public class UserFetcher {
         ServiceConfiguration serviceConfiguration = configurationParser.from(credentials);
 
         String userId = UserServiceClient.getUserId(serviceConfiguration, response.getAccessToken());
-
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId( "SharePoint Add-In" );
         authenticatedWhoResult.setDirectoryName( "SharePoint Add-In" );
@@ -70,7 +68,6 @@ public class UserFetcher {
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName("SharePoint Add-In");
         authenticatedWhoResult.setToken( response.getAccessToken());
-
         authenticatedWhoResult.setUserId(userId);
         authenticatedWhoResult.setUsername("username");
 

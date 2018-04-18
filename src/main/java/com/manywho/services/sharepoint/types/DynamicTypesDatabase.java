@@ -28,11 +28,11 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     @Override
     public MObject create(ServiceConfiguration configuration, MObject object) {
         if (tokenManager.shouldUseServices(configuration)) {
-            throw new RuntimeException("Insert new Types of objects is not currently supported for add-in tokens");
+            return dynamicTypesServiceClient.createTypeList(configuration, tokenManager.getToken(configuration), object);
         }
 
         return dynamicTypesClient
-                .createTypeList(tokenManager.getToken(configuration), object.getDeveloperName(), object.getProperties());
+                .createTypeList(tokenManager.getToken(configuration), object);
     }
 
     @Override
@@ -58,23 +58,30 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
+        ResourceMetadata resourceMetadata = new ResourceMetadata(objectDataType.getDeveloperName());
+
+        String itemId = IdExtractorForDynamicTypes.extractItemId(id);
+
         if (tokenManager.shouldUseServices(configuration)) {
-            throw new RuntimeException("Load types from list is not implemented for apps");
+            return dynamicTypesServiceClient.fetchTypeFromList(configuration,tokenManager.getToken(configuration),
+                    resourceMetadata, objectDataType.getProperties(), itemId);
         }
 
         return dynamicTypesClient.fetchTypeFromList(tokenManager.getToken(configuration),
-                        objectDataType.getDeveloperName(), id,  objectDataType.getProperties());
+                        resourceMetadata, itemId,  objectDataType.getProperties());
     }
 
     @Override
     public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, ListFilter filter) {
+        ResourceMetadata resourceMetadata = new ResourceMetadata(objectDataType.getDeveloperName());
+
         if (tokenManager.shouldUseServices(configuration)) {
             return dynamicTypesServiceClient.fetchTypesFromLists(configuration, tokenManager.getToken(configuration),
-                    objectDataType.getDeveloperName(), objectDataType.getProperties(), filter);
+                    resourceMetadata, objectDataType.getProperties(), filter);
         }
 
-        return dynamicTypesClient.fetchTypesFromLists(tokenManager.getToken(configuration),
-                        objectDataType.getDeveloperName(), objectDataType.getProperties(), filter);
+        return dynamicTypesClient.fetchTypesFromLists(tokenManager.getToken(configuration), resourceMetadata,
+                objectDataType.getProperties(), filter);
     }
 
     @Override
@@ -82,11 +89,11 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
         String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
 
         if (tokenManager.shouldUseServices(configuration)) {
-            throw new RuntimeException("Update a type is not currently supported when using add-in");
+            return dynamicTypesServiceClient.updateTypeList(configuration, tokenManager.getToken(configuration), object);
         }
 
-
-        return dynamicTypesClient.updateTypeList(tokenManager.getToken(configuration), object.getDeveloperName(),
+        ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
+        return dynamicTypesClient.updateTypeList(tokenManager.getToken(configuration), resourceMetadata,
                         object.getProperties(), itemId);
     }
 

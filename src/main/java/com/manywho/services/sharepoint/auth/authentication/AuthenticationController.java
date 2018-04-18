@@ -21,7 +21,7 @@ public class AuthenticationController extends AbstractAuthenticationController {
     @Override
     public AuthenticatedWhoResult authentication(AuthenticationCredentials credentials) throws Exception {
 
-        if (credentials.getSessionToken()!= null) {
+        if (credentials.getSessionToken() != null) {
             return userFetcher.getAuthenticatedWhoResultByContextToken(credentials);
         }
 

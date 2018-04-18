@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 
 public class IdExtractorForListItem {
 
-
+    //sites/id1/list/id2/items/id3
     static public String extractSiteId(String listItemIdUnique) {
 
         if (Strings.isNullOrEmpty(listItemIdUnique)) {
