@@ -165,7 +165,8 @@ public class DynamicTypesOdataClient {
                 .appendEntitySetSegment(resourceMetadata.getResource())
                 .appendEntitySetSegment("items")
                 .appendEntitySetSegment(itemId)
-                .expand("fields").build();
+                .expand("fields")
+                .build();
 
         ODataEntityRequest<ClientEntity> entityRequest = client.getRetrieveRequestFactory().getEntityRequest(entitySetURI);
         entityRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));

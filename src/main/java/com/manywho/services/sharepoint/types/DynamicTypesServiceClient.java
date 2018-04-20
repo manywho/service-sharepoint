@@ -3,11 +3,10 @@ package com.manywho.services.sharepoint.types;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import com.manywho.sdk.api.run.elements.type.ListFilter;
-import com.manywho.sdk.api.run.elements.type.MObject;
-import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
-import com.manywho.sdk.api.run.elements.type.Property;
+import com.manywho.sdk.api.ComparisonType;
+import com.manywho.sdk.api.run.elements.type.*;
 import com.manywho.services.sharepoint.client.HttpClient;
+import com.manywho.services.sharepoint.client.ServicePaginator;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.lists.SharePointList;
 import com.microsoft.services.sharepoint.*;
@@ -29,11 +28,13 @@ public class DynamicTypesServiceClient {
 
     private DynamicTypesMapper dynamicTypesMapper;
     private HttpClient httpClient;
+    private ServicePaginator servicePaginator;
 
     @Inject
-    public DynamicTypesServiceClient(DynamicTypesMapper dynamicTypesMapper, HttpClient httpClient) {
+    public DynamicTypesServiceClient(DynamicTypesMapper dynamicTypesMapper, HttpClient httpClient, ServicePaginator servicePaginator) {
         this.dynamicTypesMapper = dynamicTypesMapper;
         this.httpClient = httpClient;
+        this.servicePaginator = servicePaginator;
     }
 
     public List<SharePointList> fetchListsRoot(ServiceConfiguration configuration, String token) {
@@ -60,23 +61,37 @@ public class DynamicTypesServiceClient {
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
-        ListClient client = new ListClient(configuration.getHost(), "sites/" + resourceMetadata.getSiteName() , credentials);
+        MyListClient client = new MyListClient(configuration.getHost(), "sites/" + resourceMetadata.getSiteName() , credentials);
 
-        try {
-            ListenableFuture<List<SPListItem>> listItems = client.getListItems(resourceMetadata.getListName(), new Query());
-            List<SPListItem> items = listItems.get();
+        Query query = new Query();
+        addWhereToQuery(listFilter, query);
 
-            List<MObject> objectCollection = new ArrayList<>();
+        List<SPListItem> items = servicePaginator.getEntities(resourceMetadata.getListName(), query, listFilter, client);
+        List<MObject> objectCollection = new ArrayList<>();
 
-            DynamicTypesMapper dynamicTypesMapper = new DynamicTypesMapper();
-            for (SPListItem spListItem : items) {
-                objectCollection.add(dynamicTypesMapper.buildManyWhoDynamicObject(resourceMetadata, spListItem, properties));
+        DynamicTypesMapper dynamicTypesMapper = new DynamicTypesMapper();
+        for (SPListItem spListItem : items) {
+            objectCollection.add(dynamicTypesMapper.buildManyWhoDynamicObject(resourceMetadata, spListItem, properties));
+        }
+
+        return objectCollection;
+    }
+
+    private void addWhereToQuery(ListFilter filter, Query query) {
+        boolean first = true;
+
+        for (ListFilterWhere where:filter.getWhere()) {
+            if (first == false) {
+                if (filter.getComparisonType() == ComparisonType.And) {
+                    query.and();
+                } else {
+                    query.or();
+                }
             }
 
-            return objectCollection;
+            first = false;
 
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            query.field(where.getColumnName()).eq(where.getContentValue());
         }
     }
 
