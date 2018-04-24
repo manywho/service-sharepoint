@@ -97,7 +97,7 @@ public class DynamicTypesServiceClient {
 
     public MObject updateTypeList(ServiceConfiguration configuration, String token, MObject object) {
         ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
-        String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
+        String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId(), object.getDeveloperName());
 
         String uri = String.format("%s/sites/%s/_api/web/lists/GetByTitle('%s')/items(%s)", configuration.getHost(),
                 resourceMetadata.getSiteName(), resourceMetadata.getListName(), itemId);
@@ -117,12 +117,12 @@ public class DynamicTypesServiceClient {
         httpPost.setHeader("Authorization", String.format("Bearer %s", token));
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            CloseableHttpResponse response = httpclient.execute(httpPost);
+            httpclient.execute(httpPost);
         } catch (IOException e) {
-            throw new RuntimeException("Error executing save");
+            throw new RuntimeException(String.format("Error executing save for item %s", object.getDeveloperName()), e);
         }
 
-        return fetchTypeFromList(configuration, token, resourceMetadata, castToObjectProperty(object.getProperties()), itemId);
+        return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.castToObjectProperty(object.getProperties()), itemId);
     }
 
     public MObject createTypeList(ServiceConfiguration configuration, String token, MObject object) {
@@ -143,7 +143,7 @@ public class DynamicTypesServiceClient {
             JSONObject jsonObject = new JSONObject(response);
             String itemId = jsonObject.getJSONObject("d").get("ID").toString();
 
-            return fetchTypeFromList(configuration, token, resourceMetadata, castToObjectProperty(object.getProperties()), itemId);
+            return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.castToObjectProperty(object.getProperties()), itemId);
 
         } catch (UnsupportedEncodingException | JSONException e) {
             throw new RuntimeException(e);
@@ -153,8 +153,9 @@ public class DynamicTypesServiceClient {
     private String getPayload(List<Property> properties) {
         JsonObject jsonObject = new JsonObject();
         for (Property property: properties) {
-            if ("ID".equals(property.getDeveloperName()) == false)
+            if ("ID".equals(property.getDeveloperName()) == false) {
                 jsonObject.addProperty(property.getDeveloperName(), property.getContentValue());
+            }
         }
 
         return jsonObject.toString();
@@ -183,17 +184,6 @@ public class DynamicTypesServiceClient {
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private List<ObjectDataTypeProperty> castToObjectProperty(List<Property> properties) {
-        List<ObjectDataTypeProperty> properties1 = new ArrayList<>();
-        properties.forEach(p -> {
-            ObjectDataTypeProperty objectDataTypeProperty1 = new ObjectDataTypeProperty();
-            objectDataTypeProperty1.setDeveloperName(p.getDeveloperName());
-            properties1.add(objectDataTypeProperty1);
-        });
-
-        return properties1;
     }
 
     public void deleteTypeList(ServiceConfiguration configuration, String token, ResourceMetadata resourceMetadata, String id) {

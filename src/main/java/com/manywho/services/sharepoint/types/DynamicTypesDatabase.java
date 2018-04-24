@@ -42,7 +42,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public void delete(ServiceConfiguration configuration, MObject object) {
-        String id = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
+        String id = IdExtractorForDynamicTypes.extractItemId(object.getExternalId(), object.getDeveloperName());
         ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
 
         if (tokenManager.shouldUseServices(configuration)) {
@@ -54,14 +54,14 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public void delete(ServiceConfiguration configuration, List<MObject> objects) {
-        throw new RuntimeException("Delete a objects is not currently supported");
+        throw new RuntimeException("Delete a list of objects is not currently supported");
     }
 
     @Override
     public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
         ResourceMetadata resourceMetadata = new ResourceMetadata(objectDataType.getDeveloperName());
 
-        String itemId = IdExtractorForDynamicTypes.extractItemId(id);
+        String itemId = IdExtractorForDynamicTypes.extractItemId(id, objectDataType.getDeveloperName());
 
         if (tokenManager.shouldUseServices(configuration)) {
             return dynamicTypesServiceClient.fetchTypeFromList(configuration,tokenManager.getToken(configuration),
@@ -87,7 +87,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject update(ServiceConfiguration configuration, MObject object) {
-        String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId());
+        String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId(), object.getDeveloperName());
 
         if (tokenManager.shouldUseServices(configuration)) {
             return dynamicTypesServiceClient.updateTypeList(configuration, tokenManager.getToken(configuration), object);

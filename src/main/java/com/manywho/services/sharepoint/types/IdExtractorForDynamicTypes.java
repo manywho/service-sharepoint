@@ -6,13 +6,19 @@ import com.microsoft.services.sharepoint.SPListItem;
 public class IdExtractorForDynamicTypes {
 
     //sites/id1/list/id2/items/id3
-    static public String extractItemId(String idUnique) {
+    static public String extractItemId(String idUnique, String listId) {
 
         if (Strings.isNullOrEmpty(idUnique)) {
-            throw new RuntimeException("The item ID Is empty");
+            throw new RuntimeException(String.format("The item ID Is empty, the ID should look like %s/items/{itemId}",
+                    listId));
         }
 
         String[] parts = idUnique.split("/items/");
+
+        if (parts.length < 2) {
+            throw new RuntimeException(String.format("The item ID is not valid, it should look like %s/items/{itemId}",
+                    listId));
+        }
         return parts[1];
     }
 

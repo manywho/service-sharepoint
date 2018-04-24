@@ -235,13 +235,8 @@ public class DynamicTypesOdataClient {
         ODataEntityCreateResponse<ClientEntity> response = req.execute();
 
         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-            List<ObjectDataTypeProperty> propertyCollection = new ArrayList<>();
-            object.getProperties().forEach(p -> {
-                ObjectDataTypeProperty prop = new ObjectDataTypeProperty();
-                prop.setDeveloperName(p.getDeveloperName());
-                propertyCollection.add(prop);
-            });
 
+            List<ObjectDataTypeProperty> propertyCollection  = PropertiesUtils.castToObjectProperty(object.getProperties());
             String itemId = response.getBody().getProperty("id").getValue().toString();
 
             return fetchTypeFromList(token, resourceMetadata, itemId, propertyCollection);
