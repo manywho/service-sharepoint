@@ -10,7 +10,7 @@ public class PropertiesUtils {
     public static List<ObjectDataTypeProperty> castToObjectProperty(List<Property> properties) {
         return properties.stream().map(p -> {
             ObjectDataTypeProperty objectDataTypeProperty = new ObjectDataTypeProperty();
-            p.setDeveloperName(p.getDeveloperName());
+            objectDataTypeProperty.setDeveloperName(p.getDeveloperName());
             return objectDataTypeProperty;
         }).collect(Collectors.toList());
 
