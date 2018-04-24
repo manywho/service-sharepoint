@@ -29,12 +29,15 @@ public class DynamicTypesServiceClient {
     private DynamicTypesMapper dynamicTypesMapper;
     private HttpClient httpClient;
     private ServicePaginator servicePaginator;
+    private CloseableHttpClient closeableHttpClient;
 
     @Inject
-    public DynamicTypesServiceClient(DynamicTypesMapper dynamicTypesMapper, HttpClient httpClient, ServicePaginator servicePaginator) {
+    public DynamicTypesServiceClient(DynamicTypesMapper dynamicTypesMapper, HttpClient httpClient,
+                                     ServicePaginator servicePaginator, CloseableHttpClient closeableHttpClient) {
         this.dynamicTypesMapper = dynamicTypesMapper;
         this.httpClient = httpClient;
         this.servicePaginator = servicePaginator;
+        this.closeableHttpClient = closeableHttpClient;
     }
 
     public List<SharePointList> fetchListsRoot(ServiceConfiguration configuration, String token) {
@@ -115,9 +118,8 @@ public class DynamicTypesServiceClient {
         httpPost.addHeader("If-Match", "*");
         httpPost.addHeader("X-HTTP-Method", "MERGE");
         httpPost.setHeader("Authorization", String.format("Bearer %s", token));
-        CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
-            httpclient.execute(httpPost);
+            closeableHttpClient.execute(httpPost);
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error executing save for item %s", object.getDeveloperName()), e);
         }
@@ -194,10 +196,9 @@ public class DynamicTypesServiceClient {
         httpPost.addHeader("If-Match", "*");
         httpPost.addHeader("X-HTTP-Method", "DELETE");
         httpPost.setHeader("Authorization", String.format("Bearer %s", token));
-        CloseableHttpClient httpclient = HttpClients.createDefault();
 
         try {
-            httpclient.execute(httpPost);
+            closeableHttpClient.execute(httpPost);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

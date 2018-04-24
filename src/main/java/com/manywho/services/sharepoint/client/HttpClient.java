@@ -1,5 +1,6 @@
 package com.manywho.services.sharepoint.client;
 
+import com.google.inject.Inject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -11,9 +12,10 @@ import java.io.IOException;
 
 public class HttpClient {
     private CloseableHttpClient httpclient;
+    @Inject
 
-    public HttpClient() {
-        this.httpclient = HttpClients.createDefault();
+    public HttpClient(CloseableHttpClient closeableHttpClient) {
+        this.httpclient = closeableHttpClient;
     }
 
     public String executeRequest(HttpRequestBase requestBase){

@@ -241,7 +241,7 @@ public class DynamicTypesOdataClient {
 
             return fetchTypeFromList(token, resourceMetadata, itemId, propertyCollection);
         } else {
-            throw new RuntimeException(String.format("Error updating type :%s", response.getStatusCode()));
+            throw new RuntimeException(String.format("Error inserting type %s (%s)", object.getDeveloperName(), response.getStatusCode()));
         }
     }
 
