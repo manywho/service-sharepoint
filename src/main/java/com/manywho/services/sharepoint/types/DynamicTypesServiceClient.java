@@ -4,12 +4,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.manywho.sdk.api.ComparisonType;
+import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.api.run.elements.type.*;
 import com.manywho.services.sharepoint.client.HttpClient;
 import com.manywho.services.sharepoint.client.ServicePaginator;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
-import com.manywho.services.sharepoint.lists.SharePointList;
-import com.microsoft.services.sharepoint.*;
+import com.microsoft.services.sharepoint.Credentials;
+import com.microsoft.services.sharepoint.ListClient;
+import com.microsoft.services.sharepoint.Query;
+import com.microsoft.services.sharepoint.SPListItem;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -118,8 +121,8 @@ public class DynamicTypesServiceClient {
         httpPost.setHeader("Authorization", String.format("Bearer %s", token));
         try {
             closeableHttpClient.execute(httpPost);
-        } catch (IOException e) {
-            throw new RuntimeException(String.format("Error executing save for item %s", object.getDeveloperName()), e);
+        } catch (IOException | RuntimeException e) {
+            throw new RuntimeException(String.format("Error updating item %s", object.getDeveloperName()), e);
         }
 
         return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.mapToObjectProperty(object.getProperties()), itemId);
@@ -145,16 +148,24 @@ public class DynamicTypesServiceClient {
 
             return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.mapToObjectProperty(object.getProperties()), itemId);
 
-        } catch (UnsupportedEncodingException | JSONException e) {
-            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException | JSONException | RuntimeException e) {
+            throw new RuntimeException(String.format("Error inserting item %s", object.getDeveloperName()), e);
         }
     }
 
     private String getPayload(List<Property> properties) {
         JsonObject jsonObject = new JsonObject();
         for (Property property: properties) {
+            // we don't need to modify the ID
             if ("ID".equals(property.getDeveloperName()) == false) {
-                jsonObject.addProperty(property.getDeveloperName(), property.getContentValue());
+
+                // if it is a boolean property we need the string representation of the boolean "false" or "true"
+                if (property.getContentType().equals(ContentType.Boolean)) {
+                        jsonObject.addProperty(property.getDeveloperName(),
+                                String.valueOf(Boolean.valueOf(property.getContentValue())));
+                } else {
+                    jsonObject.addProperty(property.getDeveloperName(), property.getContentValue());
+                }
             }
         }
 
