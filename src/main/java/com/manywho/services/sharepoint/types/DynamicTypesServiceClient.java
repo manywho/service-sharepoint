@@ -10,12 +10,10 @@ import com.manywho.services.sharepoint.client.ServicePaginator;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.lists.SharePointList;
 import com.microsoft.services.sharepoint.*;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -124,7 +122,7 @@ public class DynamicTypesServiceClient {
             throw new RuntimeException(String.format("Error executing save for item %s", object.getDeveloperName()), e);
         }
 
-        return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.castToObjectProperty(object.getProperties()), itemId);
+        return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.mapToObjectProperty(object.getProperties()), itemId);
     }
 
     public MObject createTypeList(ServiceConfiguration configuration, String token, MObject object) {
@@ -145,7 +143,7 @@ public class DynamicTypesServiceClient {
             JSONObject jsonObject = new JSONObject(response);
             String itemId = jsonObject.getJSONObject("d").get("ID").toString();
 
-            return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.castToObjectProperty(object.getProperties()), itemId);
+            return fetchTypeFromList(configuration, token, resourceMetadata, PropertiesUtils.mapToObjectProperty(object.getProperties()), itemId);
 
         } catch (UnsupportedEncodingException | JSONException e) {
             throw new RuntimeException(e);

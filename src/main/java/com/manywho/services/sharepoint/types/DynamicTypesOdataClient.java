@@ -236,7 +236,7 @@ public class DynamicTypesOdataClient {
 
         if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
 
-            List<ObjectDataTypeProperty> propertyCollection  = PropertiesUtils.castToObjectProperty(object.getProperties());
+            List<ObjectDataTypeProperty> propertyCollection  = PropertiesUtils.mapToObjectProperty(object.getProperties());
             String itemId = response.getBody().getProperty("id").getValue().toString();
 
             return fetchTypeFromList(token, resourceMetadata, itemId, propertyCollection);
