@@ -8,7 +8,6 @@ import com.manywho.sdk.api.security.AuthenticationCredentials;
 import com.manywho.services.sharepoint.AppConfiguration;
 import com.manywho.services.sharepoint.client.OauthAuthenticationClient;
 import com.manywho.services.sharepoint.client.entities.AuthResponse;
-import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
@@ -23,12 +22,10 @@ public class ContextTokenManager {
         this.appConfiguration = appConfiguration;
     }
 
-    public AuthResponse getAuthentication(AuthenticationCredentials credentials) throws UnsupportedEncodingException, JSONException {
+    public AuthResponse getAuthentication(AuthenticationCredentials credentials) throws UnsupportedEncodingException {
         Algorithm algorithm = Algorithm.HMAC256(appConfiguration.getAppSecret());
         DecodedJWT jwt = JWT.decode(credentials.getSessionToken());
-        //String appctx = jwt.getClaim("appctx").asString();
         String aud = jwt.getClaim("aud").asString();
-        //JSONObject object = new JSONObject(appctx);
 
         String targetPrincipalName = getTargetPrincipalName(jwt.getClaim("appctxsender").asString());
         String realm = getRealm(jwt.getClaim("aud").asString());

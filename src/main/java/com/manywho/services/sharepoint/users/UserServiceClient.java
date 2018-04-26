@@ -11,13 +11,13 @@ import java.util.concurrent.ExecutionException;
 
 public class UserServiceClient {
 
-    public static String getUserId(ServiceConfiguration configuration, String token) {
+    public static String getUserLogin(ServiceConfiguration configuration, String token) {
         Credentials credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         UserClient client = new UserClient(configuration.getHost(), "", credentials);
 
         ListenableFuture<JSONObject> properties = client.getUserProperties();
         try {
-            return properties.get().getJSONObject("d").getJSONObject("UserId").get("NameId").toString();
+            return properties.get().getJSONObject("d").get("LoginName").toString();
         } catch (InterruptedException | JSONException | ExecutionException e) {
             throw new RuntimeException("Error fetching user Id", e);
         }

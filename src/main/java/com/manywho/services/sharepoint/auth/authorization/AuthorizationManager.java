@@ -19,9 +19,9 @@ import com.manywho.services.sharepoint.client.entities.AuthResponse;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.groups.Group;
 import com.manywho.services.sharepoint.groups.GroupClient;
+import com.manywho.services.sharepoint.users.GraphRestCompatibilityUtility;
 import com.manywho.services.sharepoint.users.UserClientOdata;
 import com.manywho.services.sharepoint.users.UserServiceClient;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,18 +76,19 @@ public class AuthorizationManager {
                 break;
             case Specified:
 
-                String userId;
-
-                if (authenticatedWho.getIdentityProvider().equals(AUTHENTICATION_TYPE_ADD_IN)) {
-                    userId = UserServiceClient.getUserId(serviceConfiguration, authenticatedWho.getToken());
-                } else {
-                    userId = userClientOdata
-                            .getUserId(serviceConfiguration, authenticatedWho.getToken());
-                }
-
                 if (authenticatedWho.getUserId().equals("PUBLIC_USER")) {
                     status = "401";
                     break;
+                }
+
+                String userId;
+
+                if (authenticatedWho.getIdentityProvider().equals(AUTHENTICATION_TYPE_ADD_IN)) {
+                    String userLogin = UserServiceClient.getUserLogin(serviceConfiguration, authenticatedWho.getToken());
+                    userId = GraphRestCompatibilityUtility.getUserPrincipalName(userLogin);
+                } else {
+                    userId = userClientOdata
+                            .getUserPrincipalName(authenticatedWho.getToken());
                 }
 
                 if (Strings.isNullOrEmpty(userId)) {
@@ -110,7 +111,7 @@ public class AuthorizationManager {
                 }
 
 //              // We need to check if the authenticated user is a member of one of the given groups, by group ID
-                // we use graph for that tassk
+                // we use graph for that task
               if (request.getAuthorization().hasGroups()) {
                   List<Group> groups = groupClient.fetchGroups(authenticatedWho.getToken(), null);
 
@@ -180,10 +181,9 @@ public class AuthorizationManager {
         ServiceConfiguration configuration = configurationParser.from(request);
         AuthResponse authResponse = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
 
-        // Build the required AuthorizationUser objects out of the users that Okta tells us about
         List<AuthorizationUser> users = Streams.asStream(userClientOdata.fetchUsers(authResponse.getAccessToken()).iterator())
                 .map(user -> new AuthorizationUser(
-                        user.getId(),
+                        user.getUserPrincipalName(),
                         user.getDisplayName(),
                         user.getJobTitle()
                 ))
