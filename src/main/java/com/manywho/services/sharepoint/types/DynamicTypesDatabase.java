@@ -37,7 +37,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public List<MObject> create(ServiceConfiguration configuration, List<MObject> objects) {
-        throw new RuntimeException("Create a list of objects is not currently supported");
+        throw new RuntimeException("Creating a list of objects is not currently supported");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public void delete(ServiceConfiguration configuration, List<MObject> objects) {
-        throw new RuntimeException("Delete a list of objects is not currently supported");
+        throw new RuntimeException("Deleting a list of objects is not currently supported");
     }
 
     @Override
@@ -100,6 +100,6 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public List<MObject> update(ServiceConfiguration configuration, List<MObject> objects) {
-        throw new RuntimeException("Update a list of objects is not currently supported");
+        throw new RuntimeException("Updating a list of objects is not currently supported");
     }
 }
