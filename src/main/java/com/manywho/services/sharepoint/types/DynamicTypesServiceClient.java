@@ -41,26 +41,6 @@ public class DynamicTypesServiceClient {
         this.closeableHttpClient = closeableHttpClient;
     }
 
-    public List<SharePointList> fetchListsRoot(ServiceConfiguration configuration, String token) {
-        Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
-        ListClient client = new ListClient(configuration.getHost(), "" , credentials);
-        ListenableFuture<List<SPList>> listsFuture = client.getLists(new Query());
-
-        try {
-            List<SharePointList> objectCollection = new ArrayList<>();
-            List<SPList> lists = listsFuture.get();
-
-            for (SPList spList : lists) {
-                objectCollection.add(dynamicTypesMapper.buildManyWhoSharePointListObject(spList, ""));
-            }
-
-            return objectCollection;
-
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, ResourceMetadata resourceMetadata,
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
 
