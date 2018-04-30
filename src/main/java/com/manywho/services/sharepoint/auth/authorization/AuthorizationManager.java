@@ -81,15 +81,7 @@ public class AuthorizationManager {
                     break;
                 }
 
-                String userId;
-
-                if (authenticatedWho.getIdentityProvider().equals(AUTHENTICATION_TYPE_ADD_IN)) {
-                    String userLogin = UserServiceClient.getUserLogin(serviceConfiguration, authenticatedWho.getToken());
-                    userId = GraphRestCompatibilityUtility.getUserPrincipalName(userLogin);
-                } else {
-                    userId = userClientOdata
-                            .getUserPrincipalName(authenticatedWho.getToken());
-                }
+                String userId = currentUserPrincipalName(serviceConfiguration, authenticatedWho);
 
                 if (Strings.isNullOrEmpty(userId)) {
                     status = "401";
@@ -110,10 +102,11 @@ public class AuthorizationManager {
                     break;
                 }
 
-//              // We need to check if the authenticated user is a member of one of the given groups, by group ID
+                // We need to check if the authenticated user is a member of one of the given groups, by group ID
                 // we use graph for that task
               if (request.getAuthorization().hasGroups()) {
-                  List<Group> groups = groupClient.fetchGroups(authenticatedWho.getToken(), null);
+
+                  List<Group> groups = currentUserGroups(serviceConfiguration, authenticatedWho);
 
                     // If the user is a member of no groups, then they're automatically not authorized
                     if (groups == null) {
@@ -158,7 +151,7 @@ public class AuthorizationManager {
         try {
             authenticationResult = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
         } catch (Exception e) {
-            throw new RuntimeException("Error fetching a valid getToken with the username and password", e);
+            throw new RuntimeException("Error fetching a valid token with the username and password", e);
         }
 
         List<AuthorizationGroup> groups = Streams.asStream(groupClient.fetchGroups(authenticationResult.getAccessToken(), null).iterator())
@@ -169,6 +162,7 @@ public class AuthorizationManager {
                 typeBuilder.from(groups)
         );
     }
+
 
     public ObjectDataResponse userAttributes() {
 
@@ -192,5 +186,36 @@ public class AuthorizationManager {
         return new ObjectDataResponse(
                 typeBuilder.from(users)
         );
+    }
+
+    private String currentUserPrincipalName(ServiceConfiguration configuration, AuthenticatedWho authenticatedWho) {
+
+        if (authenticatedWho.getIdentityProvider().equals(AUTHENTICATION_TYPE_ADD_IN)) {
+            String userLogin = UserServiceClient.getUserLogin(configuration, authenticatedWho.getToken());
+            return GraphRestCompatibilityUtility.getUserPrincipalName(userLogin);
+        } else {
+            return userClientOdata
+                    .getUserPrincipalName(authenticatedWho.getToken());
+        }
+    }
+
+    private List<Group> currentUserGroups(ServiceConfiguration configuration, AuthenticatedWho authenticatedWho) {
+
+        if (authenticatedWho.getIdentityProvider().equals(AUTHENTICATION_TYPE_ADD_IN)) {
+
+            AuthResponse adminToken = azureHttpClient.getAccessTokenFromUserCredentials(configuration.getUsername(), configuration.getPassword());
+            String userLogin = GraphRestCompatibilityUtility.getUserPrincipalName(UserServiceClient.getUserLogin(configuration, authenticatedWho.getToken()));
+
+            // we are using the admin token here we only want to allow the user to know if he is in the group, but not to
+            // know if other users are in the group
+
+            if (userLogin.equals(authenticatedWho.getUserId()) == false) {
+                throw new RuntimeException("Your token and userID didn't match, please logout and login again.");
+            }
+
+            return groupClient.fetchUserGroups(adminToken.getAccessToken(), authenticatedWho.getUserId());
+        } else {
+            return groupClient.fetchUserGroups(authenticatedWho.getToken(), authenticatedWho.getUserId());
+        }
     }
 }

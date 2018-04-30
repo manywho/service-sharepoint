@@ -1,12 +1,14 @@
 package com.manywho.services.sharepoint.auth.authentication;
 
-import com.auth0.jwt.JWT;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
+import com.manywho.sdk.services.configuration.ConfigurationParser;
 import com.manywho.services.sharepoint.client.OauthAuthenticationClient;
 import com.manywho.services.sharepoint.client.entities.AuthResponse;
 import com.manywho.services.sharepoint.client.entities.UserResponse;
 import com.manywho.services.sharepoint.configuration.ApiConstants;
+import com.manywho.services.sharepoint.users.GraphRestCompatibilityUtility;
+import com.manywho.services.sharepoint.users.UserServiceClient;
 
 import javax.inject.Inject;
 
@@ -17,11 +19,14 @@ public class UserFetcher {
 
     private OauthAuthenticationClient oauthAuthenticationClient;
     private ContextTokenManager contextTokenManager;
+    private ConfigurationParser configurationParser;
 
     @Inject
-    public UserFetcher(ContextTokenManager contextTokenManager, OauthAuthenticationClient oauthAuthenticationClient) {
+    public UserFetcher(ContextTokenManager contextTokenManager, OauthAuthenticationClient oauthAuthenticationClient,
+                       ConfigurationParser configurationParser) {
         this.oauthAuthenticationClient = oauthAuthenticationClient;
         this.contextTokenManager = contextTokenManager;
+        this.configurationParser = configurationParser;
     }
 
     public AuthenticatedWhoResult getAuthenticatedWhoResultByAuthCode(AuthenticationCredentials credentials) {
@@ -29,9 +34,7 @@ public class UserFetcher {
                 credentials.getCode(),
                 RESOURCE_GRAPH);
 
-        JWT jwt = JWT.decode(authResponse.getAccessToken());
-
-        UserResponse userResponse = oauthAuthenticationClient.getCurrentUser(jwt.getToken());
+        UserResponse userResponse = oauthAuthenticationClient.getCurrentUser(authResponse.getAccessToken());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId("SharePoint");
         authenticatedWhoResult.setDirectoryName("SharePoint");
@@ -41,8 +44,8 @@ public class UserFetcher {
         authenticatedWhoResult.setLastName(userResponse.getDisplayName());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(userResponse.getMail());
-        authenticatedWhoResult.setToken(jwt.getToken());
-        authenticatedWhoResult.setUserId(jwt.getClaim("puid").asString());
+        authenticatedWhoResult.setToken(authResponse.getAccessToken());
+        authenticatedWhoResult.setUserId(userResponse.getUserPrincipalName());
         authenticatedWhoResult.setUsername(userResponse.getDisplayName());
 
         return authenticatedWhoResult;
@@ -50,10 +53,8 @@ public class UserFetcher {
 
     public AuthenticatedWhoResult getAuthenticatedWhoResultByContextToken(AuthenticationCredentials credentials) throws Exception {
             AuthResponse response = contextTokenManager.getAuthentication(credentials);
-            JWT jwt = JWT.decode(response.getAccessToken());
-
-            String userId = jwt.getClaim("nameid").asString();
-
+            String restUserLogin = UserServiceClient.getUserLogin(configurationParser.from(credentials), response.getAccessToken());
+            String userPrincipalName = GraphRestCompatibilityUtility.getUserPrincipalName(restUserLogin);
 
             AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
             authenticatedWhoResult.setDirectoryId( "SharePoint Add-In" );
@@ -64,11 +65,10 @@ public class UserFetcher {
             authenticatedWhoResult.setLastName("User Last Name");
             authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
             authenticatedWhoResult.setTenantName("SharePoint Add-In");
-            authenticatedWhoResult.setToken( response.getAccessToken());
-            authenticatedWhoResult.setUserId(userId);
+            authenticatedWhoResult.setToken(response.getAccessToken());
+            authenticatedWhoResult.setUserId(userPrincipalName);
             authenticatedWhoResult.setUsername("username");
 
             return authenticatedWhoResult;
     }
 }
-

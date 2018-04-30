@@ -10,6 +10,7 @@ import org.apache.olingo.client.api.domain.ClientEntity;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GroupClient {
     private final ODataClient client;
@@ -33,5 +34,18 @@ public class GroupClient {
         }
 
         return groups;
+    }
+
+    public List<Group> fetchUserGroups(String token, String userPrincipalName) {
+
+        URI uri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
+                .appendEntitySetSegment("users")
+                .appendEntitySetSegment(userPrincipalName)
+                .appendActionCallSegment("memberOf")
+                .build();
+
+        return graphClient.queryList(token, uri).stream()
+                .map(GroupMapper::buildManyWhoGroupObject)
+                .collect(Collectors.toList());
     }
 }
