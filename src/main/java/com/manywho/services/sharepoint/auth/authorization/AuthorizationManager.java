@@ -179,7 +179,7 @@ public class AuthorizationManager {
                 .map(user -> new AuthorizationUser(
                         user.getUserPrincipalName(),
                         user.getDisplayName(),
-                        user.getJobTitle()
+                        user.getUserPrincipalName()
                 ))
                 .collect(Collectors.toList());
 
