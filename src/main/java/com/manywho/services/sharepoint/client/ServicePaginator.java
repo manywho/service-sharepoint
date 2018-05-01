@@ -32,7 +32,7 @@ public class ServicePaginator {
             try {
                 return myListClient.getListItems(listName, query).get();
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(String.format("Error fetching items from list %s", listName), e);
             }
         }
 
@@ -73,7 +73,7 @@ public class ServicePaginator {
             }
             return myListClient.getListItems(getNextUrl(jsonObject)).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("Error fetching page %s", getNextUrl(jsonObject)), e);
         }
     }
 
@@ -81,7 +81,7 @@ public class ServicePaginator {
         try {
             return myListClient.getListItemsJson(listName, query).get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("Error fetching items from list %s", listName), e);
         }
     }
 
@@ -93,7 +93,7 @@ public class ServicePaginator {
                 return null;
             }
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error accessing to list item next page url", e);
         }
     }
 }
