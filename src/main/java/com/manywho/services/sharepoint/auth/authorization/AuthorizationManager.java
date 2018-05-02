@@ -56,8 +56,7 @@ public class AuthorizationManager {
         user.setDirectoryId("Sharepoint");
         user.setDirectoryName("Sharepoint");
         user.setAuthenticationType(AuthorizationType.Oauth2);
-        user.setLoginUrl(configuration.getAuthorizationUrl());
-
+        user.setLoginUrl(configuration.getAuthorizationUrl(serviceConfiguration.getPromptAdminConsent()));
 
         switch (request.getAuthorization().getGlobalAuthenticationType()) {
             case AllUsers:

@@ -17,6 +17,9 @@ public class ServiceConfiguration implements Configuration {
     @Configuration.Setting(name="Authentication Strategy",  contentType = ContentType.String, required = false)
     private String strategy;
 
+    @Configuration.Setting(name="Prompt the Admin Consent",  contentType = ContentType.Boolean, required = false)
+    private Boolean promptAdminConsent;
+
     public String getUsername() {
         return username;
     }
@@ -36,5 +39,9 @@ public class ServiceConfiguration implements Configuration {
 
     public String getStrategy() {
         return strategy;
+    }
+
+    public Boolean getPromptAdminConsent() {
+        return promptAdminConsent;
     }
 }
