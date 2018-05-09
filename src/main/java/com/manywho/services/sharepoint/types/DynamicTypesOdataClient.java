@@ -39,12 +39,14 @@ public class DynamicTypesOdataClient {
     private final ODataClient client;
     private GraphClient graphClient;
     private SiteClient siteClient;
+    private ODataFilter oDataFilter;
 
     @Inject
-    public DynamicTypesOdataClient(ODataClient client, SiteClient siteClient) {
+    public DynamicTypesOdataClient(ODataClient client, SiteClient siteClient, ODataFilter oDataFilter) {
         this.client = client;
         this.graphClient = new GraphClient(client);
         this.siteClient = siteClient;
+        this.oDataFilter = oDataFilter;
     }
 
     public List<TypeElement> fetchAllListTypes(String token) {
@@ -151,7 +153,10 @@ public class DynamicTypesOdataClient {
         String entryPoint = String.format("%s/items", resourceMetadata.getResource());
         URIBuilder uriBuilder = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
                 .appendEntitySetSegment(entryPoint)
+                .search(listFilter.getSearch())
+                .filter(oDataFilter.createUriFilter(listFilter,"fields"))
                 .expand("fields");
+                //order by was not supported when the OData filter was added
 
         List<ClientEntity> clientEntities = odataPaginator.getEntities(token, uriBuilder, listFilter, client.getRetrieveRequestFactory());
 

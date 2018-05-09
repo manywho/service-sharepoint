@@ -73,6 +73,8 @@ public class OdataPaginator {
     private ClientEntitySetIterator<ClientEntitySet, ClientEntity> fetchPage(String token, URI uri, RetrieveRequestFactory retrieveRequestFactory) {
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> entitySetRequest = retrieveRequestFactory.getEntitySetIteratorRequest(uri);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
+        //  when filtering by a property of a list that  is not indexed, the query can not be accurate, sharepoint force me to write this line
+        entitySetRequest.addCustomHeader("Prefer", "HonorNonIndexedQueriesWarningMayFailRandomly");
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> execution = entitySetRequest.execute();
         return execution.getBody();
     }
