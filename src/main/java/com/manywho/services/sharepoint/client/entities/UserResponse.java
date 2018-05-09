@@ -2,10 +2,11 @@ package com.manywho.services.sharepoint.client.entities;
 
 public class UserResponse {
 
-   private String id;
-   private String givenName;
-   private String displayName;
-   private String mail;
+    private String id;
+    private String givenName;
+    private String displayName;
+    private String mail;
+    private String userPrincipalName;
 
     public String getId() {
         return id;
@@ -37,5 +38,13 @@ public class UserResponse {
 
     public void setMail(String mail) {
         this.mail = mail;
+    }
+
+    public String getUserPrincipalName() {
+        return userPrincipalName;
+    }
+
+    public void setUserPrincipalName(String userPrincipalName) {
+        this.userPrincipalName = userPrincipalName;
     }
 }

@@ -35,12 +35,6 @@ public class GraphClient {
         return entitySetResponse.getBody().getEntities();
     }
 
-//    public List<ClientEntity> queryListWithPagination(String token, URIBuilder uriBuilder, ListFilter listFilter) {
-//        OdataPaginator paginator = new OdataPaginator();
-//
-//        return paginator.getEntities(token, uriBuilder, listFilter, client.getRetrieveRequestFactory());
-//    }
-
     public void executeDelete(String token, URI path) {
         ODataDeleteRequest deleteRequest = client.getCUDRequestFactory().getDeleteRequest(path);
         deleteRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));

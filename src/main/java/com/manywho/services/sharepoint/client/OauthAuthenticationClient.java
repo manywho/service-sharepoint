@@ -49,7 +49,7 @@ public class OauthAuthenticationClient {
             entity.setChunked(false);
             httpPost.setEntity(entity);
 
-            return mapper.readValue(httpclient.executeRequest(httpPost), AuthResponse.class);
+             return mapper.readValue(httpclient.executeRequest(httpPost), AuthResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

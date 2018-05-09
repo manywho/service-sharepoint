@@ -3,7 +3,6 @@ package com.manywho.services.sharepoint.users;
 import com.google.inject.Inject;
 import com.manywho.services.sharepoint.client.GraphClient;
 import com.manywho.services.sharepoint.configuration.ApiConstants;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.domain.ClientEntity;
 
@@ -33,9 +32,9 @@ public class UserClientOdata {
         return users;
     }
 
-    public String getUserId(ServiceConfiguration configuration, String token) {
+    public String getUserPrincipalName(String token) {
         URI uri = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1).appendEntitySetSegment("me").build();
 
-        return graphClient.query(token, uri).getProperty("id").getValue().toString();
+        return graphClient.query(token, uri).getProperty("userPrincipalName").getValue().toString();
     }
 }

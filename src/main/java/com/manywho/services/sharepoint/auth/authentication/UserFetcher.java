@@ -1,6 +1,5 @@
 package com.manywho.services.sharepoint.auth.authentication;
 
-import com.auth0.jwt.JWT;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
 import com.manywho.sdk.services.configuration.ConfigurationParser;
@@ -8,8 +7,9 @@ import com.manywho.services.sharepoint.client.OauthAuthenticationClient;
 import com.manywho.services.sharepoint.client.entities.AuthResponse;
 import com.manywho.services.sharepoint.client.entities.UserResponse;
 import com.manywho.services.sharepoint.configuration.ApiConstants;
-import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
+import com.manywho.services.sharepoint.users.GraphRestCompatibilityUtility;
 import com.manywho.services.sharepoint.users.UserServiceClient;
+
 import javax.inject.Inject;
 
 import static com.manywho.services.sharepoint.configuration.ApiConstants.AUTHENTICATION_TYPE_ADD_IN;
@@ -34,9 +34,7 @@ public class UserFetcher {
                 credentials.getCode(),
                 RESOURCE_GRAPH);
 
-        JWT jwt = JWT.decode(authResponse.getAccessToken());
-
-        UserResponse userResponse = oauthAuthenticationClient.getCurrentUser(jwt.getToken());
+        UserResponse userResponse = oauthAuthenticationClient.getCurrentUser(authResponse.getAccessToken());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId("SharePoint");
         authenticatedWhoResult.setDirectoryName("SharePoint");
@@ -46,32 +44,31 @@ public class UserFetcher {
         authenticatedWhoResult.setLastName(userResponse.getDisplayName());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(userResponse.getMail());
-        authenticatedWhoResult.setToken(jwt.getToken());
-        authenticatedWhoResult.setUserId(userResponse.getId());
+        authenticatedWhoResult.setToken(authResponse.getAccessToken());
+        authenticatedWhoResult.setUserId(userResponse.getUserPrincipalName());
         authenticatedWhoResult.setUsername(userResponse.getDisplayName());
 
         return authenticatedWhoResult;
     }
 
     public AuthenticatedWhoResult getAuthenticatedWhoResultByContextToken(AuthenticationCredentials credentials) throws Exception {
-        AuthResponse response = contextTokenManager.getAuthentication(credentials);
-        ServiceConfiguration serviceConfiguration = configurationParser.from(credentials);
+            AuthResponse response = contextTokenManager.getAuthentication(credentials);
+            String restUserLogin = UserServiceClient.getUserLogin(configurationParser.from(credentials), response.getAccessToken());
+            String userPrincipalName = GraphRestCompatibilityUtility.getUserPrincipalName(restUserLogin);
 
-        String userId = UserServiceClient.getUserId(serviceConfiguration, response.getAccessToken());
-        AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
-        authenticatedWhoResult.setDirectoryId( "SharePoint Add-In" );
-        authenticatedWhoResult.setDirectoryName( "SharePoint Add-In" );
-        authenticatedWhoResult.setEmail("no-email");
-        authenticatedWhoResult.setFirstName("username");
-        authenticatedWhoResult.setIdentityProvider(AUTHENTICATION_TYPE_ADD_IN);
-        authenticatedWhoResult.setLastName("User Last Name");
-        authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
-        authenticatedWhoResult.setTenantName("SharePoint Add-In");
-        authenticatedWhoResult.setToken( response.getAccessToken());
-        authenticatedWhoResult.setUserId(userId);
-        authenticatedWhoResult.setUsername("username");
+            AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
+            authenticatedWhoResult.setDirectoryId( "SharePoint Add-In" );
+            authenticatedWhoResult.setDirectoryName( "SharePoint Add-In" );
+            authenticatedWhoResult.setEmail("no-email");
+            authenticatedWhoResult.setFirstName("username");
+            authenticatedWhoResult.setIdentityProvider(AUTHENTICATION_TYPE_ADD_IN);
+            authenticatedWhoResult.setLastName("User Last Name");
+            authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
+            authenticatedWhoResult.setTenantName("SharePoint Add-In");
+            authenticatedWhoResult.setToken(response.getAccessToken());
+            authenticatedWhoResult.setUserId(userPrincipalName);
+            authenticatedWhoResult.setUsername("username");
 
-        return authenticatedWhoResult;
+            return authenticatedWhoResult;
     }
 }
-
