@@ -36,6 +36,10 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
     public List<Drive> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         tokenManager.addinTokenNotSupported(configuration, "search drive");
 
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+
         return driveClient.fetchDrives(tokenManager.getToken(configuration), "me/drives", listFilter);
     }
 

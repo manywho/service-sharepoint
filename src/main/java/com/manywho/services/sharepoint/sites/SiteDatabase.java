@@ -34,7 +34,11 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
     public List<Site> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         String token = tokenManager.getToken(configuration);
 
-        if (listFilter != null && listFilter.getWhere() != null) {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+
+        if (listFilter.getWhere() != null) {
             Optional<ListFilterWhere> parentId  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Parent ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();

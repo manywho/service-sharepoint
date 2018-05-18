@@ -36,7 +36,11 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
     public List<SharePointList> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         String token = tokenManager.getToken(configuration);
 
-        if (listFilter != null && listFilter.getWhere() != null) {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+
+        if (listFilter.getWhere() != null) {
             Optional<ListFilterWhere> pathSiteId  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "Site ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();

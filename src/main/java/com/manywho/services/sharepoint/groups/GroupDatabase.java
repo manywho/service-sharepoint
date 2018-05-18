@@ -25,6 +25,10 @@ public class GroupDatabase implements Database<ServiceConfiguration, Group> {
 
     @Override
     public List<Group> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+
         return groupClient
                 .fetchGroups(tokenManager.getToken(configuration), listFilter);
     }

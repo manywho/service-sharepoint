@@ -158,6 +158,10 @@ public class DynamicTypesOdataClient {
                 .expand("fields");
                 //order by was not supported when the OData filter was added
 
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+
         List<ClientEntity> clientEntities = odataPaginator.getEntities(token, uriBuilder, listFilter, client.getRetrieveRequestFactory());
 
         return responseDynamicTypes(clientEntities, properties, resourceMetadata);

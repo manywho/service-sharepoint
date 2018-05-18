@@ -43,6 +43,9 @@ public class DynamicTypesServiceClient {
 
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, ResourceMetadata resourceMetadata,
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
 
         Credentials  credentials = request -> request.addHeader("Authorization", "Bearer " + token);
         MyListClient client = new MyListClient(configuration.getHost(), "sites/" + resourceMetadata.getSiteName() , credentials);

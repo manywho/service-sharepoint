@@ -36,15 +36,13 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
 
     @Override
     public List<SharePointListItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
 
-        Optional<ListFilterWhere> listOptional = Optional.empty();
-
-        if (listFilter!= null) {
-
-            listOptional  = listFilter.getWhere().stream()
+        Optional<ListFilterWhere> listOptional  = listFilter.getWhere().stream()
                     .filter(p -> Objects.equals(p.getColumnName(), "List ID") && !StringUtils.isEmpty(p.getContentValue()))
                     .findFirst();
-        }
 
         if (!listOptional.isPresent()) {
             throw new RuntimeException("List ID is mandatory");
