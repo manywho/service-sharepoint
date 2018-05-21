@@ -6,6 +6,7 @@ import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
 import org.apache.olingo.client.api.uri.FilterFactory;
 import org.apache.olingo.client.api.uri.URIFilter;
 import org.apache.olingo.client.core.uri.FilterFactoryImpl;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 class ODataFilter {
 
     URIFilter createUriFilter(ListFilter listFilter, String childPropertyPath) {
-        URIFilter uriFilter = null;
         FilterFactory filterFactory = new FilterFactoryImpl();
 
         List<URIFilter> uriFilters = listFilter.getWhere().stream()
@@ -22,7 +22,7 @@ class ODataFilter {
                 .collect(Collectors.toList());
 
         if (uriFilters.size() >= 1) {
-            uriFilter = uriFilters.get(0);
+            URIFilter uriFilter = uriFilters.get(0);
             for (int i = 1; i< uriFilters.size(); i++) {
                 if (listFilter.getComparisonType() == ComparisonType.And) {
                     uriFilter = filterFactory.and(uriFilter, uriFilters.get(i));
@@ -30,9 +30,11 @@ class ODataFilter {
                     uriFilter = filterFactory.or(uriFilter, uriFilters.get(i));
                 }
             }
+
+            return uriFilter;
         }
 
-        return uriFilter;
+        return null;
     }
 
     private URIFilter filterFromWhere(ListFilterWhere where, String propertyPath, FilterFactory filterFactory) {

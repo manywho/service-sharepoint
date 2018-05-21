@@ -66,6 +66,9 @@ public class DynamicTypesServiceClient {
 
     private void addWhereToQuery(ListFilter filter, Query query) {
         boolean first = true;
+        if (filter == null) {
+            return;
+        }
 
         for (ListFilterWhere where:filter.getWhere()) {
             if (first == false) {

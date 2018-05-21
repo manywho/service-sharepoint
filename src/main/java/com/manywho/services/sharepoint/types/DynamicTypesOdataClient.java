@@ -26,6 +26,7 @@ import org.apache.olingo.client.api.domain.ClientComplexValue;
 import org.apache.olingo.client.api.domain.ClientEntity;
 import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.api.uri.URIBuilder;
+import org.apache.olingo.client.api.uri.URIFilter;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import java.net.URI;
 import java.util.ArrayList;
@@ -151,16 +152,24 @@ public class DynamicTypesOdataClient {
         OdataPaginator odataPaginator = new OdataPaginator();
 
         String entryPoint = String.format("%s/items", resourceMetadata.getResource());
-        URIBuilder uriBuilder = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
-                .appendEntitySetSegment(entryPoint)
-                .search(listFilter.getSearch())
-                .filter(oDataFilter.createUriFilter(listFilter,"fields"))
-                .expand("fields");
-                //order by was not supported when the OData filter was added
 
         if (listFilter == null) {
             listFilter = new ListFilter();
         }
+
+        URIBuilder uriBuilder = client.newURIBuilder(ApiConstants.GRAPH_ENDPOINT_V1)
+                .appendEntitySetSegment(entryPoint);
+        if (listFilter.hasSearch()) {
+                uriBuilder.search(listFilter.getSearch());
+        }
+
+        URIFilter uriFilter = oDataFilter.createUriFilter(listFilter,"fields");
+        if (uriFilter != null) {
+            uriBuilder.filter(uriFilter);
+        }
+
+        uriBuilder.expand("fields");
+        //order by was not supported when the OData filter was added
 
         List<ClientEntity> clientEntities = odataPaginator.getEntities(token, uriBuilder, listFilter, client.getRetrieveRequestFactory());
 
