@@ -17,9 +17,6 @@ public class ServiceConfiguration implements Configuration {
     @Configuration.Setting(name="Authentication Strategy",  contentType = ContentType.String, required = false)
     private String strategy;
 
-    @Configuration.Setting(name="Prompt the Admin Consent",  contentType = ContentType.Boolean, required = false)
-    private boolean promptAdminConsent;
-
     public String getUsername() {
         return username;
     }
@@ -32,16 +29,7 @@ public class ServiceConfiguration implements Configuration {
         return host;
     }
 
-    // at the moment we dont include the lists that are create by the system
-    public boolean getIncludeDefaultLists() {
-        return false;
-    }
-
     public String getStrategy() {
         return strategy;
-    }
-
-    public boolean getPromptAdminConsent() {
-        return promptAdminConsent;
     }
 }
