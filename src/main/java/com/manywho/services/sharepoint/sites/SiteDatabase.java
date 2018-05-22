@@ -33,7 +33,7 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
     @Override
     public List<Site> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         String token = tokenManager.getToken(configuration);
-
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }

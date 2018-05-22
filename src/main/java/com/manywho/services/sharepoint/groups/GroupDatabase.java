@@ -25,6 +25,7 @@ public class GroupDatabase implements Database<ServiceConfiguration, Group> {
 
     @Override
     public List<Group> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }

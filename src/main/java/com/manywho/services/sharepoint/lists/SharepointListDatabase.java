@@ -36,6 +36,7 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
     public List<SharePointList> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         String token = tokenManager.getToken(configuration);
 
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }

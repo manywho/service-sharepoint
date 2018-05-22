@@ -153,6 +153,7 @@ public class DynamicTypesOdataClient {
 
         String entryPoint = String.format("%s/items", resourceMetadata.getResource());
 
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }

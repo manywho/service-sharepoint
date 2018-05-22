@@ -36,6 +36,7 @@ public class DriveDatabase implements Database<ServiceConfiguration, Drive> {
     public List<Drive> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
         tokenManager.addinTokenNotSupported(configuration, "search drive");
 
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }

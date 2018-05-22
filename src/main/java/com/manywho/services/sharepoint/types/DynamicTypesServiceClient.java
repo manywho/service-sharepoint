@@ -43,6 +43,7 @@ public class DynamicTypesServiceClient {
 
     public List<MObject> fetchTypesFromLists(ServiceConfiguration configuration, String token, ResourceMetadata resourceMetadata,
                                              List<ObjectDataTypeProperty> properties, ListFilter listFilter) {
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
             listFilter = new ListFilter();
         }
@@ -66,6 +67,7 @@ public class DynamicTypesServiceClient {
 
     private void addWhereToQuery(ListFilter filter, Query query) {
         boolean first = true;
+        //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (filter == null) {
             return;
         }
