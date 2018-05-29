@@ -19,12 +19,12 @@ public class AdminAuthorizationController {
         String title = "Authorization Success";
 
         String body = "<h1>Authorization Success</h1>" +
-                "<p>The client have been approved to be used in your organization.</p>" +
-                "<p>You can now install the SharePoint Service, for more information please check " +
+                "<p>The client has been approved to be used in your organization.</p>" +
+                "<p>You can now install the SharePoint Service. For more information please check " +
                 "<a href=\"https://docs.manywho.com\">docs.manywho.com</a></p>";
         if (Strings.isNullOrEmpty(code) || Boolean.valueOf(adminConsent) != true) {
-            title = "It have been a problem ";
-            body = "<h1>It have been a problem authorizing the client.</h1>" +
+            title = "There was a problem ";
+            body = "<h1>There was a problem authorizing the client.</h1>" +
                     "<p>This method should be called by a Microsoft client, never directly by a user.</p>" +
                     "<p> Please check the documentation at <a href=\"https://docs.manywho.com\">docs.manywho.com</a>.</p>";
         }

@@ -16,9 +16,7 @@ To authorize Boomi Flow app for all the organization the admin should give permi
 
 https://login.microsoftonline.com/common/oauth2/authorize?client_id={clientId}&response_type=code&redirect_uri={redirect-uri}%2Fauthorization&nonce={random-nonce}&resource=00000002-0000-0000-c000-000000000000&prompt=admin_consent
 
-redirect uri should be encoded
-
-e.g.https%3A%2F%2Fservices.manywho.com%2Fapi%2Fsharepoint%2F1%2Fadmin
+> The `redirect_uri` parameter should be URL-encoded, like `https%3A%2F%2Fservices.manywho.com%2Fapi%2Fsharepoint%2F1%2Fadmin`
 
 #### Running
 
