@@ -1,8 +1,6 @@
 ManyWho SharePoint Service
 ==========================
 
-> This service is currently in development, and not yet recommended for use in production environments
-
 This service allows you to integrate your Flows with [SharePoint](https://products.office.com/en-gb/sharepoint).
 
 Note:
