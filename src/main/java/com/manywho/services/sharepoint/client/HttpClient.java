@@ -36,9 +36,9 @@ public class HttpClient {
                     try {
                         String entityError = EntityUtils.toString(httpResponse.getEntity());
                         JSONObject objectError = new JSONObject(entityError);
-                        errorLine = objectError.getString("error_description");
+                        String errorDescription = objectError.getString("error_description");
 
-                        if (errorLine.contains("AADSTS65001")) {
+                        if (errorDescription.contains("AADSTS65001")) {
                             errorLine = "The user or administrator has not consented to use this application." +
                                     " Send an interactive authorization request for this user and resource. ";
                         }
