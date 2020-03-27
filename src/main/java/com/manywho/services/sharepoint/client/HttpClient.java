@@ -5,8 +5,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -26,11 +26,27 @@ public class HttpClient {
 
                 if (status >= 200 && status < 300) {
                     HttpEntity entity = httpResponse.getEntity();
-
                     return EntityUtils.toString(entity);
                 }
 
-                throw new RuntimeException(httpResponse.getStatusLine().toString());
+                String errorLine = httpResponse.getStatusLine().toString();
+
+                // If we get an error about the admin consent, we send a better error description
+                if (httpResponse.getEntity() != null) {
+                    try {
+                        String entityError = EntityUtils.toString(httpResponse.getEntity());
+                        JSONObject objectError = new JSONObject(entityError);
+                        errorLine = objectError.getString("error_description");
+
+                        if (errorLine.contains("AADSTS65001")) {
+                            errorLine = "The user or administrator has not consented to use this application." +
+                                    " Send an interactive authorization request for this user and resource. ";
+                        }
+                    } catch (Exception ignored){
+                    }
+                }
+
+                throw new RuntimeException(errorLine);
             });
         } catch (IOException e) {
             throw new RuntimeException("Error in the deserialization from SharePoint response", e);
