@@ -7,10 +7,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class HttpClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpClient.class);
     private CloseableHttpClient httpclient;
     @Inject
 
@@ -38,11 +41,20 @@ public class HttpClient {
                         JSONObject objectError = new JSONObject(entityError);
                         String errorDescription = objectError.getString("error_description");
 
+                        // At the moment of adding these lines the errors for AAD are described at:
+                        // https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes
+                        // if more errors are needed they should be described in that documentation
+
                         if (errorDescription.contains("AADSTS65001")) {
                             errorLine = "The user or administrator has not consented to use this application." +
                                     " Send an interactive authorization request for this user and resource. ";
+                        } else if (errorDescription.contains("AADSTS50126")) {
+                            errorLine = "Error validating credentials due to invalid username or password.";
                         }
-                    } catch (Exception ignored){
+
+                        LOGGER.error("Serialized httpclient error: {}", entityError);
+                    } catch (Exception e){
+                        LOGGER.error("Unable to deserialize error ", e);
                     }
                 }
 
