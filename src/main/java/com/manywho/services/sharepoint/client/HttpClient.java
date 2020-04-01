@@ -50,9 +50,10 @@ public class HttpClient {
                                     " Send an interactive authorization request for this user and resource. ";
                         } else if (errorDescription.contains("AADSTS50126")) {
                             errorLine = "Error validating credentials due to invalid username or password.";
+                        } else {
+                            LOGGER.error("Unexpected error response: {}", entityError);
                         }
 
-                        LOGGER.error("Serialized httpclient error: {}", entityError);
                     } catch (Exception e){
                         LOGGER.error("Unable to deserialize error ", e);
                     }
