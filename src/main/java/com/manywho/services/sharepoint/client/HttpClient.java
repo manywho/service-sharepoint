@@ -34,23 +34,18 @@ public class HttpClient {
 
                 String errorLine = httpResponse.getStatusLine().toString();
 
-                // If we get an error about the admin consent, we send a better error description
                 if (httpResponse.getEntity() != null) {
                     try {
                         String entityError = EntityUtils.toString(httpResponse.getEntity());
                         JSONObject objectError = new JSONObject(entityError);
-                        String errorDescription = objectError.getString("error_description");
+                        errorLine = objectError.getString("error_description");
 
                         // At the moment of adding these lines the errors for AAD are described at:
                         // https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes
-                        // if more errors are needed they should be described in that documentation
-
-                        if (errorDescription.contains("AADSTS65001")) {
-                            errorLine = "The user or administrator has not consented to use this application." +
-                                    " Send an interactive authorization request for this user and resource. ";
-                        } else if (errorDescription.contains("AADSTS50126")) {
-                            errorLine = "Error validating credentials due to invalid username or password.";
-                        } else {
+                        // errors in credentials and error installing the app because it hasn't been approved by admin
+                        // are expected errors, we log all the other errors
+                        if (errorLine.contains("AADSTS65001") == false && errorLine.contains("AADSTS50126") == false)
+                        {
                             LOGGER.error("Unexpected error response: {}", entityError);
                         }
 
