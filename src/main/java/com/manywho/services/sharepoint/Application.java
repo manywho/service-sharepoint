@@ -25,6 +25,6 @@ public class Application extends Servlet3Server {
 
         server.addModule(new ApplicationModule());
         server.setApplication(Application.class);
-        server.start("api/sharepoint/1");
+        server.start();
     }
 }

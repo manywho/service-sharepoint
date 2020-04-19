@@ -1,6 +1,7 @@
 package com.manywho.services.sharepoint.types;
 
 import com.google.inject.Inject;
+import com.manywho.sdk.api.draw.content.Command;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataType;
@@ -26,7 +27,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public MObject create(ServiceConfiguration configuration, MObject object) {
+    public MObject create(ServiceConfiguration configuration, ObjectDataType objectDataType, MObject object) {
         if (tokenManager.shouldUseServices(configuration)) {
             return dynamicTypesServiceClient.createTypeList(configuration, tokenManager.getToken(configuration), object);
         }
@@ -36,12 +37,12 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public List<MObject> create(ServiceConfiguration configuration, List<MObject> objects) {
+    public List<MObject> create(ServiceConfiguration configuration, ObjectDataType objectDataType, List<MObject> objects) {
         throw new RuntimeException("Creating a list of objects is not currently supported");
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, MObject object) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, MObject object) {
         String id = IdExtractorForDynamicTypes.extractItemId(object.getExternalId(), object.getDeveloperName());
         ResourceMetadata resourceMetadata = new ResourceMetadata(object.getDeveloperName());
 
@@ -53,12 +54,12 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<MObject> objects) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, List<MObject> objects) {
         throw new RuntimeException("Deleting a list of objects is not currently supported");
     }
 
     @Override
-    public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
+    public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, String id) {
         ResourceMetadata resourceMetadata = new ResourceMetadata(objectDataType.getDeveloperName());
 
         String itemId = IdExtractorForDynamicTypes.extractItemId(id, objectDataType.getDeveloperName());
@@ -73,7 +74,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, ListFilter filter) {
+    public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, ListFilter filter, List<MObject> objects) {
         ResourceMetadata resourceMetadata = new ResourceMetadata(objectDataType.getDeveloperName());
 
         if (tokenManager.shouldUseServices(configuration)) {
@@ -86,7 +87,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public MObject update(ServiceConfiguration configuration, MObject object) {
+    public MObject update(ServiceConfiguration configuration, ObjectDataType objectDataType, MObject object) {
         String itemId = IdExtractorForDynamicTypes.extractItemId(object.getExternalId(), object.getDeveloperName());
 
         if (tokenManager.shouldUseServices(configuration)) {
@@ -99,7 +100,7 @@ public class DynamicTypesDatabase implements RawDatabase<ServiceConfiguration> {
     }
 
     @Override
-    public List<MObject> update(ServiceConfiguration configuration, List<MObject> objects) {
+    public List<MObject> update(ServiceConfiguration configuration, ObjectDataType objectDataType, List<MObject> objects) {
         throw new RuntimeException("Updating a list of objects is not currently supported");
     }
 }

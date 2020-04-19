@@ -1,8 +1,11 @@
 package com.manywho.services.sharepoint.lists;
 
 import com.google.inject.Inject;
+import com.manywho.sdk.api.draw.content.Command;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.auth.TokenManager;
@@ -23,7 +26,7 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
     }
 
     @Override
-    public SharePointList find(ServiceConfiguration configuration, String id) {
+    public SharePointList find(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, String id) {
 
         String idSite = IdExtractorForLists.extractSiteId(id);
         String idList = IdExtractorForLists.extractListId(id);
@@ -33,7 +36,7 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
     }
 
     @Override
-    public List<SharePointList> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+    public List<SharePointList> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, ListFilter listFilter, List<MObject> objects) {
         String token = tokenManager.getToken(configuration);
 
         //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
@@ -57,32 +60,32 @@ public class SharepointListDatabase implements Database<ServiceConfiguration, Sh
     }
 
     @Override
-    public SharePointList create(ServiceConfiguration configuration, SharePointList sharePointList) {
+    public SharePointList create(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointList object) {
         throw new RuntimeException("Create a list is not currently supported");
     }
 
     @Override
-    public List<SharePointList> create(ServiceConfiguration configuration, List<SharePointList> list) {
+    public List<SharePointList> create(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointList> objects) {
         throw new RuntimeException("Create a list of lists is not currently supported");
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, SharePointList sharePointList) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointList object) {
         throw new RuntimeException("Delete a list is not currently supported");
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<SharePointList> list) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointList> objects) {
         throw new RuntimeException("Delete a list of lists is not currently supported");
     }
 
     @Override
-    public SharePointList update(ServiceConfiguration configuration, SharePointList sharePointList) {
+    public SharePointList update(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointList object) {
         throw new RuntimeException("Update a list is not currently supported");
     }
 
     @Override
-    public List<SharePointList> update(ServiceConfiguration configuration, List<SharePointList> list) {
+    public List<SharePointList> update(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointList> objects) {
         throw new RuntimeException("Update a list of lists is not currently supported");
     }
 }

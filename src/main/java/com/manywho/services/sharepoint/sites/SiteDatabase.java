@@ -1,8 +1,11 @@
 package com.manywho.services.sharepoint.sites;
 
 import com.google.inject.Inject;
+import com.manywho.sdk.api.draw.content.Command;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.auth.TokenManager;
@@ -23,7 +26,7 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
     }
 
     @Override
-    public Site find(ServiceConfiguration configuration, String id) {
+    public Site find(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, String id) {
         SiteMapper siteMapper = new SiteMapper(null, null);
         tokenManager.addinTokenNotSupported(configuration, "search drive");
 
@@ -31,7 +34,7 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
     }
 
     @Override
-    public List<Site> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+    public List<Site> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, ListFilter listFilter, List<MObject> objects) {
         String token = tokenManager.getToken(configuration);
         //ToDo in future versions of engine the list filter will be provider with empty list and this check will not be needed
         if (listFilter == null) {
@@ -63,32 +66,32 @@ public class SiteDatabase implements Database<ServiceConfiguration, Site> {
     }
 
     @Override
-    public Site create(ServiceConfiguration configuration, Site site) {
+    public Site create(ServiceConfiguration configuration, ObjectDataType objectDataType, Site site) {
         return null;
     }
 
     @Override
-    public List<Site> create(ServiceConfiguration configuration, List<Site> list) {
+    public List<Site> create(ServiceConfiguration configuration, ObjectDataType objectDataType, List<Site> list) {
         return null;
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, Site site) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, Site site) {
 
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<Site> list) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, List<Site> list) {
 
     }
 
     @Override
-    public Site update(ServiceConfiguration configuration, Site site) {
+    public Site update(ServiceConfiguration configuration, ObjectDataType objectDataType, Site site) {
         return null;
     }
 
     @Override
-    public List<Site> update(ServiceConfiguration configuration, List<Site> list) {
+    public List<Site> update(ServiceConfiguration configuration, ObjectDataType objectDataType, List<Site> list) {
         return null;
     }
 }

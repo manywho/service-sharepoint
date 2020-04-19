@@ -1,11 +1,15 @@
 package com.manywho.services.sharepoint.lists.items;
 
 import com.google.inject.Inject;
+import com.manywho.sdk.api.draw.content.Command;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.auth.TokenManager;
+import com.manywho.services.sharepoint.lists.SharePointList;
 import com.manywho.services.sharepoint.lists.SharePointListClient;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +29,7 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
     }
 
     @Override
-    public SharePointListItem find(ServiceConfiguration configuration, String id) {
+    public SharePointListItem find(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, String id) {
 
         return sharePointListClient
                 .fetchItem(tokenManager.getToken(configuration),
@@ -35,7 +39,7 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
     }
 
     @Override
-    public List<SharePointListItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+    public List<SharePointListItem> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, ListFilter listFilter, List<MObject> objects) {
         if (listFilter == null) {
             listFilter = new ListFilter();
         }
@@ -53,17 +57,17 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
     }
 
     @Override
-    public SharePointListItem create(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
+    public SharePointListItem create(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointListItem sharePointListItem) {
         throw new RuntimeException("Create is not supported for SharePoint List Item");
     }
 
     @Override
-    public List<SharePointListItem> create(ServiceConfiguration configuration, List<SharePointListItem> list) {
+    public List<SharePointListItem> create(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointListItem> list) {
         throw new RuntimeException("Create is not supported for SharePoint List Item");
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointListItem sharePointListItem) {
         sharePointListClient.deleteTypeList(tokenManager.getToken(configuration),
                         IdExtractorForListItem.extractSiteId(sharePointListItem.getId()),
                         IdExtractorForListItem.extractListId(sharePointListItem.getId()),
@@ -72,17 +76,17 @@ public class SharePointListItemDatabase implements Database<ServiceConfiguration
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<SharePointListItem> list) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointListItem> list) {
         throw new RuntimeException("Delete list of SharePoint List Item is not supported");
     }
 
     @Override
-    public SharePointListItem update(ServiceConfiguration configuration, SharePointListItem sharePointListItem) {
+    public SharePointListItem update(ServiceConfiguration configuration, ObjectDataType objectDataType, SharePointListItem sharePointListItem) {
         throw new RuntimeException("Update is not supported for SharePoint List Item");
     }
 
     @Override
-    public List<SharePointListItem> update(ServiceConfiguration configuration, List<SharePointListItem> list) {
+    public List<SharePointListItem> update(ServiceConfiguration configuration, ObjectDataType objectDataType, List<SharePointListItem> list) {
         throw new RuntimeException("Update list of SharePoint List Item is not supported");
     }
 }

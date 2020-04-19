@@ -1,8 +1,11 @@
 package com.manywho.services.sharepoint.drives.items;
 
 import com.google.inject.Inject;
+import com.manywho.sdk.api.draw.content.Command;
 import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.ListFilterWhere;
+import com.manywho.sdk.api.run.elements.type.MObject;
+import com.manywho.sdk.api.run.elements.type.ObjectDataType;
 import com.manywho.sdk.services.database.Database;
 import com.manywho.services.sharepoint.configuration.ServiceConfiguration;
 import com.manywho.services.sharepoint.auth.TokenManager;
@@ -26,7 +29,7 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
     }
 
     @Override
-    public DriveItem find(ServiceConfiguration configuration, String driveItemId)
+    public DriveItem find(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, String driveItemId)
     {
         String token = tokenManager.getToken(configuration);
 
@@ -35,7 +38,7 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
     }
 
     @Override
-    public List<DriveItem> findAll(ServiceConfiguration configuration, ListFilter listFilter) {
+    public List<DriveItem> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, Command command, ListFilter listFilter, List<MObject> objects) {
 
         tokenManager.addinTokenNotSupported(configuration, "search drive Item");
 
@@ -69,32 +72,32 @@ public class DriveItemDatabase implements Database<ServiceConfiguration, DriveIt
     }
 
     @Override
-    public DriveItem create(ServiceConfiguration configuration, DriveItem drive) {
+    public DriveItem create(ServiceConfiguration configuration, ObjectDataType objectDataType, DriveItem drive) {
         return null;
     }
 
     @Override
-    public List<DriveItem> create(ServiceConfiguration configuration, List<DriveItem> list) {
+    public List<DriveItem> create(ServiceConfiguration configuration, ObjectDataType objectDataType, List<DriveItem> list) {
         return null;
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, DriveItem drive) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, DriveItem drive) {
 
     }
 
     @Override
-    public void delete(ServiceConfiguration configuration, List<DriveItem> list) {
+    public void delete(ServiceConfiguration configuration, ObjectDataType objectDataType, List<DriveItem> list) {
 
     }
 
     @Override
-    public DriveItem update(ServiceConfiguration configuration, DriveItem drive) {
+    public DriveItem update(ServiceConfiguration configuration, ObjectDataType objectDataType, DriveItem drive) {
         return null;
     }
 
     @Override
-    public List<DriveItem> update(ServiceConfiguration configuration, List<DriveItem> list) {
+    public List<DriveItem> update(ServiceConfiguration configuration, ObjectDataType objectDataType, List<DriveItem> list) {
         return null;
     }
 
