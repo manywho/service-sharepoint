@@ -8,13 +8,14 @@ import com.manywho.sdk.api.run.elements.type.ListFilter;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.ObjectDataTypeProperty;
 import com.manywho.sdk.api.run.elements.type.Property;
-import com.manywho.services.sharepoint.configuration.ApiConstants;
 import com.manywho.services.sharepoint.client.GraphClient;
 import com.manywho.services.sharepoint.client.OdataPaginator;
+import com.manywho.services.sharepoint.configuration.ApiConstants;
 import com.manywho.services.sharepoint.sites.SiteClient;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.olingo.client.api.ODataClient;
+import org.apache.olingo.client.api.communication.ODataClientErrorException;
 import org.apache.olingo.client.api.communication.request.cud.ODataEntityCreateRequest;
 import org.apache.olingo.client.api.communication.request.cud.ODataEntityUpdateRequest;
 import org.apache.olingo.client.api.communication.request.cud.UpdateType;
@@ -28,6 +29,9 @@ import org.apache.olingo.client.api.domain.ClientValue;
 import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.client.api.uri.URIFilter;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +40,7 @@ import java.util.Objects;
 import static com.manywho.services.sharepoint.configuration.ApiConstants.GRAPH_ENDPOINT_V1;
 
 public class DynamicTypesOdataClient {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicTypesOdataClient.class);
     private final ODataClient client;
     private GraphClient graphClient;
     private SiteClient siteClient;
@@ -73,8 +77,20 @@ public class DynamicTypesOdataClient {
         List<TypeElement> typeElements = new ArrayList<>();
         List<ClientEntity> listSitesByGroups = new ArrayList<>();
 
-        ClientEntity siteGroup = siteClient.fetchSiteByGroup(token, group.getProperty("id").getValue().toString());
-        listSitesByGroups.add(siteGroup);
+        try {
+            ClientEntity siteGroup = siteClient.fetchSiteByGroup(token, group.getProperty("id").getValue().toString());
+            listSitesByGroups.add(siteGroup);
+        } catch (ODataClientErrorException ex) {
+            if (ex.getStatusLine().getStatusCode() == 403) {
+                // we have fetched the groups but the user doesn't have access to the root site of the group
+                // only the member of the group have access to the root site
+                // we ignore this scenario and we don't fetch the sites from this group
+
+                LOGGER.error("The user is not allowed to read site root for group: {}", group.getProperty("id").getValue().toString(), ex);
+            } else {
+                throw ex;
+            }
+        }
 
         for (ClientEntity site : listSitesByGroups) {
             String siteName = site.getProperty("name").getValue().toString();
